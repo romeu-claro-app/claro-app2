@@ -1,14 +1,4 @@
 {
-  "functions": {
-    "api/analyse.js": {
-      "memory": 128,
-      "maxDuration": 30
-    },
-    "api/checkout.js": {
-      "memory": 128,
-      "maxDuration": 30
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
