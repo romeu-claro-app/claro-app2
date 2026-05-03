@@ -701,9 +701,25 @@ function togglePaywall(){
   document.getElementById('pw-note').textContent=pwAnnual?'equivale a CHF 12/mês — poupa CHF 34':'';
   document.getElementById('pw-cta').textContent=pwAnnual?'Começar com Claro-app+ anual':'Começar com Claro-app+';
 }
-document.getElementById('pw-cta').addEventListener('click',()=>{
-  state.isPro=true; updatePlanLabel(); closePaywall();
-  alert('Bem-vindo ao Claro-app+!');
+document.getElementById('pw-cta').addEventListener('click',async ()=>{
+const priceId = pwAnnual 
+    ? 'price_1TSyGTI7lWm5a7C9lAylEzX5' 
+    : 'price_1TSyFmI7lWm5a7C9ipF7Sgu0';
+  const btn = document.getElementById('pw-cta');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>A redirecionar...';
+  try {
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceId })
+    });
+    const data = await res.json();
+    if (data.url) { window.location.href = data.url; }
+    else { alert('Erro. Tenta novamente.'); btn.disabled=false; btn.textContent='Começar com Claro-app+'; }
+  } catch(e) {
+    alert('Erro. Tenta novamente.'); btn.disabled=false; btn.textContent='Começar com Claro-app+';
+  }
 });
 
 // ── BOOKING ────────────────────────────────────────────────────────────────
