@@ -709,7 +709,7 @@ document.getElementById('pw-cta').addEventListener('click', async ()=>{
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>A redirecionar...';
   try {
-    const res = await fetch('/api/checkout', {
+    const res = await fetch('/api/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ priceId })
