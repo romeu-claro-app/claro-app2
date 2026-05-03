@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Claro-app.ch — Documentos oficiais em português</title>
+  <meta name="description" content="Ajudamos imigrantes portugueses na Suíça a entender documentos oficiais em alemão, francês e italiano.">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --green:#1D9E75;--green-dark:#0F6E56;--green-light:#E1F5EE;--green-mid:#9FE1CB;
+      --bg:#F7FAF9;--card:#ffffff;--border:#D0EAE2;--text:#2C2C2A;--text-muted:#5F5E5A;
+      --text-hint:#B4B2A9;--surface:#F1EFE8;--red:#E24B4A;--amber:#EF9F27;
+      --amber-light:#FAEEDA;--amber-dark:#633806;--red-light:#FCEBEB;--red-dark:#791F1F;
+    }
+    @media(prefers-color-scheme:dark){
+      :root{--bg:#1a1a18;--card:#242422;--border:#2e2e2b;--text:#f0ede8;
+        --text-muted:#9a9890;--text-hint:#5a5956;--surface:#2e2e2b;
+        --green-light:#0d3326;--green-mid:#0f4d38;}
+    }
+    html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text)}
+    .app{max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+
+    /* ONBOARDING */
+    .onboard{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center}
+    .onboard-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px}
+    .onboard-title{font-size:26px;font-weight:500;color:var(--text);margin-bottom:10px;line-height:1.3}
+    .onboard-sub{font-size:15px;color:var(--text-muted);margin-bottom:36px;line-height:1.6}
+    .onboard-features{width:100%;margin-bottom:32px}
+    .onboard-feat{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--border);text-align:left}
+    .onboard-feat:last-child{border-bottom:none}
+    .feat-icon{width:40px;height:40px;border-radius:10px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .feat-text{font-size:14px;color:var(--text);font-weight:500}
+    .feat-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+
+    /* HEADER */
+    .header{background:var(--card);padding:14px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+    .logo-wrap{display:flex;align-items:center;gap:9px}
+    .logo-icon{width:34px;height:34px}
+    .logo-main{font-size:20px;font-weight:600;color:var(--green);letter-spacing:-0.3px}
+    .logo-sub{font-size:14px;color:var(--green-dark)}
+    .avatar{width:34px;height:34px;border-radius:50%;background:var(--green-light);color:var(--green-dark);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--green-mid);cursor:pointer}
+
+    /* NAV */
+    .nav{display:flex;background:var(--card);border-bottom:0.5px solid var(--border)}
+    .nav-btn{flex:1;padding:10px 4px 8px;font-size:11px;color:var(--text-muted);background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit;transition:color 0.15s}
+    .nav-btn.active{color:var(--green);font-weight:500}
+    .nav-bar{width:20px;height:2px;background:transparent;border-radius:2px;margin-top:2px}
+    .nav-btn.active .nav-bar{background:var(--green)}
+    .nav-icon{width:20px;height:20px}
+
+    /* SCREENS */
+    .screen{display:none;flex:1;padding:16px;overflow-y:auto}
+    .screen.active{display:block}
+    .section-title{font-size:11px;color:var(--text-hint);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.6px;font-weight:500}
+
+    /* CARDS */
+    .card{background:var(--card);border-radius:14px;border:0.5px solid var(--border);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.15s}
+    .card:hover{border-color:var(--green-mid)}
+    .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+    .card-title{font-size:14px;font-weight:500;color:var(--text);line-height:1.3}
+    .card-date{font-size:11px;color:var(--text-hint);white-space:nowrap;margin-left:8px}
+    .card-meta{display:flex;gap:5px;flex-wrap:wrap}
+    .card-preview{font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.5}
+
+    /* TAGS */
+    .tag{font-size:10px;padding:3px 8px;border-radius:10px;font-weight:500}
+    .tag-urgent{background:#FCEBEB;color:#791F1F}
+    .tag-action{background:#FAEEDA;color:#633806}
+    .tag-info{background:#E1F5EE;color:#085041}
+    .tag-deadline{background:#FAECE7;color:#712B13}
+    .tag-cat{background:var(--surface);color:var(--text-muted)}
+
+    /* BUTTONS */
+    .btn-primary{width:100%;background:var(--green);color:white;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;transition:background 0.15s}
+    .btn-primary:hover{background:var(--green-dark)}
+    .btn-primary:disabled{background:var(--surface);color:var(--text-hint);cursor:default}
+    .btn-secondary{width:100%;background:var(--surface);color:var(--text);border:0.5px solid var(--border);border-radius:10px;padding:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+    .stat-card{background:var(--surface);border-radius:10px;padding:14px}
+    .stat-num{font-size:26px;font-weight:500;color:var(--text)}
+    .stat-label{font-size:12px;color:var(--text-muted);margin-top:2px}
+
+    /* FILTER */
+    .filter-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
+    .filter-row::-webkit-scrollbar{display:none}
+    .filter-chip{font-size:12px;padding:6px 13px;border-radius:20px;border:0.5px solid var(--border);background:var(--card);color:var(--text-muted);cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit}
+    .filter-chip.active{background:var(--green);color:white;border-color:var(--green)}
+
+    /* ALERTS */
+    .alert{border-radius:10px;padding:14px 16px;margin-bottom:12px}
+    .alert-warning{background:#FAEEDA;border:0.5px solid #FAC775}
+    .alert-warning .alert-text{font-size:14px;color:#633806;font-weight:500}
+    .alert-ok{background:#E1F5EE;border:0.5px solid #9FE1CB}
+    .alert-ok .alert-text{font-size:14px;color:#085041;font-weight:500}
+
+    /* BLOCK */
+    .block{background:var(--card);border-radius:10px;border:0.5px solid var(--border);padding:14px 16px;margin-bottom:10px}
+    .block-label{font-size:11px;color:var(--text-hint);text-transform:uppercase;letter-spacing:0.5px;font-weight:500;margin-bottom:6px}
+    .block-text{font-size:14px;color:var(--text);line-height:1.6}
+
+    /* STEPS */
+    .steps-list{list-style:none;padding:0}
+    .steps-list li{display:flex;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);font-size:14px;color:var(--text);line-height:1.5;align-items:flex-start}
+    .steps-list li:last-child{border-bottom:none}
+    .step-num{min-width:22px;height:22px;background:var(--green);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;margin-top:1px}
+
+    /* HELP BOX */
+    .help-box{background:var(--green-light);border-radius:10px;border:0.5px solid var(--green-mid);padding:16px;margin-bottom:12px}
+    .help-text{font-size:13px;color:#085041;margin-bottom:12px;line-height:1.5}
+    .help-btn{background:var(--green);color:white;border:none;border-radius:8px;padding:13px 16px;font-size:14px;font-weight:500;width:100%;cursor:pointer;font-family:inherit}
+
+    /* UPLOAD */
+    .upload-btn{width:100%;background:var(--green);color:white;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;font-family:inherit}
+    .upload-btn:hover{background:var(--green-dark)}
+
+    /* TEXTAREA */
+    .textarea{width:100%;min-height:130px;padding:12px;border-radius:10px;border:0.5px solid var(--border);background:var(--card);font-size:14px;color:var(--text);font-family:inherit;resize:vertical;line-height:1.6;margin-bottom:8px}
+    .textarea:focus{outline:none;border-color:var(--green)}
+    .char-count{font-size:12px;color:var(--text-hint);text-align:right;margin-bottom:10px}
+    .sample-btn{font-size:12px;color:var(--green);background:none;border:0.5px solid var(--green-mid);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit;margin-right:6px;margin-bottom:10px}
+
+    /* SPINNER */
+    .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* DETAIL */
+    .detail-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:100;max-width:430px;margin:0 auto;overflow-y:auto}
+    .detail-overlay.open{display:block}
+    .detail-header{background:var(--card);padding:14px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px;position:sticky;top:0}
+    .back-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--green);line-height:1;padding:0 8px 0 0}
+    .detail-title{font-size:15px;font-weight:500;color:var(--text)}
+    .detail-content{padding:16px}
+
+    /* PAYWALL */
+    .paywall-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;max-width:430px;margin:0 auto}
+    .paywall-overlay.open{display:flex}
+    .paywall-sheet{background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-height:92vh;overflow-y:auto}
+    .paywall-logo{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:16px}
+    .paywall-title{font-size:20px;font-weight:500;color:var(--text);text-align:center;margin-bottom:6px}
+    .paywall-sub{font-size:14px;color:var(--text-muted);text-align:center;margin-bottom:20px;line-height:1.5}
+    .toggle-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px}
+    .toggle-label{font-size:13px;color:var(--text-muted)}
+    .toggle-label.active{color:var(--text);font-weight:500}
+    .toggle-switch{width:44px;height:26px;border-radius:13px;background:var(--green);border:none;cursor:pointer;position:relative;flex-shrink:0}
+    .toggle-dot{position:absolute;top:3px;width:20px;height:20px;border-radius:50%;background:white;transition:left 0.2s;left:3px}
+    .toggle-switch.annual .toggle-dot{left:21px}
+    .badge-save{font-size:11px;background:var(--green-light);color:#085041;border-radius:10px;padding:3px 8px;font-weight:500}
+    .price-big{text-align:center;margin-bottom:4px}
+    .price-big span{font-size:36px;font-weight:500;color:var(--text)}
+    .price-big small{font-size:15px;color:var(--text-muted)}
+    .price-note{font-size:12px;color:var(--text-hint);text-align:center;margin-bottom:20px;min-height:18px}
+    .paywall-features{list-style:none;margin-bottom:12px}
+    .paywall-features li{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);padding:6px 0}
+    .paywall-features li span.check{color:var(--green);font-size:16px}
+    .bonus-box{background:linear-gradient(135deg,#0F6E56 0%,#1D9E75 100%);border-radius:12px;padding:14px;margin-bottom:16px}
+    .bonus-title{font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+    .bonus-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:0.5px solid rgba(255,255,255,0.15)}
+    .bonus-item:last-child{border-bottom:none;padding-bottom:0}
+    .bonus-icon{width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .bonus-info{flex:1}
+    .bonus-name{font-size:13px;font-weight:500;color:white}
+    .bonus-desc{font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;line-height:1.4}
+    .bonus-price{font-size:11px;color:rgba(255,255,255,0.5);text-decoration:line-through;flex-shrink:0;margin-top:2px}
+    .paywall-close{width:100%;padding:13px;background:var(--surface);border:none;border-radius:10px;font-size:14px;color:var(--text-muted);cursor:pointer;font-family:inherit;margin-top:10px}
+
+    /* PROFILE */
+    .profile-card{background:var(--card);border-radius:14px;border:0.5px solid var(--border);padding:24px 16px;margin-bottom:14px;text-align:center}
+    .profile-avatar{width:64px;height:64px;border-radius:50%;background:var(--green-light);color:var(--green-dark);font-size:22px;font-weight:600;display:flex;align-items:center;justify-content:center;border:2px solid var(--green-mid);margin:0 auto 12px}
+    .profile-name{font-size:18px;font-weight:500;color:var(--text)}
+    .profile-email{font-size:13px;color:var(--text-muted);margin-top:4px}
+    .input-row{margin-bottom:12px}
+    .input-label{font-size:12px;color:var(--text-muted);margin-bottom:5px}
+    .input-field{width:100%;padding:11px 13px;border-radius:10px;border:0.5px solid var(--border);background:var(--surface);font-size:14px;color:var(--text);font-family:inherit}
+    .input-field:focus{outline:none;border-color:var(--green)}
+
+    /* NOTIFS */
+    .notif-item{background:var(--card);border-radius:10px;border:0.5px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+    .notif-dot{width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:5px;flex-shrink:0}
+    .notif-dot.green{background:var(--green)}
+    .notif-body{flex:1}
+    .notif-title{font-size:14px;font-weight:500;color:var(--text)}
+    .notif-desc{font-size:13px;color:var(--text-muted);margin-top:2px}
+    .notif-time{font-size:11px;color:var(--text-hint);margin-top:4px}
+
+    /* BOOKING */
+    .booking-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:150;max-width:430px;margin:0 auto;overflow-y:auto}
+    .booking-overlay.open{display:block}
+    .type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+    .type-btn{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:12px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font-family:inherit}
+    .type-btn.selected{border:2px solid var(--green);background:var(--green-light)}
+    .type-icon{font-size:20px}
+    .type-label{font-size:12px;font-weight:500;color:var(--text)}
+    .type-sub{font-size:10px;color:var(--text-muted)}
+    .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .cal-month{font-size:15px;font-weight:500;color:var(--text)}
+    .cal-nav{background:none;border:0.5px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:15px;color:var(--text);display:flex;align-items:center;justify-content:center;font-family:inherit}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:16px}
+    .cal-day-label{font-size:11px;color:var(--text-hint);text-align:center;padding:4px 0;font-weight:500}
+    .cal-wrap{display:flex;flex-direction:column;align-items:center}
+    .cal-day{width:100%;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;color:var(--text);background:none;border:none;font-family:inherit}
+    .cal-day.today{color:var(--green);font-weight:500}
+    .cal-day.selected{background:var(--green);color:white}
+    .cal-day.disabled{color:var(--text-hint);cursor:default;opacity:0.3}
+    .cal-day:hover:not(.disabled):not(.empty){background:var(--green-light)}
+    .dot{width:4px;height:4px;border-radius:50%;background:var(--green);margin-top:1px}
+    .dot.hidden{visibility:hidden}
+    .times-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+    .time-btn{background:var(--card);border:0.5px solid var(--border);border-radius:10px;padding:10px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;font-family:inherit;text-align:center}
+    .time-btn:hover:not(.unavailable){border-color:var(--green-mid)}
+    .time-btn.selected{background:var(--green);color:white;border-color:var(--green)}
+    .time-btn.unavailable{opacity:0.3;cursor:default;text-decoration:line-through}
+    .summary-box{background:var(--green-light);border:0.5px solid var(--green-mid);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+    .summary-row{display:flex;justify-content:space-between;font-size:13px;color:#085041;padding:4px 0;border-bottom:0.5px solid var(--green-mid)}
+    .summary-row:last-child{border-bottom:none}
+    .summary-row span:first-child{opacity:0.7}
+    .summary-row span:last-child{font-weight:500}
+    .success-screen{display:none;padding:28px 20px;text-align:center}
+    .success-screen.show{display:block}
+    .success-icon{width:64px;height:64px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px}
+    .success-title{font-size:20px;font-weight:500;color:var(--text);margin-bottom:8px}
+    .success-sub{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:20px}
+    .success-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:0 16px;margin-bottom:16px;text-align:left}
+    .success-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border);font-size:13px}
+    .success-row:last-child{border-bottom:none}
+    .success-row .lbl{color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+    .success-row .val{color:var(--text);font-weight:500;text-align:right}
+    .float-btn{background:var(--green);color:white;border:none;border-radius:24px;padding:13px 18px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:7px;margin:16px auto 0;font-family:inherit}
+  </style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div class="onboard" id="onboard">
+  <div class="onboard-logo">
+    <svg width="44" height="44" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
+    <div><span style="font-size:24px;font-weight:600;color:#1D9E75;">claro-app</span><span style="font-size:17px;color:#0F6E56;">.ch</span></div>
+  </div>
+  <div class="onboard-title">Documentos suíços,<br>explicados em português.</div>
+  <div class="onboard-sub">Cartas do seguro, impostos, renda — percebe tudo sem precisar de saber alemão.</div>
+  <div class="onboard-features">
+    <div class="onboard-feat"><div class="feat-icon">📄</div><div><div class="feat-text">Analisa qualquer documento</div><div class="feat-sub">Alemão, francês ou italiano</div></div></div>
+    <div class="onboard-feat"><div class="feat-icon">🇵🇹</div><div><div class="feat-text">Tradução e resumo em português</div><div class="feat-sub">Simples e sem termos técnicos</div></div></div>
+    <div class="onboard-feat"><div class="feat-icon">⚡</div><div><div class="feat-text">Sabe o que tens de fazer</div><div class="feat-sub">Prazos, passos e consequências</div></div></div>
+    <div class="onboard-feat"><div class="feat-icon">💬</div><div><div class="feat-text">Marca consulta com consultor</div><div class="feat-sub">Quando precisares de ajuda real</div></div></div>
+  </div>
+  <button class="btn-primary" onclick="startApp()" style="max-width:320px;">Começar grátis</button>
+  <p style="font-size:12px;color:var(--text-hint);margin-top:12px;">O primeiro documento é grátis. Sem cartão.</p>
+</div>
+
+<!-- APP -->
+<div class="app" id="app" style="display:none;">
+  <div class="header">
+    <div class="logo-wrap">
+      <svg class="logo-icon" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
+      <span class="logo-main">claro-app</span><span class="logo-sub">.ch</span>
+    </div>
+    <div class="avatar" onclick="showScreen('perfil')" id="headerAvatar">MR</div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" onclick="showScreen('analisar')" id="nav-analisar">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M14 14l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Analisar<div class="nav-bar"></div>
+    </button>
+    <button class="nav-btn" onclick="showScreen('documentos')" id="nav-documentos">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M5 2h7l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 2v4h4M7 9h6M7 12h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Documentos<div class="nav-bar"></div>
+    </button>
+    <button class="nav-btn" onclick="showScreen('notificacoes')" id="nav-notificacoes">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 00-6-6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8.5 16a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Avisos<div class="nav-bar"></div>
+    </button>
+    <button class="nav-btn" onclick="showScreen('perfil')" id="nav-perfil">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Perfil<div class="nav-bar"></div>
+    </button>
+  </div>
+
+  <!-- ANALISAR -->
+  <div id="screen-analisar" class="screen active">
+    <div class="section-title">Analisar documento</div>
+    <div style="margin-bottom:10px;">
+      <button class="sample-btn" onclick="loadSample(0)">Exemplo: Krankenkasse</button>
+      <button class="sample-btn" onclick="loadSample(1)">Exemplo: Steuererklärung</button>
+      <button class="sample-btn" onclick="loadSample(2)">Exemplo: Mietvertrag</button>
+    </div>
+    <textarea class="textarea" id="docInput" placeholder="Cola aqui o texto do documento em alemão, francês ou italiano..." oninput="updateCount()"></textarea>
+    <div class="char-count" id="charCount">0 caracteres</div>
+    <button class="btn-primary" id="analyseBtn" onclick="analyseDoc()">Analisar com IA</button>
+    <div id="resultArea" style="margin-top:14px;"></div>
+  </div>
+
+  <!-- DOCUMENTOS -->
+  <div id="screen-documentos" class="screen">
+    <div class="section-title">Os meus documentos</div>
+    <div class="filter-row">
+      <div class="filter-chip active" onclick="filterDocs(this,'')">Todos</div>
+      <div class="filter-chip" onclick="filterDocs(this,'Seguro')">Seguro</div>
+      <div class="filter-chip" onclick="filterDocs(this,'Impostos')">Impostos</div>
+      <div class="filter-chip" onclick="filterDocs(this,'Renda')">Renda</div>
+      <div class="filter-chip" onclick="filterDocs(this,'Trabalho')">Trabalho</div>
+      <div class="filter-chip" onclick="filterDocs(this,'Saúde')">Saúde</div>
+    </div>
+    <div id="savedDocsList"><div style="font-size:14px;color:var(--text-muted);text-align:center;padding:48px 0;line-height:1.6;">Ainda não tens documentos guardados.<br>Analisa um documento para o guardar aqui.</div></div>
+  </div>
+
+  <!-- NOTIFICAÇÕES -->
+  <div id="screen-notificacoes" class="screen">
+    <div class="section-title">Avisos</div>
+    <div id="notifsList"><div style="font-size:14px;color:var(--text-muted);text-align:center;padding:48px 0;">Sem avisos por agora.</div></div>
+  </div>
+
+  <!-- PERFIL -->
+  <div id="screen-perfil" class="screen">
+    <div class="profile-card">
+      <div class="profile-avatar" id="profileInitials">MR</div>
+      <div class="profile-name" id="profileName">Maria Rodrigues</div>
+      <div class="profile-email" id="profileEmail">maria.r@email.com</div>
+    </div>
+    <div class="block">
+      <div class="input-row"><div class="input-label">Nome completo</div><input class="input-field" id="inputName" type="text" value="Maria Rodrigues"></div>
+      <div class="input-row"><div class="input-label">Email</div><input class="input-field" id="inputEmail" type="email" value="maria.r@email.com"></div>
+      <div class="input-row" style="margin-bottom:0;"><div class="input-label">Telemóvel</div><input class="input-field" type="tel" value="+41 79 123 45 67"></div>
+    </div>
+    <button class="btn-primary" onclick="saveProfile()" style="margin-bottom:12px;">Guardar alterações</button>
+    <div class="block">
+      <div class="block-label">Plano atual</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="block-text" id="planLabel">Grátis · 1 documento restante</div>
+        <button onclick="openPaywall()" style="font-size:13px;color:var(--green);background:none;border:none;cursor:pointer;font-family:inherit;font-weight:500;">Upgrade →</button>
+      </div>
+    </div>
+    <div id="proResources" style="display:none;">
+      <div class="block" style="margin-top:4px;">
+        <div class="block-label">Recursos incluídos no Claro-app+</div>
+        <a href="Manual_Emigrante_FINAL_v2.pdf" download style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);text-decoration:none;">
+          <span style="font-size:20px;">📖</span>
+          <div><div style="font-size:14px;font-weight:500;color:var(--text);">Manual do Emigrante</div><div style="font-size:12px;color:var(--text-muted);">Guia completo de integração na Suíça</div></div>
+          <span style="margin-left:auto;color:var(--green);font-size:13px;">↓ Download</span>
+        </a>
+        <a href="Cálculo_do_Budget_Mensal_v2.xlsx" download style="display:flex;align-items:center;gap:10px;padding:10px 0;text-decoration:none;">
+          <span style="font-size:20px;">📊</span>
+          <div><div style="font-size:14px;font-weight:500;color:var(--text);">Budget Mensal Suíça</div><div style="font-size:12px;color:var(--text-muted);">Excel para controlar as tuas despesas</div></div>
+          <span style="margin-left:auto;color:var(--green);font-size:13px;">↓ Download</span>
+        </a>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:16px;">
+      <button class="float-btn" onclick="openBooking()">📅 Marcar consulta com consultor</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL OVERLAY -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-header">
+    <button class="back-btn" onclick="closeDetail()">←</button>
+    <div class="detail-title" id="detailTitle"></div>
+  </div>
+  <div class="detail-content" id="detailContent"></div>
+</div>
+
+<!-- PAYWALL -->
+<div class="paywall-overlay" id="paywallOverlay">
+  <div class="paywall-sheet">
+    <div class="paywall-logo">
+      <svg width="28" height="28" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
+      <span style="font-size:18px;font-weight:600;color:#1D9E75;">claro-app</span><span style="font-size:13px;color:#0F6E56;">.ch</span>
+    </div>
+    <div class="paywall-title">Continua sem limites</div>
+    <div class="paywall-sub">Usaste o teu documento grátis.<br>Faz upgrade para continuar.</div>
+    <div class="toggle-row">
+      <span class="toggle-label active" id="pw-label-monthly">Mensal</span>
+      <button class="toggle-switch" id="pwToggle" onclick="togglePaywall()"><div class="toggle-dot" id="pwDot"></div></button>
+      <span class="toggle-label" id="pw-label-annual">Anual</span>
+      <span class="badge-save" id="pw-badge" style="display:none;">Poupa CHF 34</span>
+    </div>
+    <div class="price-big"><span id="pw-price">CHF 14.90</span><small id="pw-period">/mês</small></div>
+    <div class="price-note" id="pw-note"></div>
+    <ul class="paywall-features">
+      <li><span class="check">✓</span> Documentos ilimitados</li>
+      <li><span class="check">✓</span> Histórico completo</li>
+      <li><span class="check">✓</span> Notificações de prazos</li>
+      <li><span class="check">✓</span> Marcação de consulta</li>
+    </ul>
+    <div class="bonus-box">
+      <div class="bonus-title">✦ Incluído no Claro-app+</div>
+      <div class="bonus-item">
+        <div class="bonus-icon">📖</div>
+        <div class="bonus-info"><div class="bonus-name">Manual do Emigrante</div><div class="bonus-desc">Guia completo de integração na Suíça — seguros, impostos, habitação e muito mais.</div></div>
+        <div class="bonus-price">CHF 9.90</div>
+      </div>
+      <div class="bonus-item">
+        <div class="bonus-icon">📊</div>
+        <div class="bonus-info"><div class="bonus-name">Budget Mensal Suíça</div><div class="bonus-desc">Excel completo para controlar as tuas despesas em francos suíços.</div></div>
+        <div class="bonus-price">CHF 4.90</div>
+      </div>
+    </div>
+    <button class="btn-primary" id="pw-cta">Começar com Claro-app+</button>
+    <button class="paywall-close" onclick="closePaywall()">Agora não</button>
+  </div>
+</div>
+
+<!-- BOOKING OVERLAY -->
+<div class="booking-overlay" id="bookingOverlay">
+  <div class="header">
+    <div class="logo-wrap">
+      <svg class="logo-icon" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
+      <span class="logo-main">claro-app</span><span class="logo-sub">.ch</span>
+    </div>
+    <button class="back-btn" onclick="closeBooking()" style="padding:0;">✕</button>
+  </div>
+  <div style="padding:16px;" id="bookingForm">
+    <div class="section-title">Marcar consulta</div>
+    <div class="section-title" style="margin-top:12px;">Tipo de consulta</div>
+    <div class="type-grid">
+      <button class="type-btn selected" onclick="selectType('video',this)"><div class="type-icon">🎥</div><div class="type-label">Vídeo</div><div class="type-sub">Google Meet</div></button>
+      <button class="type-btn" onclick="selectType('phone',this)"><div class="type-icon">📞</div><div class="type-label">Chamada</div><div class="type-sub">Telefone</div></button>
+      <button class="type-btn" onclick="selectType('presencial',this)"><div class="type-icon">🤝</div><div class="type-label">Presencial</div><div class="type-sub">Zürich</div></button>
+    </div>
+    <div class="section-title">Escolhe o dia</div>
+    <div class="cal-header"><button class="cal-nav" onclick="prevMonth()">‹</button><div class="cal-month" id="calMonth"></div><button class="cal-nav" onclick="nextMonth()">›</button></div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div id="timesSection" style="display:none;">
+      <div class="section-title" id="timesLabel">Horários disponíveis</div>
+      <div class="times-grid" id="timesGrid"></div>
+    </div>
+    <div id="bookingFormSection" style="display:none;">
+      <div class="section-title">Os teus dados</div>
+      <div class="block" style="margin-bottom:12px;">
+        <div class="input-row"><div class="input-label">Nome completo <span style="color:var(--green);">*</span></div><input class="input-field" id="bkName" type="text" placeholder="Maria Rodrigues"></div>
+        <div class="input-row"><div class="input-label">Data de nascimento <span style="color:var(--green);">*</span></div><input class="input-field" id="bkDob" type="date"></div>
+        <div class="input-row"><div class="input-label">Telemóvel <span style="color:var(--green);">*</span></div><input class="input-field" id="bkPhone" type="tel" placeholder="+41 79 000 00 00"></div>
+        <div class="input-row"><div class="input-label">Email <span style="color:var(--green);">*</span></div><input class="input-field" id="bkEmail" type="email" placeholder="email@exemplo.com"></div>
+        <div class="input-row" style="margin-bottom:0;"><div class="input-label">Assunto (opcional)</div><textarea class="textarea" id="bkNote" placeholder="Ex: Recebi uma carta dos impostos e não sei o que fazer..." style="min-height:70px;margin-bottom:0;"></textarea></div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-row"><span>Data</span><span id="sumDate">—</span></div>
+        <div class="summary-row"><span>Hora</span><span id="sumTime">—</span></div>
+        <div class="summary-row"><span>Tipo</span><span id="sumType">Videochamada</span></div>
+      </div>
+      <button class="btn-primary" onclick="confirmBooking()">Confirmar marcação</button>
+      <p style="font-size:12px;color:var(--text-hint);text-align:center;margin-top:10px;margin-bottom:20px;">Receberás confirmação por email em poucos minutos.</p>
+    </div>
+  </div>
+  <div class="success-screen" id="bookingSuccess">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Marcação confirmada!</div>
+    <div class="success-sub">O consultor recebeu os teus dados e entrará em contacto para confirmar.</div>
+    <div class="success-card">
+      <div class="success-row"><span class="lbl">Data</span><span class="val" id="cDate">—</span></div>
+      <div class="success-row"><span class="lbl">Hora</span><span class="val" id="cTime">—</span></div>
+      <div class="success-row"><span class="lbl">Tipo</span><span class="val" id="cType">—</span></div>
+      <div class="success-row"><span class="lbl">Nome</span><span class="val" id="cName">—</span></div>
+      <div class="success-row"><span class="lbl">Nasc.</span><span class="val" id="cDob">—</span></div>
+      <div class="success-row"><span class="lbl">Telemóvel</span><span class="val" id="cPhone">—</span></div>
+      <div class="success-row"><span class="lbl">Email</span><span class="val" id="cEmail">—</span></div>
+    </div>
+    <button class="btn-primary" onclick="resetBooking()">Fazer nova marcação</button>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+// SUBSTITUI PELA TUA CHAVE API DO ANTHROPIC
+// Chave API gerida pelo servidor (Vercel Environment Variables)
+const ANTHROPIC_API_KEY = '';
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+const state = { docsUsed:0, freeLimit:1, isPro:false, savedDocs:[], notifs:[], activeFilter:'' };
+
+const samples = [
+  `Krankenkasse Helsana AG\nPrämienrechnung April 2025\n\nSehr geehrte Frau Rodrigues,\n\nwir stellen Ihnen die Monatsprämie für April 2025 in Rechnung.\n\nVersicherungsnehmer: Maria Rodrigues\nGrundversicherung (KVG): CHF 312.40\nZusatzversicherung (VVG): CHF 30.40\nTotal: CHF 342.80\n\nZahlungsfrist: 27. April 2025\n\nBei verspäteter Zahlung werden Verzugszinsen erhoben. Nach 3 Mahnungen wird der Fall an das kantonale Betreibungsamt weitergeleitet.\n\nHelsana AG, Zürich`,
+  `Kantonales Steueramt Zürich\nSteuererklärung 2024\n\nSehr geehrte Frau Rodrigues,\n\nwir fordern Sie auf, die Steuererklärung 2024 bis spätestens 30. April 2025 einzureichen.\n\nBitte reichen Sie folgende Dokumente ein:\n- Lohnausweis 2024\n- Bankkontoauszüge\n- Mietvertrag\n\nBei Nichteinreichung wird eine Ermessensveranlagung vorgenommen.\n\nKantonales Steueramt Zürich`,
+  `Mietvertrag – Verlängerungsbestätigung\n\nVermieterin: Migros Immobilien AG\nMieterin: Maria Rodrigues\nMietobjekt: Bergstrasse 14, 8001 Zürich\n\nWir bestätigen die automatische Verlängerung Ihres Mietvertrags für den Zeitraum 1. Mai 2025 bis 30. April 2026.\n\nMonatliche Miete: CHF 1.450.00\nNebenkosten: CHF 120.00\n\nMit freundlichen Grüssen,\nMigros Immobilien AG`
+];
+
+// ── ONBOARDING ─────────────────────────────────────────────────────────────
+function startApp(){
+  document.getElementById('onboard').style.display='none';
+  document.getElementById('app').style.display='flex';
+}
+
+// ── NAV ────────────────────────────────────────────────────────────────────
+function showScreen(name){
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  if(name==='documentos') renderDocs();
+  if(name==='notificacoes') renderNotifs();
+}
+
+// ── ANÁLISE ────────────────────────────────────────────────────────────────
+function loadSample(i){ document.getElementById('docInput').value=samples[i]; updateCount(); document.getElementById('resultArea').innerHTML=''; }
+function updateCount(){ document.getElementById('charCount').textContent=document.getElementById('docInput').value.length+' caracteres'; }
+
+async function analyseDoc(){
+  if(!state.isPro && state.docsUsed>=state.freeLimit){ openPaywall(); return; }
+  const text=document.getElementById('docInput').value.trim();
+  if(!text) return;
+  const btn=document.getElementById('analyseBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A analisar...';
+  document.getElementById('resultArea').innerHTML='';
+  const prompt=`És um assistente especializado a ajudar imigrantes portugueses na Suíça a compreender documentos oficiais em alemão, francês ou italiano.\n\nAnalisa o seguinte documento e responde APENAS em JSON válido sem markdown:\n{\n  "titulo": "título curto",\n  "idioma_original": "Alemão/Francês/Italiano",\n  "categoria": "Seguro/Impostos/Renda/Trabalho/Saúde/Outro",\n  "resumo": "resumo simples em 2-3 frases em português",\n  "explicacao": "explicação clara em português",\n  "acao_necessaria": true/false,\n  "urgente": true/false,\n  "o_que_fazer": "o que o utilizador deve fazer (vazio se não necessário)",\n  "prazo": "prazo em português (vazio se não houver)",\n  "passos": ["passo 1","passo 2"],\n  "consequencias": "o que acontece se ignorar (vazio se não aplicável)",\n  "prazo_dias": 0\n}\n\nDocumento:\n${text}`;
+  try{
+    const res=await fetch('/api/analyse',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const raw=data.content[0].text.replace(/```json|```/g,'').trim();
+    const r=JSON.parse(raw);
+    state.docsUsed++;
+    state.savedDocs.push({...r,savedAt:new Date().toLocaleDateString('pt-PT')});
+    if(r.acao_necessaria) state.notifs.push({title:r.titulo,desc:r.o_que_fazer,urgent:r.urgente});
+    updatePlanLabel();
+    renderResult(r);
+  }catch(e){
+    document.getElementById('resultArea').innerHTML=`<div class="block"><div class="block-text" style="color:var(--red);">Erro ao analisar. Verifica a tua ligação ou a chave de API e tenta novamente.</div></div>`;
+  }
+  btn.disabled=false; btn.innerHTML='Analisar com IA';
+}
+
+function renderResult(r){
+  let h='';
+  h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;">`;
+  if(r.urgente) h+=`<span class="tag tag-urgent">Urgente</span>`;
+  if(r.acao_necessaria) h+=`<span class="tag tag-action">Ação necessária</span>`;
+  if(!r.acao_necessaria) h+=`<span class="tag tag-info">Informativo</span>`;
+  if(r.prazo_dias>0&&r.prazo_dias<=7) h+=`<span class="tag tag-deadline">Prazo próximo</span>`;
+  h+=`<span class="tag tag-cat">${r.categoria}</span><span class="tag tag-cat">Original: ${r.idioma_original}</span></div>`;
+  if(r.acao_necessaria) h+=`<div class="alert alert-warning"><div class="alert-text">⚠️ Este documento pode exigir uma ação importante.</div></div>`;
+  else h+=`<div class="alert alert-ok"><div class="alert-text">✅ Não é necessária nenhuma ação.</div></div>`;
+  h+=`<div class="block"><div class="block-label">Resumo</div><div class="block-text">${r.resumo}</div></div>`;
+  h+=`<div class="block"><div class="block-label">Explicação</div><div class="block-text">${r.explicacao}</div></div>`;
+  if(r.acao_necessaria){
+    if(r.o_que_fazer) h+=`<div class="block"><div class="block-label">O que tens de fazer</div><div class="block-text">${r.o_que_fazer}</div></div>`;
+    if(r.prazo) h+=`<div class="block"><div class="block-label">Prazo</div><div class="block-text" style="color:var(--red);font-weight:500;">📅 ${r.prazo}</div></div>`;
+    if(r.passos&&r.passos.length){
+      h+=`<div class="block"><div class="block-label">Passo a passo</div><ul class="steps-list">`;
+      r.passos.forEach((s,i)=>{h+=`<li><span class="step-num">${i+1}</span>${s}</li>`;});
+      h+=`</ul></div>`;
+    }
+    if(r.consequencias) h+=`<div class="block"><div class="block-label">Se não fizeres nada</div><div class="block-text">${r.consequencias}</div></div>`;
+    h+=`<div class="help-box"><div class="help-text">Evita erros ou custos desnecessários. Um consultor pode ajudar-te com este documento.</div><button class="help-btn" onclick="openBooking()">Precisas de ajuda com este documento?</button></div>`;
+  }
+  h+=`<button class="btn-primary" style="margin-top:4px;" onclick="showScreen('documentos')">Ver documentos guardados →</button>`;
+  document.getElementById('resultArea').innerHTML=h;
+  document.getElementById('resultArea').scrollIntoView({behavior:'smooth'});
+}
+
+// ── DOCUMENTOS ─────────────────────────────────────────────────────────────
+function filterDocs(chip,cat){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  state.activeFilter=cat;
+  renderDocs();
+}
+
+function renderDocs(){
+  const el=document.getElementById('savedDocsList');
+  const docs=state.activeFilter?state.savedDocs.filter(d=>d.categoria===state.activeFilter):state.savedDocs;
+  if(!docs.length){el.innerHTML='<div style="font-size:14px;color:var(--text-muted);text-align:center;padding:48px 0;line-height:1.6;">Ainda não tens documentos guardados.<br>Analisa um documento para o guardar aqui.</div>';return;}
+  el.innerHTML=docs.map((d,i)=>`
+    <div class="card" onclick="openDoc(${state.savedDocs.indexOf(d)})">
+      <div class="card-header"><div class="card-title">${d.titulo}</div><div class="card-date">${d.savedAt}</div></div>
+      <div class="card-meta">
+        ${d.urgente?'<span class="tag tag-urgent">Urgente</span>':''}
+        ${d.acao_necessaria?'<span class="tag tag-action">Ação necessária</span>':'<span class="tag tag-info">Informativo</span>'}
+        <span class="tag tag-cat">${d.categoria}</span>
+      </div>
+      ${d.resumo?`<div class="card-preview">${d.resumo.substring(0,80)}...</div>`:''}
+    </div>`).join('');
+}
+
+function openDoc(i){
+  const r=state.savedDocs[i];
+  document.getElementById('detailTitle').textContent=r.titulo;
+  let h='';
+  h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;">`;
+  if(r.urgente) h+=`<span class="tag tag-urgent">Urgente</span>`;
+  if(r.acao_necessaria) h+=`<span class="tag tag-action">Ação necessária</span>`;
+  if(!r.acao_necessaria) h+=`<span class="tag tag-info">Informativo</span>`;
+  h+=`<span class="tag tag-cat">${r.categoria}</span></div>`;
+  if(r.acao_necessaria) h+=`<div class="alert alert-warning"><div class="alert-text">⚠️ Este documento pode exigir uma ação importante.</div></div>`;
+  else h+=`<div class="alert alert-ok"><div class="alert-text">✅ Não é necessária nenhuma ação.</div></div>`;
+  h+=`<div class="block"><div class="block-label">Resumo</div><div class="block-text">${r.resumo}</div></div>`;
+  h+=`<div class="block"><div class="block-label">Explicação</div><div class="block-text">${r.explicacao}</div></div>`;
+  if(r.acao_necessaria&&r.o_que_fazer){
+    h+=`<div class="block"><div class="block-label">O que tens de fazer</div><div class="block-text">${r.o_que_fazer}</div></div>`;
+    if(r.prazo) h+=`<div class="block"><div class="block-label">Prazo</div><div class="block-text" style="color:var(--red);font-weight:500;">📅 ${r.prazo}</div></div>`;
+    if(r.passos&&r.passos.length){
+      h+=`<div class="block"><div class="block-label">Passo a passo</div><ul class="steps-list">`;
+      r.passos.forEach((s,idx)=>{h+=`<li><span class="step-num">${idx+1}</span>${s}</li>`;});
+      h+=`</ul></div>`;
+    }
+    h+=`<div class="help-box"><div class="help-text">Evita erros ou custos desnecessários.</div><button class="help-btn" onclick="openBooking()">Precisas de ajuda com este documento?</button></div>`;
+  }
+  document.getElementById('detailContent').innerHTML=h;
+  document.getElementById('detailOverlay').classList.add('open');
+}
+function closeDetail(){ document.getElementById('detailOverlay').classList.remove('open'); }
+
+// ── NOTIFICAÇÕES ───────────────────────────────────────────────────────────
+function renderNotifs(){
+  const el=document.getElementById('notifsList');
+  if(!state.notifs.length){el.innerHTML='<div style="font-size:14px;color:var(--text-muted);text-align:center;padding:48px 0;">Sem avisos por agora.</div>';return;}
+  el.innerHTML=state.notifs.map(n=>`
+    <div class="notif-item">
+      <div class="notif-dot${n.urgent?'':' green'}"></div>
+      <div class="notif-body"><div class="notif-title">${n.urgent?'⚠️ ':'✅ '}${n.title}</div><div class="notif-desc">${n.desc}</div></div>
+    </div>`).join('');
+}
+
+// ── PERFIL ─────────────────────────────────────────────────────────────────
+function saveProfile(){
+  const name=document.getElementById('inputName').value;
+  const email=document.getElementById('inputEmail').value;
+  document.getElementById('profileName').textContent=name;
+  document.getElementById('profileEmail').textContent=email;
+  const initials=name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('profileInitials').textContent=initials;
+  document.getElementById('headerAvatar').textContent=initials;
+  // Pré-preencher formulário de booking
+  document.getElementById('bkName').value=name;
+  document.getElementById('bkEmail').value=email;
+  alert('Perfil guardado!');
+}
+
+function updatePlanLabel(){
+  if(state.isPro){
+    document.getElementById('planLabel').textContent='Claro-app+ ativo';
+    document.getElementById('proResources').style.display='block';
+  }
+  else{const r=Math.max(0,state.freeLimit-state.docsUsed);document.getElementById('planLabel').textContent=`Grátis · ${r} documento${r!==1?'s':''} restante${r!==1?'s':''}`;}
+}
+
+// ── PAYWALL ────────────────────────────────────────────────────────────────
+let pwAnnual=false;
+function openPaywall(){ document.getElementById('paywallOverlay').classList.add('open'); }
+function closePaywall(){ document.getElementById('paywallOverlay').classList.remove('open'); }
+function togglePaywall(){
+  pwAnnual=!pwAnnual;
+  document.getElementById('pwToggle').className='toggle-switch'+(pwAnnual?' annual':'');
+  document.getElementById('pw-label-monthly').className='toggle-label'+(pwAnnual?'':' active');
+  document.getElementById('pw-label-annual').className='toggle-label'+(pwAnnual?' active':'');
+  document.getElementById('pw-badge').style.display=pwAnnual?'inline-block':'none';
+  document.getElementById('pw-price').textContent=pwAnnual?'CHF 144':'CHF 14.90';
+  document.getElementById('pw-period').textContent=pwAnnual?'/ano':'/mês';
+  document.getElementById('pw-note').textContent=pwAnnual?'equivale a CHF 12/mês — poupa CHF 34':'';
+  document.getElementById('pw-cta').textContent=pwAnnual?'Começar com Claro-app+ anual':'Começar com Claro-app+';
+}
+document.getElementById('pw-cta').addEventListener('click',()=>{
+  state.isPro=true; updatePlanLabel(); closePaywall();
+  alert('Bem-vindo ao Claro-app+!');
+});
+
+// ── BOOKING ────────────────────────────────────────────────────────────────
+const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const TYPE_LABELS={video:'Videochamada',phone:'Chamada telefónica',presencial:'Presencial (Zürich)'};
+const UNAVAILABLE=['10:00','15:30'];
+const TIMES=['09:00','09:30','10:00','10:30','11:00','11:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00'];
+let curMonth,curYear,selDate=null,selTime=null,selType='video';
+
+function openBooking(){
+  if(!state.isPro){ openPaywall(); return; }
+  document.getElementById('bookingOverlay').classList.add('open');
+  if(!curMonth){ const n=new Date(); curMonth=n.getMonth(); curYear=n.getFullYear(); }
+  // Pré-preencher com dados do perfil
+  document.getElementById('bkName').value=document.getElementById('inputName').value||'';
+  document.getElementById('bkEmail').value=document.getElementById('inputEmail').value||'';
+  renderCal();
+}
+function closeBooking(){ document.getElementById('bookingOverlay').classList.remove('open'); }
+
+function renderCal(){
+  document.getElementById('calMonth').textContent=MONTHS[curMonth]+' '+curYear;
+  const g=document.getElementById('calGrid'); g.innerHTML='';
+  DAYS.forEach(d=>{const e=document.createElement('div');e.className='cal-day-label';e.textContent=d;g.appendChild(e);});
+  const first=new Date(curYear,curMonth,1).getDay();
+  const total=new Date(curYear,curMonth+1,0).getDate();
+  const today=new Date(); today.setHours(0,0,0,0);
+  for(let i=0;i<first;i++){const w=document.createElement('div');w.className='cal-wrap';const b=document.createElement('button');b.className='cal-day empty';w.appendChild(b);w.appendChild(mkDot(false));g.appendChild(w);}
+  for(let d=1;d<=total;d++){
+    const date=new Date(curYear,curMonth,d); date.setHours(0,0,0,0);
+    const dow=date.getDay(); const avail=[1,2,3,4,5].includes(dow)&&date>=today;
+    const isToday=date.getTime()===today.getTime();
+    const isSel=selDate&&selDate.getTime()===date.getTime();
+    const w=document.createElement('div'); w.className='cal-wrap';
+    const b=document.createElement('button');
+    b.textContent=d;
+    b.className='cal-day'+(isToday?' today':'')+(isSel?' selected':'')+((!avail)?' disabled':'');
+    if(avail) b.onclick=()=>selDay(new Date(curYear,curMonth,d));
+    w.appendChild(b); w.appendChild(mkDot(avail)); g.appendChild(w);
+  }
+}
+function mkDot(show){const d=document.createElement('div');d.className='dot'+(show?'':' hidden');return d;}
+function prevMonth(){curMonth--;if(curMonth<0){curMonth=11;curYear--;}renderCal();}
+function nextMonth(){curMonth++;if(curMonth>11){curMonth=0;curYear++;}renderCal();}
+
+function selDay(date){
+  selDate=date; selTime=null; renderCal();
+  const label=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][date.getDay()];
+  document.getElementById('timesLabel').textContent=label+', '+date.getDate()+' de '+MONTHS[date.getMonth()];
+  const g=document.getElementById('timesGrid'); g.innerHTML='';
+  TIMES.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='time-btn'+(UNAVAILABLE.includes(t)?' unavailable':'');
+    b.textContent=t;
+    if(!UNAVAILABLE.includes(t)) b.onclick=()=>selTimeF(t,b);
+    g.appendChild(b);
+  });
+  document.getElementById('timesSection').style.display='block';
+  document.getElementById('bookingFormSection').style.display='none';
+  setTimeout(()=>document.getElementById('timesSection').scrollIntoView({behavior:'smooth'}),100);
+}
+
+function selTimeF(t,btn){
+  selTime=t;
+  document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updateSummary();
+  document.getElementById('bookingFormSection').style.display='block';
+  setTimeout(()=>document.getElementById('bookingFormSection').scrollIntoView({behavior:'smooth'}),100);
+}
+
+function selectType(type,btn){
+  selType=type;
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updateSummary();
+}
+
+function updateSummary(){
+  if(selDate) document.getElementById('sumDate').textContent=selDate.getDate()+' de '+MONTHS[selDate.getMonth()]+' de '+selDate.getFullYear();
+  if(selTime) document.getElementById('sumTime').textContent=selTime;
+  document.getElementById('sumType').textContent=TYPE_LABELS[selType];
+}
+
+function confirmBooking(){
+  const name=document.getElementById('bkName').value.trim();
+  const email=document.getElementById('bkEmail').value.trim();
+  const dob=document.getElementById('bkDob').value;
+  const phone=document.getElementById('bkPhone').value.trim();
+  if(!name||!email||!dob||!phone||!selDate||!selTime){alert('Por favor preenche todos os campos obrigatórios.');return;}
+  document.getElementById('cDate').textContent=selDate.getDate()+' de '+MONTHS[selDate.getMonth()]+' de '+selDate.getFullYear();
+  document.getElementById('cTime').textContent=selTime;
+  document.getElementById('cType').textContent=TYPE_LABELS[selType];
+  document.getElementById('cName').textContent=name;
+  const p=dob.split('-'); document.getElementById('cDob').textContent=p[2]+'/'+p[1]+'/'+p[0];
+  document.getElementById('cPhone').textContent=phone;
+  document.getElementById('cEmail').textContent=email;
+  document.getElementById('bookingForm').style.display='none';
+  document.getElementById('bookingSuccess').classList.add('show');
+}
+
+function resetBooking(){
+  selDate=null; selTime=null; selType='video';
+  document.getElementById('bookingForm').style.display='block';
+  document.getElementById('bookingSuccess').classList.remove('show');
+  document.getElementById('timesSection').style.display='none';
+  document.getElementById('bookingFormSection').style.display='none';
+  document.querySelectorAll('.type-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));
+  renderCal();
+}
+</script>
+</body>
+</html>
