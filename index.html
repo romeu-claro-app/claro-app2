@@ -53,7 +53,7 @@
     .screen{display:none;flex:1;padding:16px;overflow-y:auto}
     .screen.active{display:block}
     .section-title{font-size:11px;color:var(--text-hint);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.6px;font-weight:500}
- 
+
     /* CARDS */
     .card{background:var(--card);border-radius:14px;border:0.5px solid var(--border);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.15s}
     .card:hover{border-color:var(--green-mid)}
@@ -282,7 +282,34 @@
   <!-- ANALISAR -->
   <div id="screen-analisar" class="screen active">
     <div class="section-title">Analisar documento</div>
-    <div style="margin-bottom:10px;">
+    
+    <!-- Upload buttons -->
+    <input type="file" id="fileInput" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="handleFile(event)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <button class="upload-btn" onclick="document.getElementById('fileInput').removeAttribute('capture');document.getElementById('fileInput').click()" style="font-size:13px;padding:12px;">
+        📎 Importar ficheiro
+      </button>
+      <button class="upload-btn" onclick="document.getElementById('fileInput').setAttribute('capture','environment');document.getElementById('fileInput').click()" style="font-size:13px;padding:12px;">
+        📷 Tirar foto
+      </button>
+    </div>
+
+    <!-- Preview imagem -->
+    <div id="imagePreview" style="display:none;margin-bottom:12px;">
+      <div style="position:relative;display:inline-block;width:100%;">
+        <img id="previewImg" style="width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:0.5px solid var(--border);background:var(--surface);">
+        <button onclick="clearFile()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;">✕</button>
+      </div>
+      <div id="fileName" style="font-size:12px;color:var(--text-muted);margin-top:6px;text-align:center;"></div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div style="flex:1;height:0.5px;background:var(--border);"></div>
+      <span style="font-size:11px;color:var(--text-hint);">ou escreve/cola texto</span>
+      <div style="flex:1;height:0.5px;background:var(--border);"></div>
+    </div>
+
+    <div style="margin-bottom:6px;">
       <button class="sample-btn" onclick="loadSample(0)">Exemplo: Krankenkasse</button>
       <button class="sample-btn" onclick="loadSample(1)">Exemplo: Steuererklärung</button>
       <button class="sample-btn" onclick="loadSample(2)">Exemplo: Mietvertrag</button>
@@ -341,7 +368,7 @@
           <div><div style="font-size:14px;font-weight:500;color:var(--text);">Manual do Emigrante</div><div style="font-size:12px;color:var(--text-muted);">Guia completo de integração na Suíça</div></div>
           <span style="margin-left:auto;color:var(--green);font-size:13px;">↓ Download</span>
         </a>
-        <a href="https://drive.google.com/uc?export=download&id=1IYzgWgTp_WCrKMj3X9_WSz5Se-O7yHtq" style="display:flex;align-items:center;gap:10px;padding:10px 0;text-decoration:none;">
+        <a href="Budget_Mensal_v2.xlsx" download style="display:flex;align-items:center;gap:10px;padding:10px 0;text-decoration:none;">
           <span style="font-size:20px;">📊</span>
           <div><div style="font-size:14px;font-weight:500;color:var(--text);">Budget Mensal Suíça</div><div style="font-size:12px;color:var(--text-muted);">Excel para controlar as tuas despesas</div></div>
           <span style="margin-left:auto;color:var(--green);font-size:13px;">↓ Download</span>
@@ -502,22 +529,40 @@ function updateCount(){ document.getElementById('charCount').textContent=documen
 async function analyseDoc(){
   if(!state.isPro && state.docsUsed>=state.freeLimit){ openPaywall(); return; }
   const text=document.getElementById('docInput').value.trim();
-  if(!text) return;
+  const hasFile = uploadedFileData !== null;
+  if(!text && !hasFile){ alert('Importa um ficheiro ou cola o texto do documento.'); return; }
   const btn=document.getElementById('analyseBtn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A analisar...';
   document.getElementById('resultArea').innerHTML='';
   const prompt=`És um assistente especializado a ajudar imigrantes portugueses na Suíça a compreender documentos oficiais em alemão, francês ou italiano.\n\nAnalisa o seguinte documento e responde APENAS em JSON válido sem markdown:\n{\n  "titulo": "título curto",\n  "idioma_original": "Alemão/Francês/Italiano",\n  "categoria": "Seguro/Impostos/Renda/Trabalho/Saúde/Outro",\n  "resumo": "resumo simples em 2-3 frases em português",\n  "explicacao": "explicação clara em português",\n  "acao_necessaria": true/false,\n  "urgente": true/false,\n  "o_que_fazer": "o que o utilizador deve fazer (vazio se não necessário)",\n  "prazo": "prazo em português (vazio se não houver)",\n  "passos": ["passo 1","passo 2"],\n  "consequencias": "o que acontece se ignorar (vazio se não aplicável)",\n  "prazo_dias": 0\n}\n\nDocumento:\n${text}`;
   try{
+    let messageContent;
+    if(hasFile && uploadedFileData) {
+      if(uploadedFileType === 'image') {
+        messageContent = [
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:uploadedFileData}},
+          {type:'text',text:prompt}
+        ];
+      } else {
+        messageContent = [
+          {type:'document',source:{type:'base64',media_type:'application/pdf',data:uploadedFileData}},
+          {type:'text',text:prompt}
+        ];
+      }
+    } else {
+      messageContent = prompt;
+    }
     const res=await fetch('/api/analyse',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({messages:[{role:'user',content:messageContent}]})
     });
     const data=await res.json();
     const raw=data.content[0].text.replace(/```json|```/g,'').trim();
     const r=JSON.parse(raw);
     state.docsUsed++;
     state.savedDocs.push({...r,savedAt:new Date().toLocaleDateString('pt-PT')});
+    clearFile();
     if(r.acao_necessaria) state.notifs.push({title:r.titulo,desc:r.o_que_fazer,urgent:r.urgente});
     updatePlanLabel();
     renderResult(r);
@@ -769,6 +814,52 @@ function resetBooking(){
   document.getElementById('bookingFormSection').style.display='none';
   document.querySelectorAll('.type-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));
   renderCal();
+}
+
+// ── UPLOAD DE FICHEIROS ────────────────────────────────────────────────────
+let uploadedFileData = null;
+let uploadedFileType = null;
+
+function handleFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  if (file.size > maxSize) {
+    alert('Ficheiro demasiado grande. Máximo 5MB.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const result = e.target.result;
+    const base64 = result.split(',')[1];
+    uploadedFileData = base64;
+    
+    if (file.type === 'application/pdf') {
+      uploadedFileType = 'pdf';
+      document.getElementById('previewImg').src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>';
+    } else {
+      uploadedFileType = 'image';
+      document.getElementById('previewImg').src = result;
+    }
+    
+    document.getElementById('imagePreview').style.display = 'block';
+    document.getElementById('fileName').textContent = file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)';
+    document.getElementById('docInput').value = '';
+    document.getElementById('charCount').textContent = '0 caracteres';
+    document.getElementById('resultArea').innerHTML = '';
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function clearFile() {
+  uploadedFileData = null;
+  uploadedFileType = null;
+  document.getElementById('imagePreview').style.display = 'none';
+  document.getElementById('previewImg').src = '';
+  document.getElementById('fileName').textContent = '';
 }
 </script>
 </body>
