@@ -374,79 +374,98 @@
 
   <!-- PERFIL -->
   <div id="screen-perfil" class="screen">
-    <div class="profile-card">
-      <div class="profile-avatar" id="profileInitials">MR</div>
-      <div class="profile-name" id="profileName">Maria Rodrigues</div>
-      <div class="profile-email" id="profileEmail">maria.r@email.com</div>
-    </div>
-    <div class="block">
-      <div class="input-row"><div class="input-label">Nome completo</div><input class="input-field" id="inputName" type="text" value="Maria Rodrigues"></div>
-      <div class="input-row"><div class="input-label">Email</div><input class="input-field" id="inputEmail" type="email" value="maria.r@email.com"></div>
-      <div class="input-row" style="margin-bottom:0;"><div class="input-label">Telemóvel</div><input class="input-field" type="tel" value="+41 79 123 45 67"></div>
-    </div>
-    <button class="btn-primary" onclick="saveProfile()" style="margin-bottom:12px;">Guardar alterações</button>
-    <div class="block">
-      <div class="block-label">Plano atual</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div class="block-text" id="planLabel">Grátis · 1 documento restante</div>
-        <button onclick="openPaywall()" style="font-size:13px;color:var(--green);background:none;border:none;cursor:pointer;font-family:inherit;font-weight:500;">Upgrade →</button>
-      </div>
-    </div>
-    <div id="cancelSubSection" style="display:none;margin-bottom:12px;">
-      <div class="block">
-        <div class="block-label">Subscrição</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div style="font-size:14px;color:var(--text);">Claro-app+ ativo ✓</div>
-          <button onclick="cancelSubscription()" style="font-size:12px;color:var(--red);background:none;border:0.5px solid var(--red);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit;">Cancelar</button>
+
+    <!-- Card principal -->
+    <div class="profile-card" style="position:relative;">
+      <div style="position:relative;width:72px;height:72px;margin:0 auto 12px;">
+        <div class="profile-avatar" id="profileInitials" style="width:72px;height:72px;font-size:22px;margin:0;overflow:hidden;">
+          <img id="profilePhoto" style="display:none;width:72px;height:72px;border-radius:50%;object-fit:cover;" src="">
+          <span id="profileInitialsText">?</span>
         </div>
       </div>
+      <div class="profile-name" id="profileName">—</div>
+      <div class="profile-email" id="profileEmail">—</div>
     </div>
-    <div class="block" style="margin-top:4px;">
+
+    <!-- Agregado familiar (só leitura) -->
+    <div class="block" style="margin-bottom:10px;">
       <div class="block-label">Agregado Familiar</div>
-      <div id="agregadoList" style="margin-bottom:10px;"></div>
-      <button onclick="openAddMembro()" style="width:100%;padding:10px;background:var(--green-light);border:0.5px dashed var(--green-mid);border-radius:10px;font-size:13px;color:var(--green-dark);font-weight:500;cursor:pointer;font-family:inherit;">+ Adicionar membro</button>
-    </div>
-
-    <div id="proResources" style="display:none;">
-      <div class="block" style="margin-top:4px;">
-        <div class="block-label">Recursos incluídos no Claro-app+</div>
-        <a href="Manual_Emigrante_FINAL_v2.pdf" download style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);text-decoration:none;">
-          <span style="font-size:20px;">📖</span>
-          <div><div style="font-size:14px;font-weight:500;color:var(--text);">Manual do Emigrante</div><div style="font-size:12px;color:var(--text-muted);">Guia completo de integração na Suíça</div></div>
-          <span style="margin-left:auto;color:var(--green);font-size:13px;">↓ Download</span>
-        </a>
-        <a href="Budget_Mensal_v2.xlsx" download style="display:flex;align-items:center;gap:10px;padding:10px 0;text-decoration:none;">
-          <span style="font-size:20px;">📊</span>
-          <div><div style="font-size:14px;font-weight:500;color:var(--text);">Budget Mensal Suíça</div><div style="font-size:12px;color:var(--text-muted);">Excel para controlar as tuas despesas</div></div>
-          <span style="margin-left:auto;color:var(--green);font-size:13px;">↓ Download</span>
-        </a>
+      <div id="agregadoList">
+        <div style="font-size:13px;color:var(--text-hint);padding:6px 0;">Nenhum membro adicionado.</div>
       </div>
     </div>
-    <!-- Modal adicionar membro -->
-    <div id="membroModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-end;max-width:430px;margin:0 auto;">
-      <div style="background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;">
-        <div style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:16px;">Adicionar membro</div>
-        <div class="input-row"><div class="input-label">Nome completo *</div><input class="input-field" id="membroNome" type="text" placeholder="Nome do membro"></div>
-        <div class="input-row"><div class="input-label">Data de nascimento *</div><input class="input-field" id="membroDob" type="date"></div>
-        <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Tipo *</div>
-          <select class="input-field" id="membroTipo">
-            <option value="">Seleciona...</option>
-            <option value="Cônjuge">Cônjuge</option>
-            <option value="Filho/a">Filho/a</option>
-            <option value="Pai/Mãe">Pai/Mãe</option>
-            <option value="Outro">Outro</option>
-          </select>
+
+    <!-- Botão editar -->
+    <button class="btn-secondary" onclick="openEditModal()" style="margin-bottom:10px;">✏️ Editar perfil e agregado</button>
+
+    <!-- Plano -->
+    <div class="block" style="margin-bottom:10px;cursor:pointer;" onclick="togglePlano()">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div class="block-label">Plano atual</div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);" id="planLabel">Grátis</div>
         </div>
-        <button class="btn-primary" onclick="saveMembro()" style="margin-bottom:10px;">Guardar</button>
-        <button onclick="closeAddMembro()" style="width:100%;padding:12px;background:none;border:none;font-size:14px;color:var(--text-muted);cursor:pointer;font-family:inherit;">Cancelar</button>
+        <span id="planoChevron" style="font-size:20px;color:var(--text-muted);transition:transform 0.2s;">›</span>
+      </div>
+      <div id="planoDetails" style="display:none;margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border);">
       </div>
     </div>
 
-    <div style="text-align:center;margin-top:16px;">
+    <!-- Marcar consulta -->
+    <div style="text-align:center;margin-top:8px;margin-bottom:24px;">
       <button class="float-btn" onclick="openBooking()">📅 Marcar consulta com consultor</button>
     </div>
   </div>
-</div>
+
+  <!-- MODAL EDITAR PERFIL -->
+  <div id="editModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;max-width:430px;margin:0 auto;">
+    <div style="background:var(--card);border-radius:20px 20px 0 0;padding:20px 20px 36px;width:100%;max-height:92vh;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:16px;font-weight:500;color:var(--text);">Editar Perfil</div>
+        <button onclick="closeEditModal()" style="background:none;border:none;font-size:20px;color:var(--text-muted);cursor:pointer;">✕</button>
+      </div>
+      <!-- Foto -->
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--green-light);border:2px solid var(--green-mid);display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 8px;" id="editAvatarPreview">
+          <img id="editPhotoPreview" style="display:none;width:72px;height:72px;object-fit:cover;border-radius:50%;" src="">
+          <span id="editInitialsPreview" style="font-size:22px;font-weight:600;color:var(--green-dark);">?</span>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+        <button onclick="document.getElementById('photoInput').click()" style="font-size:12px;color:var(--green);background:none;border:0.5px solid var(--green-mid);border-radius:8px;padding:5px 12px;cursor:pointer;font-family:inherit;">📷 Alterar foto</button>
+      </div>
+      <!-- Dados -->
+      <div class="section-title">Dados Pessoais</div>
+      <div class="input-row"><div class="input-label">Nome completo *</div><input class="input-field" id="inputName" type="text" placeholder="O teu nome"></div>
+      <div class="input-row"><div class="input-label">Email *</div><input class="input-field" id="inputEmail" type="email" placeholder="email@exemplo.com"></div>
+      <div class="input-row"><div class="input-label">Telemóvel</div><input class="input-field" id="inputPhone" type="tel" placeholder="+41 79 000 00 00"></div>
+      <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Data de nascimento</div><input class="input-field" id="inputDob" type="date"></div>
+      <!-- Agregado no modal -->
+      <div class="section-title">Agregado Familiar</div>
+      <div id="agregadoEditList" style="margin-bottom:10px;"></div>
+      <button onclick="openAddMembro()" style="width:100%;padding:10px;background:var(--green-light);border:0.5px dashed var(--green-mid);border-radius:10px;font-size:13px;color:var(--green-dark);font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:16px;">+ Adicionar membro</button>
+      <button class="btn-primary" onclick="saveProfile()">Guardar alterações</button>
+    </div>
+  </div>
+
+  <!-- MODAL ADICIONAR MEMBRO -->
+  <div id="membroModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;align-items:flex-end;max-width:430px;margin:0 auto;">
+    <div style="background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;">
+      <div style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:16px;">Adicionar membro</div>
+      <div class="input-row"><div class="input-label">Nome completo *</div><input class="input-field" id="membroNome" type="text" placeholder="Nome do membro"></div>
+      <div class="input-row"><div class="input-label">Data de nascimento *</div><input class="input-field" id="membroDob" type="date"></div>
+      <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Relação *</div>
+        <select class="input-field" id="membroTipo">
+          <option value="">Seleciona...</option>
+          <option value="Conjuge">Cônjuge</option>
+          <option value="Filho/a">Filho/a</option>
+          <option value="Pai/Mae">Pai/Mãe</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="saveMembro()" style="margin-bottom:10px;">Guardar</button>
+      <button onclick="closeAddMembro()" style="width:100%;padding:12px;background:none;border:none;font-size:14px;color:var(--text-muted);cursor:pointer;font-family:inherit;">Cancelar</button>
+    </div>
+  </div>
 
 <!-- DETAIL OVERLAY -->
 <div class="detail-overlay" id="detailOverlay">
@@ -598,34 +617,56 @@ function saveMembro() {
   if (!nome || !dob || !tipo) { alert('Preenche todos os campos.'); return; }
   agregado.push({ nome: nome, dob: dob, tipo: tipo });
   renderAgregado();
+  renderAgregadoEdit();
   closeAddMembro();
 }
 
 function removeMembro(i) {
   agregado.splice(i, 1);
   renderAgregado();
+  renderAgregadoEdit();
+}
+
+function formatDob(dob) {
+  var parts = dob.split('-');
+  return parts[2] + '/' + parts[1] + '/' + parts[0];
 }
 
 function renderAgregado() {
   var el = document.getElementById('agregadoList');
+  if (!el) return;
   if (!agregado.length) {
-    el.innerHTML = '<div style="font-size:13px;color:var(--text-hint);text-align:center;padding:8px 0;">Ainda não adicionaste nenhum membro.</div>';
+    el.innerHTML = '<div style="font-size:13px;color:var(--text-hint);padding:6px 0;">Nenhum membro adicionado.</div>';
     return;
   }
   el.innerHTML = agregado.map(function(m, i) {
-    var parts = m.dob.split('-');
-    var dobFmt = parts[2] + '/' + parts[1] + '/' + parts[0];
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--border);">' +
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border);">' +
       '<div>' +
         '<div style="font-size:14px;font-weight:500;color:var(--text);">' + m.nome + '</div>' +
-        '<div style="font-size:12px;color:var(--text-muted);">' + m.tipo + ' · ' + dobFmt + '</div>' +
+        '<div style="font-size:12px;color:var(--text-muted);">' + m.tipo + ' · ' + formatDob(m.dob) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderAgregadoEdit() {
+  var el = document.getElementById('agregadoEditList');
+  if (!el) return;
+  if (!agregado.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--text-hint);padding:6px 0;">Nenhum membro adicionado.</div>';
+    return;
+  }
+  el.innerHTML = agregado.map(function(m, i) {
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border);">' +
+      '<div>' +
+        '<div style="font-size:14px;font-weight:500;color:var(--text);">' + m.nome + '</div>' +
+        '<div style="font-size:12px;color:var(--text-muted);">' + m.tipo + ' · ' + formatDob(m.dob) + '</div>' +
       '</div>' +
       '<button onclick="removeMembro(' + i + ')" style="background:none;border:none;color:var(--text-hint);cursor:pointer;font-size:16px;padding:0 4px;">✕</button>' +
     '</div>';
   }).join('');
 }
 
-// Inicializar lista
 renderAgregado();
 </script>
 <script>
@@ -802,25 +843,113 @@ function renderNotifs(){
 }
 
 // ── PERFIL ─────────────────────────────────────────────────────────────────
-function saveProfile(){
-  const name=document.getElementById('inputName').value;
-  const email=document.getElementById('inputEmail').value;
-  document.getElementById('profileName').textContent=name;
-  document.getElementById('profileEmail').textContent=email;
-  const initials=name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-  document.getElementById('profileInitials').textContent=initials;
-  document.getElementById('headerAvatar').textContent=initials;
-  // Pré-preencher formulário de booking
-  document.getElementById('bkName').value=name;
-  document.getElementById('bkEmail').value=email;
+// Foto de perfil
+var profilePhotoData = null;
+
+function handlePhotoUpload(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    profilePhotoData = e.target.result;
+    document.getElementById('editPhotoPreview').src = profilePhotoData;
+    document.getElementById('editPhotoPreview').style.display = 'block';
+    document.getElementById('editInitialsPreview').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function openEditModal() {
+  // Preencher campos com dados actuais
+  document.getElementById('inputName').value = document.getElementById('profileName').textContent === '—' ? '' : document.getElementById('profileName').textContent;
+  document.getElementById('inputEmail').value = document.getElementById('profileEmail').textContent === '—' ? '' : document.getElementById('profileEmail').textContent;
+  // Foto
+  if (profilePhotoData) {
+    document.getElementById('editPhotoPreview').src = profilePhotoData;
+    document.getElementById('editPhotoPreview').style.display = 'block';
+    document.getElementById('editInitialsPreview').style.display = 'none';
+  }
+  renderAgregadoEdit();
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').style.display = 'none';
+}
+
+function saveProfile() {
+  var name = document.getElementById('inputName').value.trim();
+  var email = document.getElementById('inputEmail').value.trim();
+  if (!name || !email) { alert('Nome e email são obrigatórios.'); return; }
+  
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('profileEmail').textContent = email;
+  
+  var initials = name.split(' ').map(function(n){return n[0];}).join('').substring(0,2).toUpperCase();
+  document.getElementById('profileInitialsText').textContent = initials;
+  document.getElementById('headerAvatar').textContent = initials;
+  
+  // Foto
+  if (profilePhotoData) {
+    document.getElementById('profilePhoto').src = profilePhotoData;
+    document.getElementById('profilePhoto').style.display = 'block';
+    document.getElementById('profileInitialsText').style.display = 'none';
+  }
+  
+  // Pré-preencher booking
+  document.getElementById('bkName').value = name;
+  document.getElementById('bkEmail').value = email;
+  
+  renderAgregado();
+  closeEditModal();
   alert('Perfil guardado!');
+}
+
+// Plano expandível
+var planoOpen = false;
+function togglePlano() {
+  planoOpen = !planoOpen;
+  var details = document.getElementById('planoDetails');
+  var chevron = document.getElementById('planoChevron');
+  details.style.display = planoOpen ? 'block' : 'none';
+  chevron.style.transform = planoOpen ? 'rotate(90deg)' : 'none';
+  if (planoOpen) renderPlanoDetails();
+}
+
+function renderPlanoDetails() {
+  var el = document.getElementById('planoDetails');
+  if (state.isPro) {
+    el.innerHTML = '<div style="margin-bottom:10px;">' +
+      '<a href="Manual_Emigrante_FINAL_v2.pdf" download style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);text-decoration:none;">' +
+        '<span style="font-size:18px;">📖</span>' +
+        '<div><div style="font-size:13px;font-weight:500;color:var(--text);">Manual do Emigrante</div><div style="font-size:11px;color:var(--text-muted);">Guia completo</div></div>' +
+        '<span style="margin-left:auto;color:var(--green);font-size:12px;">↓</span>' +
+      '</a>' +
+      '<a href="https://drive.google.com/uc?export=download&id=1IYzgWgTp_WCrKMj3X9_WSz5Se-O7yHtq" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);text-decoration:none;">' +
+        '<span style="font-size:18px;">📊</span>' +
+        '<div><div style="font-size:13px;font-weight:500;color:var(--text);">Budget Mensal</div><div style="font-size:11px;color:var(--text-muted);">Excel para despesas</div></div>' +
+        '<span style="margin-left:auto;color:var(--green);font-size:12px;">↓</span>' +
+      '</a>' +
+      '<button onclick="cancelSubscription()" style="width:100%;margin-top:10px;padding:10px;background:none;border:0.5px solid var(--red);border-radius:10px;font-size:13px;color:var(--red);cursor:pointer;font-family:inherit;">Cancelar subscrição</button>' +
+    '</div>';
+  } else {
+    var r = Math.max(0, state.freeLimit - state.docsUsed);
+    el.innerHTML = '<div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">' + r + ' documento' + (r!==1?'s':'') + ' gratuito' + (r!==1?'s':'') + ' restante' + (r!==1?'s':'') + '.</div>' +
+      '<button class="btn-primary" onclick="closeAndOpenPaywall()" style="padding:12px;">Fazer upgrade para Claro-app+</button>';
+  }
+}
+
+function closeAndOpenPaywall() {
+  planoOpen = false;
+  document.getElementById('planoDetails').style.display = 'none';
+  document.getElementById('planoChevron').style.transform = 'none';
+  openPaywall();
 }
 
 function updatePlanLabel(){
   if(state.isPro){
-    document.getElementById('planLabel').textContent='Claro-app+ ativo';
-    document.getElementById('proResources').style.display='block';
-    document.getElementById('cancelSubSection').style.display='block';
+    document.getElementById('planLabel').textContent='Claro-app+ ativo ✓';
+    if(planoOpen) renderPlanoDetails();
   }
   else{const r=Math.max(0,state.freeLimit-state.docsUsed);document.getElementById('planLabel').textContent=`Grátis · ${r} documento${r!==1?'s':''} restante${r!==1?'s':''}`;}
 }
