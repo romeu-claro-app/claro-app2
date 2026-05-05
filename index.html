@@ -416,6 +416,32 @@
         </a>
       </div>
     </div>
+    <div class="block" style="margin-top:4px;">
+      <div class="block-label">Agregado Familiar</div>
+      <div id="agregadoList" style="margin-bottom:10px;"></div>
+      <button onclick="openAddMembro()" style="width:100%;padding:10px;background:var(--green-light);border:0.5px dashed var(--green-mid);border-radius:10px;font-size:13px;color:var(--green-dark);font-weight:500;cursor:pointer;font-family:inherit;">+ Adicionar membro</button>
+    </div>
+
+    <!-- Modal adicionar membro -->
+    <div id="membroModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-end;max-width:430px;margin:0 auto;">
+      <div style="background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;">
+        <div style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:16px;">Adicionar membro</div>
+        <div class="input-row"><div class="input-label">Nome completo *</div><input class="input-field" id="membroNome" type="text" placeholder="Nome do membro"></div>
+        <div class="input-row"><div class="input-label">Data de nascimento *</div><input class="input-field" id="membroDob" type="date"></div>
+        <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Tipo *</div>
+          <select class="input-field" id="membroTipo">
+            <option value="">Seleciona...</option>
+            <option value="Cônjuge">Cônjuge</option>
+            <option value="Filho/a">Filho/a</option>
+            <option value="Pai/Mãe">Pai/Mãe</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="saveMembro()" style="margin-bottom:10px;">Guardar</button>
+        <button onclick="closeAddMembro()" style="width:100%;padding:12px;background:none;border:none;font-size:14px;color:var(--text-muted);cursor:pointer;font-family:inherit;">Cancelar</button>
+      </div>
+    </div>
+
     <div style="text-align:center;margin-top:16px;">
       <button class="float-btn" onclick="openBooking()">📅 Marcar consulta com consultor</button>
     </div>
@@ -550,6 +576,57 @@ async function cancelSubscription() {
   if (!ok) return;
   alert('Para cancelar a subscrição, envia um email para suporte@claro-app.ch com o assunto "Cancelar subscrição". Processamos em 24h.');
 }
+
+// ── AGREGADO FAMILIAR ──────────────────────────────────────────────────────
+var agregado = [];
+
+function openAddMembro() {
+  document.getElementById('membroNome').value = '';
+  document.getElementById('membroDob').value = '';
+  document.getElementById('membroTipo').value = '';
+  document.getElementById('membroModal').style.display = 'flex';
+}
+
+function closeAddMembro() {
+  document.getElementById('membroModal').style.display = 'none';
+}
+
+function saveMembro() {
+  var nome = document.getElementById('membroNome').value.trim();
+  var dob = document.getElementById('membroDob').value;
+  var tipo = document.getElementById('membroTipo').value;
+  if (!nome || !dob || !tipo) { alert('Preenche todos os campos.'); return; }
+  agregado.push({ nome: nome, dob: dob, tipo: tipo });
+  renderAgregado();
+  closeAddMembro();
+}
+
+function removeMembro(i) {
+  agregado.splice(i, 1);
+  renderAgregado();
+}
+
+function renderAgregado() {
+  var el = document.getElementById('agregadoList');
+  if (!agregado.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--text-hint);text-align:center;padding:8px 0;">Ainda não adicionaste nenhum membro.</div>';
+    return;
+  }
+  el.innerHTML = agregado.map(function(m, i) {
+    var parts = m.dob.split('-');
+    var dobFmt = parts[2] + '/' + parts[1] + '/' + parts[0];
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--border);">' +
+      '<div>' +
+        '<div style="font-size:14px;font-weight:500;color:var(--text);">' + m.nome + '</div>' +
+        '<div style="font-size:12px;color:var(--text-muted);">' + m.tipo + ' · ' + dobFmt + '</div>' +
+      '</div>' +
+      '<button onclick="removeMembro(' + i + ')" style="background:none;border:none;color:var(--text-hint);cursor:pointer;font-size:16px;padding:0 4px;">✕</button>' +
+    '</div>';
+  }).join('');
+}
+
+// Inicializar lista
+renderAgregado();
 </script>
 <script>
 // ── CONFIG ─────────────────────────────────────────────────────────────────
