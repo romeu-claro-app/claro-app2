@@ -229,6 +229,7 @@
     .success-row .val{color:var(--text);font-weight:500;text-align:right}
     .float-btn{background:var(--green);color:white;border:none;border-radius:24px;padding:13px 18px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:7px;margin:16px auto 0;font-family:inherit}
   </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -264,22 +265,51 @@
   </div>
 </div>
 
-<!-- ONBOARDING -->
-<div class="onboard" id="onboard">
-  <div class="onboard-logo">
-    <svg width="44" height="44" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
-    <div><span style="font-size:24px;font-weight:600;color:#1D9E75;">claro-app</span><span style="font-size:17px;color:#0F6E56;">.ch</span></div>
+<!-- AUTH SCREENS -->
+<div id="authScreen" style="display:none;min-height:100vh;background:var(--bg);max-width:430px;margin:0 auto;">
+  
+  <!-- LOGO TOPO -->
+  <div style="padding:48px 24px 24px;text-align:center;">
+    <svg width="56" height="56" viewBox="0 0 36 36" style="margin-bottom:12px;"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
+    <div style="font-size:26px;font-weight:600;color:#1D9E75;">claro-app<span style="font-size:18px;color:#0F6E56;">.ch</span></div>
+    <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">Documentos suíços em português</div>
   </div>
-  <div class="onboard-title">Documentos suíços,<br>explicados em português.</div>
-  <div class="onboard-sub">Cartas do seguro, impostos, renda — percebe tudo sem precisar de saber alemão.</div>
-  <div class="onboard-features">
-    <div class="onboard-feat"><div class="feat-icon">📄</div><div><div class="feat-text">Analisa qualquer documento</div><div class="feat-sub">Alemão, francês ou italiano</div></div></div>
-    <div class="onboard-feat"><div class="feat-icon">🇵🇹</div><div><div class="feat-text">Tradução e resumo em português</div><div class="feat-sub">Simples e sem termos técnicos</div></div></div>
-    <div class="onboard-feat"><div class="feat-icon">⚡</div><div><div class="feat-text">Sabe o que tens de fazer</div><div class="feat-sub">Prazos, passos e consequências</div></div></div>
-    <div class="onboard-feat"><div class="feat-icon">💬</div><div><div class="feat-text">Marca consulta com consultor</div><div class="feat-sub">Quando precisares de ajuda real</div></div></div>
+
+  <!-- TABS LOGIN / CRIAR CONTA -->
+  <div style="display:flex;margin:0 24px 24px;background:var(--surface);border-radius:10px;padding:3px;">
+    <button id="tabLogin" onclick="switchTab('login')" style="flex:1;padding:9px;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;background:var(--card);color:var(--text);">Entrar</button>
+    <button id="tabRegister" onclick="switchTab('register')" style="flex:1;padding:9px;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;background:transparent;color:var(--text-muted);">Criar conta</button>
   </div>
-  <button class="btn-primary" onclick="startApp()" style="max-width:320px;">Começar grátis</button>
-  <p style="font-size:12px;color:var(--text-hint);margin-top:12px;">O primeiro documento é grátis. Sem cartão.</p>
+
+  <!-- LOGIN -->
+  <div id="loginForm" style="padding:0 24px;">
+    <div class="input-row"><div class="input-label">Email</div><input class="input-field" id="loginEmail" type="email" placeholder="email@exemplo.com" autocomplete="email"></div>
+    <div class="input-row" style="margin-bottom:6px;"><div class="input-label">Password</div><input class="input-field" id="loginPassword" type="password" placeholder="A tua password" autocomplete="current-password"></div>
+    <button onclick="forgotPassword()" style="font-size:12px;color:var(--green);background:none;border:none;cursor:pointer;font-family:inherit;margin-bottom:16px;padding:0;">Esqueci-me da password</button>
+    <div id="loginError" style="display:none;background:var(--red-light,#FCEBEB);border-radius:8px;padding:10px 12px;font-size:13px;color:#791F1F;margin-bottom:12px;"></div>
+    <button class="btn-primary" id="loginBtn" onclick="doLogin()">Entrar</button>
+    <p style="font-size:12px;color:var(--text-hint);text-align:center;margin-top:12px;">O primeiro documento é grátis. Sem cartão.</p>
+  </div>
+
+  <!-- REGISTO -->
+  <div id="registerForm" style="display:none;padding:0 24px;">
+    <div class="input-row"><div class="input-label">Nome completo *</div><input class="input-field" id="regNome" type="text" placeholder="O teu nome completo" autocomplete="name"></div>
+    <div class="input-row"><div class="input-label">Email *</div><input class="input-field" id="regEmail" type="email" placeholder="email@exemplo.com" autocomplete="email"></div>
+    <div class="input-row"><div class="input-label">Telemóvel</div><input class="input-field" id="regPhone" type="tel" placeholder="+41 79 000 00 00"></div>
+    <div class="input-row"><div class="input-label">Data de nascimento</div><input class="input-field" id="regDob" type="date"></div>
+    <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Password *</div><input class="input-field" id="regPassword" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password"></div>
+    <div id="registerError" style="display:none;background:var(--red-light,#FCEBEB);border-radius:8px;padding:10px 12px;font-size:13px;color:#791F1F;margin-bottom:12px;"></div>
+    <button class="btn-primary" id="registerBtn" onclick="doRegister()">Criar conta</button>
+    <p style="font-size:11px;color:var(--text-hint);text-align:center;margin-top:12px;line-height:1.5;">Ao criar conta, aceitas os nossos termos de serviço e política de privacidade.</p>
+  </div>
+
+  <!-- CONFIRMAÇÃO EMAIL -->
+  <div id="confirmEmail" style="display:none;padding:24px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">📧</div>
+    <div style="font-size:18px;font-weight:500;color:var(--text);margin-bottom:8px;">Confirma o teu email</div>
+    <div style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:20px;">Enviámos um email de confirmação. Clica no link para ativar a tua conta.</div>
+    <button class="btn-secondary" onclick="switchTab('login')">Já confirmei — Entrar</button>
+  </div>
 </div>
 
 <!-- APP -->
@@ -289,7 +319,7 @@
       <svg class="logo-icon" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
       <span class="logo-main">claro-app</span><span class="logo-sub">.ch</span>
     </div>
-    <div class="avatar" onclick="showScreen('perfil')" id="headerAvatar">MR</div>
+    <div class="avatar" onclick="showScreen('perfil')" id="headerAvatar" style="position:relative;">?</div>
   </div>
 
   <div class="nav">
@@ -412,8 +442,11 @@
     </div>
 
     <!-- Marcar consulta -->
-    <div style="text-align:center;margin-top:8px;margin-bottom:24px;">
+    <div style="text-align:center;margin-top:8px;margin-bottom:12px;">
       <button class="float-btn" onclick="openBooking()">📅 Marcar consulta com consultor</button>
+    </div>
+    <div style="text-align:center;margin-bottom:24px;">
+      <button onclick="doLogout()" style="font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;font-family:inherit;">Terminar sessão</button>
     </div>
   </div>
 
@@ -685,10 +718,7 @@ const samples = [
 ];
 
 // ── ONBOARDING ─────────────────────────────────────────────────────────────
-function startApp(){
-  document.getElementById('onboard').style.display='none';
-  document.getElementById('app').style.display='flex';
-}
+function startApp(){ /* replaced by auth */ }
 
 // ── NAV ────────────────────────────────────────────────────────────────────
 function showScreen(name){
@@ -877,9 +907,11 @@ function closeEditModal() {
   document.getElementById('editModal').style.display = 'none';
 }
 
-function saveProfile() {
+async function saveProfile() {
   var name = document.getElementById('inputName').value.trim();
   var email = document.getElementById('inputEmail').value.trim();
+  var phone = document.getElementById('inputPhone').value.trim();
+  var dob = document.getElementById('inputDob').value;
   if (!name || !email) { alert('Nome e email são obrigatórios.'); return; }
   
   document.getElementById('profileName').textContent = name;
@@ -894,6 +926,16 @@ function saveProfile() {
     document.getElementById('profilePhoto').src = profilePhotoData;
     document.getElementById('profilePhoto').style.display = 'block';
     document.getElementById('profileInitialsText').style.display = 'none';
+  }
+  
+  // Guardar no Supabase
+  if (supabase) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from('profiles').update({
+        nome: name, email: email, telefone: phone, data_nascimento: dob || null
+      }).eq('id', user.id);
+    }
   }
   
   // Pré-preencher booking
