@@ -229,7 +229,6 @@
     .success-row .val{color:var(--text);font-weight:500;text-align:right}
     .float-btn{background:var(--green);color:white;border:none;border-radius:24px;padding:13px 18px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:7px;margin:16px auto 0;font-family:inherit}
   </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -610,17 +609,6 @@
 </div>
 
 <script>
-// Detetar se é PC e mostrar página de download
-(function() {
-  var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  if (!isMobile) {
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('desktopPage').style.display = 'flex';
-      document.getElementById('onboard').style.display = 'none';
-      document.getElementById('app').style.display = 'none';
-    });
-  }
-})();
 
 // cancelar subscricao
 async function cancelSubscription() {
@@ -643,12 +631,17 @@ function closeAddMembro() {
   document.getElementById('membroModal').style.display = 'none';
 }
 
-function saveMembro() {
+async function saveMembro() {
   var nome = document.getElementById('membroNome').value.trim();
   var dob = document.getElementById('membroDob').value;
   var tipo = document.getElementById('membroTipo').value;
   if (!nome || !dob || !tipo) { alert('Preenche todos os campos.'); return; }
-  agregado.push({ nome: nome, dob: dob, tipo: tipo });
+  var newMembro = { nome: nome, dob: dob, tipo: tipo };
+  if (currentUser) {
+    var result = await sbPost('agregado', { user_id: currentUser.id, nome: nome, data_nascimento: dob, relacao: tipo });
+    if (Array.isArray(result) && result[0]) newMembro.id = result[0].id;
+  }
+  agregado.push(newMembro);
   renderAgregado();
   renderAgregadoEdit();
   closeAddMembro();
@@ -703,6 +696,160 @@ function renderAgregadoEdit() {
 renderAgregado();
 </script>
 <script>
+
+// ── SUPABASE CONFIG (sem SDK) ──────────────────────────────────────────────
+const SUPABASE_URL = 'https://vawfgruwwfnpnrnxuvnw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_65vuly7LkkRF6YYxd2H94g_TB-vOYvk';
+var currentUser = null;
+var accessToken = null;
+
+async function sbGet(table, filter) {
+  var r = await fetch(SUPABASE_URL+'/rest/v1/'+table+'?'+filter, {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(accessToken||SUPABASE_KEY)}});
+  return r.json();
+}
+async function sbPost(table, body) {
+  var r = await fetch(SUPABASE_URL+'/rest/v1/'+table, {method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(accessToken||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(body)});
+  return r.json();
+}
+async function sbPatch(table, filter, body) {
+  var r = await fetch(SUPABASE_URL+'/rest/v1/'+table+'?'+filter, {method:'PATCH',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(accessToken||SUPABASE_KEY),'Content-Type':'application/json'},body:JSON.stringify(body)});
+  return r.ok;
+}
+async function authPost(path, body) {
+  var r = await fetch(SUPABASE_URL+'/auth/v1/'+path, {method:'POST',headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  return r.json();
+}
+
+var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+document.addEventListener('DOMContentLoaded', async function() {
+  if (!isMobile) { document.getElementById('desktopPage').style.display='flex'; return; }
+  var saved = localStorage.getItem('claro_session');
+  if (saved) {
+    try {
+      var session = JSON.parse(saved);
+      accessToken = session.access_token;
+      currentUser = session.user;
+      await loadUserAndStart(currentUser);
+      return;
+    } catch(e) { localStorage.removeItem('claro_session'); }
+  }
+  document.getElementById('authScreen').style.display = 'block';
+});
+
+function switchTab(tab) {
+  var isLogin = tab==='login';
+  document.getElementById('loginForm').style.display = isLogin?'block':'none';
+  document.getElementById('registerForm').style.display = isLogin?'none':'block';
+  document.getElementById('confirmEmail').style.display = 'none';
+  document.getElementById('tabLogin').style.background = isLogin?'var(--card)':'transparent';
+  document.getElementById('tabLogin').style.color = isLogin?'var(--text)':'var(--text-muted)';
+  document.getElementById('tabRegister').style.background = isLogin?'transparent':'var(--card)';
+  document.getElementById('tabRegister').style.color = isLogin?'var(--text-muted)':'var(--text)';
+}
+
+async function doLogin() {
+  var email=document.getElementById('loginEmail').value.trim();
+  var password=document.getElementById('loginPassword').value;
+  var errEl=document.getElementById('loginError');
+  var btn=document.getElementById('loginBtn');
+  if(!email||!password){showAuthError(errEl,'Preenche email e password.');return;}
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A entrar...';
+  errEl.style.display='none';
+  var data=await authPost('token?grant_type=password',{email:email,password:password});
+  if(data.error||!data.access_token){
+    showAuthError(errEl,'Email ou password incorretos.');
+    btn.disabled=false; btn.textContent='Entrar';
+  } else {
+    accessToken=data.access_token; currentUser=data.user;
+    localStorage.setItem('claro_session',JSON.stringify({access_token:data.access_token,user:data.user}));
+    await loadUserAndStart(data.user);
+  }
+}
+
+async function doRegister() {
+  var nome=document.getElementById('regNome').value.trim();
+  var email=document.getElementById('regEmail').value.trim();
+  var phone=document.getElementById('regPhone').value.trim();
+  var dob=document.getElementById('regDob').value;
+  var password=document.getElementById('regPassword').value;
+  var errEl=document.getElementById('registerError');
+  var btn=document.getElementById('registerBtn');
+  if(!nome||!email||!password){showAuthError(errEl,'Nome, email e password são obrigatórios.');return;}
+  if(password.length<8){showAuthError(errEl,'A password deve ter pelo menos 8 caracteres.');return;}
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A criar conta...';
+  errEl.style.display='none';
+  var data=await authPost('signup',{email:email,password:password,data:{nome:nome,phone:phone,dob:dob}});
+  if(data.error){
+    showAuthError(errEl,data.error.message||'Erro ao criar conta.');
+    btn.disabled=false; btn.textContent='Criar conta';
+  } else {
+    if(data.access_token){
+      accessToken=data.access_token;
+      await sbPost('profiles',{id:data.user.id,nome:nome,email:email,telefone:phone,data_nascimento:dob||null,plano:'gratuito'});
+    }
+    document.getElementById('registerForm').style.display='none';
+    document.getElementById('confirmEmail').style.display='block';
+    btn.disabled=false; btn.textContent='Criar conta';
+  }
+}
+
+async function forgotPassword() {
+  var email=document.getElementById('loginEmail').value.trim();
+  if(!email){alert('Escreve o teu email primeiro.');return;}
+  var data=await authPost('recover',{email:email});
+  if(!data.error) alert('Email de recuperação enviado!');
+  else alert('Erro ao enviar email.');
+}
+
+function showAuthError(el,msg){el.textContent=msg;el.style.display='block';}
+
+async function loadUserAndStart(user) {
+  var profiles=await sbGet('profiles','id=eq.'+user.id+'&select=*');
+  var profile=Array.isArray(profiles)?profiles[0]:null;
+  if(profile){
+    var nome=profile.nome||user.email;
+    var initials=nome.split(' ').map(function(n){return n[0];}).join('').substring(0,2).toUpperCase();
+    document.getElementById('profileName').textContent=nome;
+    document.getElementById('profileEmail').textContent=profile.email||user.email;
+    document.getElementById('profileInitialsText').textContent=initials;
+    document.getElementById('headerAvatar').textContent=initials;
+    document.getElementById('inputName').value=nome;
+    document.getElementById('inputEmail').value=profile.email||user.email;
+    if(profile.telefone) document.getElementById('inputPhone').value=profile.telefone;
+    if(profile.data_nascimento) document.getElementById('inputDob').value=profile.data_nascimento;
+    if(profile.plano==='pro'){state.isPro=true;updatePlanLabel();}
+    var agData=await sbGet('agregado','user_id=eq.'+user.id+'&select=*');
+    if(Array.isArray(agData)&&agData.length){
+      agregado=agData.map(function(a){return{id:a.id,nome:a.nome,dob:a.data_nascimento,tipo:a.relacao};});
+      renderAgregado();
+    }
+  }
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('bkName').value=document.getElementById('profileName').textContent;
+  document.getElementById('bkEmail').value=document.getElementById('profileEmail').textContent;
+  if(window.location.search.includes('success=true')){
+    await sbPatch('profiles','id=eq.'+user.id,{plano:'pro'});
+    state.isPro=true; updatePlanLabel();
+    history.replaceState({},'','/');
+    setTimeout(function(){alert('Bem-vindo ao Claro-app+!');},500);
+  }
+}
+
+async function doLogout() {
+  if(accessToken) await authPost('logout',{});
+  accessToken=null; currentUser=null;
+  localStorage.removeItem('claro_session');
+  state.isPro=false; state.docsUsed=0; state.savedDocs=[]; agregado=[];
+  document.getElementById('app').style.display='none';
+  document.getElementById('authScreen').style.display='block';
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPassword').value='';
+  switchTab('login');
+}
+
+
 // ── CONFIG ─────────────────────────────────────────────────────────────────
 // SUBSTITUI PELA TUA CHAVE API DO ANTHROPIC
 // Chave API gerida pelo servidor (Vercel Environment Variables)
@@ -929,13 +1076,8 @@ async function saveProfile() {
   }
   
   // Guardar no Supabase
-  if (supabase) {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from('profiles').update({
-        nome: name, email: email, telefone: phone, data_nascimento: dob || null
-      }).eq('id', user.id);
-    }
+  if (currentUser) {
+    await sbPatch('profiles', 'id=eq.' + currentUser.id, { nome: name, email: email, telefone: phone, data_nascimento: dob || null });
   }
   
   // Pré-preencher booking
