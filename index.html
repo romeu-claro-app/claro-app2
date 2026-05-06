@@ -283,7 +283,13 @@
   <!-- LOGIN -->
   <div id="loginForm" style="padding:0 24px;">
     <div class="input-row"><div class="input-label">Email</div><input class="input-field" id="loginEmail" type="email" placeholder="email@exemplo.com" autocomplete="email"></div>
-    <div class="input-row" style="margin-bottom:6px;"><div class="input-label">Password</div><input class="input-field" id="loginPassword" type="password" placeholder="A tua password" autocomplete="current-password"></div>
+    <div class="input-row" style="margin-bottom:6px;">
+      <div class="input-label">Password</div>
+      <div style="position:relative;">
+        <input class="input-field" id="loginPassword" type="password" placeholder="A tua password" autocomplete="current-password" style="padding-right:40px;">
+        <button type="button" onclick="togglePw('loginPassword','eyeLogin')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-muted);" id="eyeLogin">👁</button>
+      </div>
+    </div>
     <button onclick="forgotPassword()" style="font-size:12px;color:var(--green);background:none;border:none;cursor:pointer;font-family:inherit;margin-bottom:16px;padding:0;">Esqueci-me da password</button>
     <div id="loginError" style="display:none;background:var(--red-light,#FCEBEB);border-radius:8px;padding:10px 12px;font-size:13px;color:#791F1F;margin-bottom:12px;"></div>
     <button class="btn-primary" id="loginBtn" onclick="doLogin()">Entrar</button>
@@ -299,7 +305,13 @@
     <div class="input-row"><div class="input-label">Email *</div><input class="input-field" id="regEmail" type="email" placeholder="email@exemplo.com" autocomplete="email"></div>
     <div class="input-row"><div class="input-label">Telemóvel</div><input class="input-field" id="regPhone" type="tel" placeholder="+41 79 000 00 00"></div>
     <div class="input-row"><div class="input-label">Data de nascimento</div><input class="input-field" id="regDob" type="date"></div>
-    <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Password *</div><input class="input-field" id="regPassword" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password"></div>
+    <div class="input-row" style="margin-bottom:16px;">
+      <div class="input-label">Password *</div>
+      <div style="position:relative;">
+        <input class="input-field" id="regPassword" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" style="padding-right:40px;">
+        <button type="button" onclick="togglePw('regPassword','eyeReg')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-muted);" id="eyeReg">👁</button>
+      </div>
+    </div>
     <div id="registerError" style="display:none;background:var(--red-light,#FCEBEB);border-radius:8px;padding:10px 12px;font-size:13px;color:#791F1F;margin-bottom:12px;"></div>
     <button class="btn-primary" id="registerBtn" onclick="doRegister()">Criar conta</button>
     <p style="font-size:11px;color:var(--text-hint);text-align:center;margin-top:12px;line-height:1.5;">Ao criar conta, aceitas os nossos termos de serviço e política de privacidade.</p>
@@ -706,6 +718,19 @@ function renderAgregadoEdit() {
 }
 
 renderAgregado();
+
+// Toggle password visibility
+function togglePw(inputId, btnId) {
+  var input = document.getElementById(inputId);
+  var btn = document.getElementById(btnId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
 </script>
 <script>
 
