@@ -287,11 +287,15 @@
     <button onclick="forgotPassword()" style="font-size:12px;color:var(--green);background:none;border:none;cursor:pointer;font-family:inherit;margin-bottom:16px;padding:0;">Esqueci-me da password</button>
     <div id="loginError" style="display:none;background:var(--red-light,#FCEBEB);border-radius:8px;padding:10px 12px;font-size:13px;color:#791F1F;margin-bottom:12px;"></div>
     <button class="btn-primary" id="loginBtn" onclick="doLogin()">Entrar</button>
+    <p style="font-size:12px;color:var(--text-hint);text-align:center;margin-top:12px;">O primeiro documento é grátis. Sem cartão.</p>
   </div>
 
   <!-- REGISTO -->
   <div id="registerForm" style="display:none;padding:0 24px;">
-    <div class="input-row"><div class="input-label">Nome completo *</div><input class="input-field" id="regNome" type="text" placeholder="O teu nome completo" autocomplete="name"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="input-row"><div class="input-label">Primeiro nome *</div><input class="input-field" id="regPrimeiroNome" type="text" placeholder="Ex: João" autocomplete="given-name"></div>
+        <div class="input-row"><div class="input-label">Apelido *</div><input class="input-field" id="regApelido" type="text" placeholder="Ex: Silva" autocomplete="family-name"></div>
+      </div>
     <div class="input-row"><div class="input-label">Email *</div><input class="input-field" id="regEmail" type="email" placeholder="email@exemplo.com" autocomplete="email"></div>
     <div class="input-row"><div class="input-label">Telemóvel</div><input class="input-field" id="regPhone" type="tel" placeholder="+41 79 000 00 00"></div>
     <div class="input-row"><div class="input-label">Data de nascimento</div><input class="input-field" id="regDob" type="date"></div>
@@ -466,7 +470,11 @@
       </div>
       <!-- Dados -->
       <div class="section-title">Dados Pessoais</div>
-      <div class="input-row"><div class="input-label">Nome completo *</div><input class="input-field" id="inputName" type="text" placeholder="O teu nome"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="input-row"><div class="input-label">Primeiro nome *</div><input class="input-field" id="inputPrimeiroNome" type="text" placeholder="Ex: João" autocomplete="given-name"></div>
+        <div class="input-row"><div class="input-label">Apelido *</div><input class="input-field" id="inputApelido" type="text" placeholder="Ex: Silva" autocomplete="family-name"></div>
+      </div>
+      <input type="hidden" id="inputName">
       <div class="input-row"><div class="input-label">Email *</div><input class="input-field" id="inputEmail" type="email" placeholder="email@exemplo.com"></div>
       <div class="input-row"><div class="input-label">Telemóvel</div><input class="input-field" id="inputPhone" type="tel" placeholder="+41 79 000 00 00"></div>
       <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Data de nascimento</div><input class="input-field" id="inputDob" type="date"></div>
@@ -482,7 +490,10 @@
   <div id="membroModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;align-items:flex-end;max-width:430px;margin:0 auto;">
     <div style="background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;">
       <div style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:16px;">Adicionar membro</div>
-      <div class="input-row"><div class="input-label">Nome completo *</div><input class="input-field" id="membroNome" type="text" placeholder="Nome do membro"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="input-row"><div class="input-label">Primeiro nome *</div><input class="input-field" id="membroPrimeiroNome" type="text" placeholder="Ex: Maria"></div>
+        <div class="input-row"><div class="input-label">Apelido *</div><input class="input-field" id="membroApelido" type="text" placeholder="Ex: Silva"></div>
+      </div>
       <div class="input-row"><div class="input-label">Data de nascimento *</div><input class="input-field" id="membroDob" type="date"></div>
       <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Relação *</div>
         <select class="input-field" id="membroTipo">
@@ -631,10 +642,12 @@ function closeAddMembro() {
 }
 
 async function saveMembro() {
-  var nome = document.getElementById('membroNome').value.trim();
+  var primeiroNome = document.getElementById('membroPrimeiroNome').value.trim();
+  var apelido = document.getElementById('membroApelido').value.trim();
+  var nome = (primeiroNome+' '+apelido).trim();
   var dob = document.getElementById('membroDob').value;
   var tipo = document.getElementById('membroTipo').value;
-  if (!nome || !dob || !tipo) { alert('Preenche todos os campos.'); return; }
+  if (!primeiroNome || !apelido || !dob || !tipo) { alert('Preenche todos os campos.'); return; }
   var newMembro = { nome: nome, dob: dob, tipo: tipo };
   if (currentUser) {
     var result = await sbPost('agregado', { user_id: currentUser.id, nome: nome, data_nascimento: dob, relacao: tipo });
@@ -767,14 +780,16 @@ async function doLogin() {
 }
 
 async function doRegister() {
-  var nome=document.getElementById('regNome').value.trim();
+  var primeiroNome=document.getElementById('regPrimeiroNome').value.trim();
+  var apelido=document.getElementById('regApelido').value.trim();
+  var nome=(primeiroNome+' '+apelido).trim();
   var email=document.getElementById('regEmail').value.trim();
   var phone=document.getElementById('regPhone').value.trim();
   var dob=document.getElementById('regDob').value;
   var password=document.getElementById('regPassword').value;
   var errEl=document.getElementById('registerError');
   var btn=document.getElementById('registerBtn');
-  if(!nome||!email||!password){showAuthError(errEl,'Nome, email e password são obrigatórios.');return;}
+  if(!primeiroNome||!apelido||!email||!password){showAuthError(errEl,'Todos os campos obrigatórios devem ser preenchidos.');return;}
   if(password.length<8){showAuthError(errEl,'A password deve ter pelo menos 8 caracteres.');return;}
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A criar conta...';
   errEl.style.display='none';
