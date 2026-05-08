@@ -1008,6 +1008,29 @@ async function loadUserAndStart(user) {
   document.getElementById('app').style.display='flex';
   document.getElementById('bkName').value=document.getElementById('profileName').textContent;
   document.getElementById('bkEmail').value=document.getElementById('profileEmail').textContent;
+  // Carregar documentos guardados
+  var docsData = await sbGet('documentos', 'user_id=eq.'+user.id+'&order=created_at.desc&select=*');
+  if(Array.isArray(docsData) && docsData.length) {
+    state.savedDocs = docsData.map(function(d) {
+      return {
+        titulo: d.titulo,
+        categoria: d.categoria,
+        resumo: d.resumo,
+        explicacao: d.explicacao,
+        acao_necessaria: d.acao_necessaria,
+        urgente: d.urgente,
+        o_que_fazer: d.o_que_fazer,
+        prazo: d.prazo,
+        prazo_dias: d.prazo_dias,
+        passos: d.passos || [],
+        consequencias: d.consequencias,
+        idioma_original: d.idioma_original,
+        savedAt: new Date(d.created_at).toLocaleDateString('pt-PT'),
+        db_id: d.id
+      };
+    });
+    state.docsUsed = docsData.length;
+  }
   updateHome();
   if(window.location.search.includes('success=true')){
     await sbPatch('profiles','id=eq.'+user.id,{plano:'pro'});
@@ -1101,7 +1124,26 @@ async function analyseDoc(){
     const raw=data.content[0].text.replace(/```json|```/g,'').trim();
     const r=JSON.parse(raw);
     state.docsUsed++;
-    state.savedDocs.push({...r,savedAt:new Date().toLocaleDateString('pt-PT')});
+    var doc = {...r, savedAt:new Date().toLocaleDateString('pt-PT')};
+    state.savedDocs.push(doc);
+    // Guardar no Supabase
+    if(currentUser) {
+      sbPost('documentos', {
+        user_id: currentUser.id,
+        titulo: r.titulo,
+        categoria: r.categoria,
+        resumo: r.resumo,
+        explicacao: r.explicacao,
+        acao_necessaria: r.acao_necessaria,
+        urgente: r.urgente,
+        o_que_fazer: r.o_que_fazer || '',
+        prazo: r.prazo || '',
+        prazo_dias: r.prazo_dias || 0,
+        passos: r.passos || [],
+        consequencias: r.consequencias || '',
+        idioma_original: r.idioma_original || ''
+      });
+    }
     clearFile();
     updateHome();
     if(r.acao_necessaria) state.notifs.push({title:r.titulo,desc:r.o_que_fazer,urgent:r.urgente});
