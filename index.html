@@ -856,7 +856,7 @@ function updateHome() {
 
 function goAnalisar() {
   if (!state.isPro && state.docsUsed >= state.freeLimit) { openPaywall(); return; }
-  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); s.style.display = 'none'; });
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); s.style.display = ''; });
   var form = document.getElementById('screen-analisar-form');
   form.style.display = 'block';
   form.classList.add('active');
@@ -1073,18 +1073,18 @@ function startApp(){ /* replaced by auth */ }
 // ── NAV ────────────────────────────────────────────────────────────────────
 function showScreen(name){
   document.getElementById('detailOverlay').classList.remove('open');
-  // Esconder todos os ecrãs
+  // Remover active e display de todos
   document.querySelectorAll('.screen').forEach(function(s){
     s.classList.remove('active');
-    s.style.display = 'none';
+    s.style.display = '';
   });
   // Esconder form de analisar
   var form = document.getElementById('screen-analisar-form');
   if(form) { form.style.display='none'; form.classList.remove('active'); }
-  // Mostrar ecrã pretendido
+  // Activar ecrã pretendido
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
   var screen = document.getElementById('screen-'+name);
-  if(screen) { screen.style.display = 'block'; screen.classList.add('active'); }
+  if(screen) { screen.classList.add('active'); screen.style.display = ''; }
   var navBtn = document.getElementById('nav-'+name);
   if(navBtn) navBtn.classList.add('active');
   if(name==='documentos') renderDocs();
