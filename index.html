@@ -490,7 +490,7 @@
     </div>
 
     <!-- Botão editar -->
-    <button class="btn-secondary" onclick="openEditModal()" style="margin-bottom:10px;">✏️ Editar perfil e agregado</button>
+    <button class="btn-secondary" onclick="openEditModalCheck()" style="margin-bottom:10px;">✏️ Editar perfil e agregado</button>
 
     <!-- Plano -->
     <div class="block" style="margin-bottom:10px;cursor:pointer;" onclick="togglePlano()">
@@ -543,7 +543,9 @@
       <!-- Agregado no modal -->
       <div class="section-title">Agregado Familiar</div>
       <div id="agregadoEditList" style="margin-bottom:10px;"></div>
-      <button onclick="openAddMembro()" style="width:100%;padding:10px;background:var(--green-light);border:0.5px dashed var(--green-mid);border-radius:10px;font-size:13px;color:var(--green-dark);font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:16px;">+ Adicionar membro</button>
+      <div id="addMembroWrap">
+        <button onclick="tryAddMembro()" style="width:100%;padding:10px;background:var(--green-light);border:0.5px dashed var(--green-mid);border-radius:10px;font-size:13px;color:var(--green-dark);font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:16px;">+ Adicionar membro</button>
+      </div>
       <button class="btn-primary" onclick="saveProfile()">Guardar alterações</button>
     </div>
   </div>
@@ -599,9 +601,13 @@
     <div class="price-note" id="pw-note"></div>
     <ul class="paywall-features">
       <li><span class="check">✓</span> Documentos ilimitados</li>
-      <li><span class="check">✓</span> Histórico completo</li>
-      <li><span class="check">✓</span> Notificações de prazos</li>
-      <li><span class="check">✓</span> Marcação de consulta</li>
+      <li><span class="check">✓</span> Histórico completo de documentos</li>
+      <li><span class="check">✓</span> Notificações e prazos automáticos</li>
+      <li><span class="check">✓</span> Marcações de consulta/conselho com um profissional — ilimitadas</li>
+      <li><span class="check">✓</span> Gestão do agregado familiar</li>
+      <li><span class="check">✓</span> Análise em 3 idiomas (DE, FR, IT)</li>
+      <li><span class="check">✓</span> Acesso prioritário a novas funcionalidades</li>
+      <li><span class="check">✓</span> Suporte direto por email</li>
     </ul>
     <div class="bonus-box">
       <div class="bonus-title">✦ Incluído no Claro-app+</div>
@@ -815,7 +821,7 @@ function updateHome() {
         '</div>' +
         (d.prazo ? '<div style="font-size:12px;color:var(--red);margin-top:6px;">📅 ' + d.prazo + '</div>' : '') +
         (d.o_que_fazer ? '<div style="font-size:13px;color:var(--text-muted);margin-top:4px;">' + d.o_que_fazer.substring(0,80) + '...</div>' : '') +
-        '<button onclick="marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:var(--green-light);border:0.5px solid var(--green-mid);border-radius:8px;font-size:13px;color:var(--green-dark);font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
+        '<button onclick="marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:#1D9E75;border:none;border-radius:10px;font-size:14px;color:white;font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
       '</div>';
     }).join('');
     document.getElementById('pendingList').innerHTML = html;
@@ -877,6 +883,20 @@ async function marcarFeito(idx) {
   }
   updateHome();
   renderNotifs();
+}
+
+function openEditModalCheck() {
+  // Perfil sempre disponível, mas agregado só para premium
+  openEditModal();
+}
+
+function tryAddMembro() {
+  if (!state.isPro) {
+    closeEditModal();
+    openPaywall();
+    return;
+  }
+  openAddMembro();
 }
 </script>
 <script>
@@ -1005,6 +1025,16 @@ async function loadUserAndStart(user) {
     if(profile.telefone) document.getElementById('inputPhone').value=profile.telefone;
     if(profile.data_nascimento) document.getElementById('inputDob').value=profile.data_nascimento;
     if(profile.plano==='pro'){state.isPro=true;updatePlanLabel();}
+    // Carregar foto de perfil
+    if(profile.foto_url) {
+      profilePhotoData = profile.foto_url;
+      document.getElementById('profilePhoto').src = profile.foto_url;
+      document.getElementById('profilePhoto').style.display = 'block';
+      document.getElementById('profileInitialsText').style.display = 'none';
+      document.getElementById('editPhotoPreview').src = profile.foto_url;
+      document.getElementById('editPhotoPreview').style.display = 'block';
+      document.getElementById('editInitialsPreview').style.display = 'none';
+    }
     var agData=await sbGet('agregado','user_id=eq.'+user.id+'&select=*');
     if(Array.isArray(agData)&&agData.length){
       agregado=agData.map(function(a){return{id:a.id,nome:a.nome,dob:a.data_nascimento,tipo:a.relacao};});
@@ -1274,7 +1304,7 @@ function renderNotifs(){
           (d.prazo ? '<div class="notif-time">📅 ' + d.prazo + '</div>' : '') +
         '</div>' +
       '</div>' +
-      '<button onclick="marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:var(--green-light);border:0.5px solid var(--green-mid);border-radius:8px;font-size:13px;color:var(--green-dark);font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
+      '<button onclick="marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:#1D9E75;border:none;border-radius:10px;font-size:14px;color:white;font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
     '</div>';
   }).join('');
 }
@@ -1283,9 +1313,11 @@ function renderNotifs(){
 // Foto de perfil
 var profilePhotoData = null;
 
-function handlePhotoUpload(event) {
+async function handlePhotoUpload(event) {
   var file = event.target.files[0];
   if (!file) return;
+  
+  // Preview imediato
   var reader = new FileReader();
   reader.onload = function(e) {
     profilePhotoData = e.target.result;
@@ -1294,6 +1326,31 @@ function handlePhotoUpload(event) {
     document.getElementById('editInitialsPreview').style.display = 'none';
   };
   reader.readAsDataURL(file);
+  
+  // Upload ao Supabase Storage
+  if (currentUser) {
+    try {
+      var arrayBuffer = await file.arrayBuffer();
+      var fileName = currentUser.id + '/avatar.' + file.name.split('.').pop();
+      var uploadRes = await fetch(SUPABASE_URL + '/storage/v1/object/avatars/' + fileName, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + accessToken,
+          'Content-Type': file.type,
+          'x-upsert': 'true'
+        },
+        body: arrayBuffer
+      });
+      if (uploadRes.ok) {
+        var photoUrl = SUPABASE_URL + '/storage/v1/object/public/avatars/' + fileName;
+        await sbPatch('profiles', 'id=eq.' + currentUser.id, { foto_url: photoUrl });
+        profilePhotoData = photoUrl;
+      }
+    } catch(e) {
+      console.log('Foto upload erro:', e);
+    }
+  }
 }
 
 function openEditModal() {
