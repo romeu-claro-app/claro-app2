@@ -361,11 +361,74 @@
     </button>
   </div>
 
-  <!-- ANALISAR -->
+  <!-- HOME -->
   <div id="screen-analisar" class="screen active">
-    <div class="section-title">Analisar documento</div>
     
-    <!-- Upload buttons -->
+    <!-- Saudação -->
+    <div style="padding:4px 0 20px;">
+      <div style="font-size:22px;font-weight:500;color:var(--text);margin-bottom:4px;">Olá, <span id="homeNome">👋</span></div>
+      <div style="font-size:13px;color:var(--text-muted);">O que queres fazer hoje?</div>
+    </div>
+
+    <!-- 3 botões principais -->
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+      
+      <!-- Analisar documento -->
+      <button onclick="goAnalisar()" style="background:var(--green);color:white;border:none;border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;transition:background 0.15s;" onmouseover="this.style.background='#0F6E56'" onmouseout="this.style.background='var(--green)'">
+        <div style="width:44px;height:44px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📄</div>
+        <div>
+          <div style="font-size:15px;font-weight:600;">Analisar documento</div>
+          <div style="font-size:12px;opacity:0.8;margin-top:2px;" id="homeDocsLeft">Fotografa, importa ou cola o texto</div>
+        </div>
+        <div style="margin-left:auto;font-size:20px;opacity:0.7;">›</div>
+      </button>
+
+      <!-- Manual do Emigrante -->
+      <button onclick="goManual()" style="background:var(--card);color:var(--text);border:0.5px solid var(--border);border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;background:var(--green-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📖</div>
+        <div>
+          <div style="font-size:15px;font-weight:600;">Manual do Emigrante</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Guia completo de vida na Suíça</div>
+        </div>
+        <div style="margin-left:auto;font-size:20px;color:var(--text-hint);">›</div>
+      </button>
+
+      <!-- Marcar consulta -->
+      <button onclick="goConsulta()" style="background:var(--card);color:var(--text);border:0.5px solid var(--border);border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;background:var(--green-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📅</div>
+        <div>
+          <div style="font-size:15px;font-weight:600;">Marcar consulta</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Fala com o teu consultor</div>
+        </div>
+        <div style="margin-left:auto;font-size:20px;color:var(--text-hint);">›</div>
+      </button>
+    </div>
+
+    <!-- Ações/prazos pendentes -->
+    <div id="pendingSection" style="display:none;">
+      <div class="section-title">⚠️ Ações pendentes</div>
+      <div id="pendingList"></div>
+    </div>
+
+    <!-- Estado sem pendentes -->
+    <div id="noPendingSection">
+      <div class="section-title">Últimos documentos</div>
+      <div id="homeDocsList">
+        <div style="text-align:center;padding:32px 0;font-size:14px;color:var(--text-muted);line-height:1.6;">
+          Ainda não analisaste nenhum documento.<br>
+          <span style="font-size:13px;color:var(--text-hint);">Começa por fotografar ou importar um.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALISAR (ecrã secundário) -->
+  <div id="screen-analisar-form" class="screen" style="display:none;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <button onclick="showScreen('analisar')" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--green);padding:0;">←</button>
+      <div style="font-size:16px;font-weight:500;color:var(--text);">Analisar documento</div>
+    </div>
+    
     <input type="file" id="fileInput" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="handleFile(event)">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
       <button class="upload-btn" onclick="document.getElementById('fileInput').removeAttribute('capture');document.getElementById('fileInput').click()" style="font-size:13px;padding:12px;">
@@ -376,7 +439,6 @@
       </button>
     </div>
 
-    <!-- Preview imagem -->
     <div id="imagePreview" style="display:none;margin-bottom:12px;">
       <div style="position:relative;display:inline-block;width:100%;">
         <img id="previewImg" style="width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:0.5px solid var(--border);background:var(--surface);">
@@ -390,7 +452,6 @@
       <span style="font-size:11px;color:var(--text-hint);">ou escreve/cola texto</span>
       <div style="flex:1;height:0.5px;background:var(--border);"></div>
     </div>
-
     <div style="margin-bottom:6px;">
       <button class="sample-btn" onclick="loadSample(0)">Exemplo: Krankenkasse</button>
       <button class="sample-btn" onclick="loadSample(1)">Exemplo: Steuererklärung</button>
@@ -737,6 +798,79 @@ function togglePw(inputId, btnId) {
     btn.textContent = '👁';
   }
 }
+
+// ── HOME PAGE ──────────────────────────────────────────────────────────────
+function updateHome() {
+  // Saudação com nome
+  var nome = document.getElementById('profileName').textContent;
+  if (nome && nome !== '—') {
+    var primeiroNome = nome.split(' ')[0];
+    document.getElementById('homeNome').textContent = primeiroNome + ' 👋';
+  }
+
+  // Docs restantes
+  var r = Math.max(0, state.freeLimit - state.docsUsed);
+  if (!state.isPro) {
+    document.getElementById('homeDocsLeft').textContent = r > 0 
+      ? r + ' análise' + (r !== 1 ? 's' : '') + ' gratuita' + (r !== 1 ? 's' : '') + ' disponível'
+      : 'Upgrade para continuar a analisar';
+  } else {
+    document.getElementById('homeDocsLeft').textContent = 'Fotografa, importa ou cola o texto';
+  }
+
+  // Pendentes
+  var pending = state.savedDocs.filter(function(d) { return d.acao_necessaria; });
+  if (pending.length > 0) {
+    document.getElementById('pendingSection').style.display = 'block';
+    document.getElementById('noPendingSection').style.display = 'none';
+    var html = pending.map(function(d) {
+      return '<div class="card" style="margin-bottom:8px;">' +
+        '<div class="card-header">' +
+          '<div class="card-title">' + d.titulo + '</div>' +
+          (d.urgente ? '<span class="tag tag-urgent">Urgente</span>' : '<span class="tag tag-action">Ação</span>') +
+        '</div>' +
+        (d.prazo ? '<div style="font-size:12px;color:var(--red);margin-top:6px;">📅 ' + d.prazo + '</div>' : '') +
+        (d.o_que_fazer ? '<div style="font-size:13px;color:var(--text-muted);margin-top:4px;">' + d.o_que_fazer.substring(0,80) + '...</div>' : '') +
+      '</div>';
+    }).join('');
+    document.getElementById('pendingList').innerHTML = html;
+  } else if (state.savedDocs.length > 0) {
+    document.getElementById('pendingSection').style.display = 'none';
+    document.getElementById('noPendingSection').style.display = 'block';
+    var recentDocs = state.savedDocs.slice(-3).reverse();
+    var html2 = recentDocs.map(function(d, i) {
+      return '<div class="card" style="margin-bottom:8px;">' +
+        '<div class="card-header">' +
+          '<div class="card-title">' + d.titulo + '</div>' +
+          '<div class="card-date">' + d.savedAt + '</div>' +
+        '</div>' +
+        '<div class="card-meta">' +
+          '<span class="tag tag-cat">' + d.categoria + '</span>' +
+          (d.acao_necessaria ? '<span class="tag tag-action">Ação</span>' : '<span class="tag tag-info">OK</span>') +
+        '</div>' +
+      '</div>';
+    }).join('');
+    document.getElementById('homeDocsList').innerHTML = html2;
+  }
+}
+
+function goAnalisar() {
+  if (!state.isPro && state.docsUsed >= state.freeLimit) { openPaywall(); return; }
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); s.style.display = 'none'; });
+  var form = document.getElementById('screen-analisar-form');
+  form.style.display = 'block';
+  form.classList.add('active');
+}
+
+function goManual() {
+  if (!state.isPro) { openPaywall(); return; }
+  window.open('Manual_Emigrante_FINAL_v2.pdf', '_blank');
+}
+
+function goConsulta() {
+  if (!state.isPro) { openPaywall(); return; }
+  openBooking();
+}
 </script>
 <script>
 
@@ -874,6 +1008,7 @@ async function loadUserAndStart(user) {
   document.getElementById('app').style.display='flex';
   document.getElementById('bkName').value=document.getElementById('profileName').textContent;
   document.getElementById('bkEmail').value=document.getElementById('profileEmail').textContent;
+  updateHome();
   if(window.location.search.includes('success=true')){
     await sbPatch('profiles','id=eq.'+user.id,{plano:'pro'});
     state.isPro=true; updatePlanLabel();
@@ -915,12 +1050,16 @@ function startApp(){ /* replaced by auth */ }
 // ── NAV ────────────────────────────────────────────────────────────────────
 function showScreen(name){
   document.getElementById('detailOverlay').classList.remove('open');
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');});
+  // Esconder também o form de analisar
+  var form = document.getElementById('screen-analisar-form');
+  if(form) { form.style.display='none'; form.classList.remove('active'); }
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
   document.getElementById('nav-'+name).classList.add('active');
   if(name==='documentos') renderDocs();
   if(name==='notificacoes') renderNotifs();
+  if(name==='analisar') updateHome();
 }
 
 // ── ANÁLISE ────────────────────────────────────────────────────────────────
@@ -964,6 +1103,7 @@ async function analyseDoc(){
     state.docsUsed++;
     state.savedDocs.push({...r,savedAt:new Date().toLocaleDateString('pt-PT')});
     clearFile();
+    updateHome();
     if(r.acao_necessaria) state.notifs.push({title:r.titulo,desc:r.o_que_fazer,urgent:r.urgente});
     updatePlanLabel();
     renderResult(r);
