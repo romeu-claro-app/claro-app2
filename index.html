@@ -361,106 +361,89 @@
     </button>
   </div>
 
-  <!-- HOME -->
+  <!-- HOME + ANALISAR (ecrã único com dois estados) -->
   <div id="screen-analisar" class="screen active">
     
-    <!-- Saudação -->
-    <div style="padding:4px 0 20px;">
-      <div style="font-size:22px;font-weight:500;color:var(--text);margin-bottom:4px;">Olá, <span id="homeNome">👋</span></div>
-      <div style="font-size:13px;color:var(--text-muted);">O que queres fazer hoje?</div>
-    </div>
-
-    <!-- 3 botões principais -->
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
-      
-      <!-- Analisar documento -->
-      <button onclick="goAnalisar()" style="background:var(--green);color:white;border:none;border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;transition:background 0.15s;" onmouseover="this.style.background='#0F6E56'" onmouseout="this.style.background='var(--green)'">
-        <div style="width:44px;height:44px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📄</div>
-        <div>
-          <div style="font-size:15px;font-weight:600;">Analisar documento</div>
-          <div style="font-size:12px;opacity:0.8;margin-top:2px;" id="homeDocsLeft">Fotografa, importa ou cola o texto</div>
-        </div>
-        <div style="margin-left:auto;font-size:20px;opacity:0.7;">›</div>
-      </button>
-
-      <!-- Manual do Emigrante -->
-      <button onclick="goManual()" style="background:var(--card);color:var(--text);border:0.5px solid var(--border);border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;">
-        <div style="width:44px;height:44px;background:var(--green-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📖</div>
-        <div>
-          <div style="font-size:15px;font-weight:600;">Manual do Emigrante</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Guia completo de vida na Suíça</div>
-        </div>
-        <div style="margin-left:auto;font-size:20px;color:var(--text-hint);">›</div>
-      </button>
-
-      <!-- Marcar consulta -->
-      <button onclick="goConsulta()" style="background:var(--card);color:var(--text);border:0.5px solid var(--border);border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;">
-        <div style="width:44px;height:44px;background:var(--green-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📅</div>
-        <div>
-          <div style="font-size:15px;font-weight:600;">Marcar consulta</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Fala com o teu consultor</div>
-        </div>
-        <div style="margin-left:auto;font-size:20px;color:var(--text-hint);">›</div>
-      </button>
-    </div>
-
-    <!-- Ações/prazos pendentes -->
-    <div id="pendingSection" style="display:none;">
-      <div class="section-title">⚠️ Ações pendentes</div>
-      <div id="pendingList"></div>
-    </div>
-
-    <!-- Estado sem pendentes -->
-    <div id="noPendingSection">
-      <div class="section-title">Últimos documentos</div>
-      <div id="homeDocsList">
-        <div style="text-align:center;padding:32px 0;font-size:14px;color:var(--text-muted);line-height:1.6;">
-          Ainda não analisaste nenhum documento.<br>
-          <span style="font-size:13px;color:var(--text-hint);">Começa por fotografar ou importar um.</span>
+    <!-- ESTADO 1: HOME -->
+    <div id="homeState">
+      <div style="padding:4px 0 20px;">
+        <div style="font-size:22px;font-weight:500;color:var(--text);margin-bottom:4px;">Olá, <span id="homeNome">👋</span></div>
+        <div style="font-size:13px;color:var(--text-muted);">O que queres fazer hoje?</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+        <button onclick="goAnalisar()" style="background:var(--green);color:white;border:none;border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;">
+          <div style="width:44px;height:44px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📄</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;">Analisar documento</div>
+            <div style="font-size:12px;opacity:0.8;margin-top:2px;" id="homeDocsLeft">Fotografa, importa ou cola o texto</div>
+          </div>
+          <div style="margin-left:auto;font-size:20px;opacity:0.7;">›</div>
+        </button>
+        <button onclick="goManual()" style="background:var(--card);color:var(--text);border:0.5px solid var(--border);border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;">
+          <div style="width:44px;height:44px;background:var(--green-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📖</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;">Manual do Emigrante</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Guia completo de vida na Suíça</div>
+          </div>
+          <div style="margin-left:auto;font-size:20px;color:var(--text-hint);">›</div>
+        </button>
+        <button onclick="goConsulta()" style="background:var(--card);color:var(--text);border:0.5px solid var(--border);border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;">
+          <div style="width:44px;height:44px;background:var(--green-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📅</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;">Marcar consulta</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Fala com o teu consultor</div>
+          </div>
+          <div style="margin-left:auto;font-size:20px;color:var(--text-hint);">›</div>
+        </button>
+      </div>
+      <div id="pendingSection" style="display:none;">
+        <div class="section-title">⚠️ Ações pendentes</div>
+        <div id="pendingList"></div>
+      </div>
+      <div id="noPendingSection">
+        <div class="section-title">Últimos documentos</div>
+        <div id="homeDocsList">
+          <div style="text-align:center;padding:32px 0;font-size:14px;color:var(--text-muted);line-height:1.6;">
+            Ainda não analisaste nenhum documento.<br>
+            <span style="font-size:13px;color:var(--text-hint);">Começa por fotografar ou importar um.</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ANALISAR (ecrã secundário) -->
-  <div id="screen-analisar-form" class="screen" style="display:none;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-      <button onclick="showScreen('analisar')" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--green);padding:0;">←</button>
-      <div style="font-size:16px;font-weight:500;color:var(--text);">Analisar documento</div>
-    </div>
-    
-    <input type="file" id="fileInput" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="handleFile(event)">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-      <button class="upload-btn" onclick="document.getElementById('fileInput').removeAttribute('capture');document.getElementById('fileInput').click()" style="font-size:13px;padding:12px;">
-        📎 Importar ficheiro
-      </button>
-      <button class="upload-btn" onclick="document.getElementById('fileInput').setAttribute('capture','environment');document.getElementById('fileInput').click()" style="font-size:13px;padding:12px;">
-        📷 Tirar foto
-      </button>
-    </div>
-
-    <div id="imagePreview" style="display:none;margin-bottom:12px;">
-      <div style="position:relative;display:inline-block;width:100%;">
-        <img id="previewImg" style="width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:0.5px solid var(--border);background:var(--surface);">
-        <button onclick="clearFile()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;">✕</button>
+    <!-- ESTADO 2: FORMULÁRIO ANÁLISE -->
+    <div id="analyseState" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <button onclick="backToHome()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--green);padding:0;">←</button>
+        <div style="font-size:16px;font-weight:500;color:var(--text);">Analisar documento</div>
       </div>
-      <div id="fileName" style="font-size:12px;color:var(--text-muted);margin-top:6px;text-align:center;"></div>
+      <input type="file" id="fileInput" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="handleFile(event)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <button class="upload-btn" onclick="document.getElementById('fileInput').removeAttribute('capture');document.getElementById('fileInput').click()" style="font-size:13px;padding:12px;">📎 Importar ficheiro</button>
+        <button class="upload-btn" onclick="document.getElementById('fileInput').setAttribute('capture','environment');document.getElementById('fileInput').click()" style="font-size:13px;padding:12px;">📷 Tirar foto</button>
+      </div>
+      <div id="imagePreview" style="display:none;margin-bottom:12px;">
+        <div style="position:relative;display:inline-block;width:100%;">
+          <img id="previewImg" style="width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:0.5px solid var(--border);background:var(--surface);">
+          <button onclick="clearFile()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;">✕</button>
+        </div>
+        <div id="fileName" style="font-size:12px;color:var(--text-muted);margin-top:6px;text-align:center;"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <div style="flex:1;height:0.5px;background:var(--border);"></div>
+        <span style="font-size:11px;color:var(--text-hint);">ou escreve/cola texto</span>
+        <div style="flex:1;height:0.5px;background:var(--border);"></div>
+      </div>
+      <div style="margin-bottom:6px;">
+        <button class="sample-btn" onclick="loadSample(0)">Exemplo: Krankenkasse</button>
+        <button class="sample-btn" onclick="loadSample(1)">Exemplo: Steuererklärung</button>
+        <button class="sample-btn" onclick="loadSample(2)">Exemplo: Mietvertrag</button>
+      </div>
+      <textarea class="textarea" id="docInput" placeholder="Cola aqui o texto do documento em alemão, francês ou italiano..." oninput="updateCount()"></textarea>
+      <div class="char-count" id="charCount">0 caracteres</div>
+      <button class="btn-primary" id="analyseBtn" onclick="analyseDoc()">Analisar com IA</button>
+      <div id="resultArea" style="margin-top:14px;"></div>
     </div>
-
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-      <div style="flex:1;height:0.5px;background:var(--border);"></div>
-      <span style="font-size:11px;color:var(--text-hint);">ou escreve/cola texto</span>
-      <div style="flex:1;height:0.5px;background:var(--border);"></div>
-    </div>
-    <div style="margin-bottom:6px;">
-      <button class="sample-btn" onclick="loadSample(0)">Exemplo: Krankenkasse</button>
-      <button class="sample-btn" onclick="loadSample(1)">Exemplo: Steuererklärung</button>
-      <button class="sample-btn" onclick="loadSample(2)">Exemplo: Mietvertrag</button>
-    </div>
-    <textarea class="textarea" id="docInput" placeholder="Cola aqui o texto do documento em alemão, francês ou italiano..." oninput="updateCount()"></textarea>
-    <div class="char-count" id="charCount">0 caracteres</div>
-    <button class="btn-primary" id="analyseBtn" onclick="analyseDoc()">Analisar com IA</button>
-    <div id="resultArea" style="margin-top:14px;"></div>
   </div>
 
   <!-- DOCUMENTOS -->
@@ -856,10 +839,18 @@ function updateHome() {
 
 function goAnalisar() {
   if (!state.isPro && state.docsUsed >= state.freeLimit) { openPaywall(); return; }
-  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); s.style.display = ''; });
-  var form = document.getElementById('screen-analisar-form');
-  form.style.display = 'block';
-  form.classList.add('active');
+  document.getElementById('homeState').style.display = 'none';
+  document.getElementById('analyseState').style.display = 'block';
+}
+
+function backToHome() {
+  document.getElementById('analyseState').style.display = 'none';
+  document.getElementById('homeState').style.display = 'block';
+  document.getElementById('docInput').value = '';
+  document.getElementById('charCount').textContent = '0 caracteres';
+  document.getElementById('resultArea').innerHTML = '';
+  clearFile();
+  updateHome();
 }
 
 function goManual() {
@@ -1073,23 +1064,22 @@ function startApp(){ /* replaced by auth */ }
 // ── NAV ────────────────────────────────────────────────────────────────────
 function showScreen(name){
   document.getElementById('detailOverlay').classList.remove('open');
-  // Remover active e display de todos
   document.querySelectorAll('.screen').forEach(function(s){
     s.classList.remove('active');
-    s.style.display = '';
   });
-  // Esconder form de analisar
-  var form = document.getElementById('screen-analisar-form');
-  if(form) { form.style.display='none'; form.classList.remove('active'); }
-  // Activar ecrã pretendido
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
   var screen = document.getElementById('screen-'+name);
-  if(screen) { screen.classList.add('active'); screen.style.display = ''; }
+  if(screen) screen.classList.add('active');
   var navBtn = document.getElementById('nav-'+name);
   if(navBtn) navBtn.classList.add('active');
+  // Reset home state quando volta ao analisar
+  if(name==='analisar') {
+    document.getElementById('homeState').style.display = 'block';
+    document.getElementById('analyseState').style.display = 'none';
+    updateHome();
+  }
   if(name==='documentos') renderDocs();
   if(name==='notificacoes') renderNotifs();
-  if(name==='analisar') updateHome();
 }
 
 // ── ANÁLISE ────────────────────────────────────────────────────────────────
