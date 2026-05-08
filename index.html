@@ -806,7 +806,8 @@ function updateHome() {
   if (pending.length > 0) {
     document.getElementById('pendingSection').style.display = 'block';
     document.getElementById('noPendingSection').style.display = 'none';
-    var html = pending.map(function(d) {
+    var html = pending.map(function(d, i) {
+      var idx = state.savedDocs.indexOf(d);
       return '<div class="card" style="margin-bottom:8px;">' +
         '<div class="card-header">' +
           '<div class="card-title">' + d.titulo + '</div>' +
@@ -814,6 +815,7 @@ function updateHome() {
         '</div>' +
         (d.prazo ? '<div style="font-size:12px;color:var(--red);margin-top:6px;">📅 ' + d.prazo + '</div>' : '') +
         (d.o_que_fazer ? '<div style="font-size:13px;color:var(--text-muted);margin-top:4px;">' + d.o_que_fazer.substring(0,80) + '...</div>' : '') +
+        '<button onclick="marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:var(--green-light);border:0.5px solid var(--green-mid);border-radius:8px;font-size:13px;color:var(--green-dark);font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
       '</div>';
     }).join('');
     document.getElementById('pendingList').innerHTML = html;
@@ -861,6 +863,20 @@ function goManual() {
 function goConsulta() {
   if (!state.isPro) { openPaywall(); return; }
   openBooking();
+}
+
+// Marcar pendente como feito
+async function marcarFeito(idx) {
+  var doc = state.savedDocs[idx];
+  if (!doc) return;
+  doc.acao_necessaria = false;
+  doc.urgente = false;
+  // Actualizar no Supabase se tiver id
+  if (currentUser && doc.db_id) {
+    await sbPatch('documentos', 'id=eq.' + doc.db_id, { acao_necessaria: false, urgente: false });
+  }
+  updateHome();
+  renderNotifs();
 }
 </script>
 <script>
@@ -1101,7 +1117,7 @@ async function analyseDoc(){
   const btn=document.getElementById('analyseBtn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A analisar...';
   document.getElementById('resultArea').innerHTML='';
-  const prompt=`És um assistente especializado a ajudar imigrantes portugueses na Suíça a compreender documentos oficiais em alemão, francês ou italiano.\n\nAnalisa o seguinte documento e responde APENAS em JSON válido sem markdown:\n{\n  "titulo": "título curto",\n  "idioma_original": "Alemão/Francês/Italiano",\n  "categoria": "Seguro/Impostos/Renda/Trabalho/Saúde/Outro",\n  "resumo": "resumo simples em 2-3 frases em português",\n  "explicacao": "explicação clara em português",\n  "acao_necessaria": true/false,\n  "urgente": true/false,\n  "o_que_fazer": "o que o utilizador deve fazer (vazio se não necessário)",\n  "prazo": "prazo em português (vazio se não houver)",\n  "passos": ["passo 1","passo 2"],\n  "consequencias": "o que acontece se ignorar (vazio se não aplicável)",\n  "prazo_dias": 0\n}\n\nDocumento:\n${text}`;
+  const hoje = new Date().toLocaleDateString('pt-PT'); const prompt=`És um assistente especializado a ajudar imigrantes portugueses na Suíça a compreender documentos oficiais em alemão, francês ou italiano. A data de hoje é ${hoje}.\n\nAnalisa o seguinte documento e responde APENAS em JSON válido sem markdown:\n{\n  "titulo": "título curto",\n  "idioma_original": "Alemão/Francês/Italiano",\n  "categoria": "Seguro/Impostos/Renda/Trabalho/Saúde/Outro",\n  "resumo": "resumo simples em 2-3 frases em português",\n  "explicacao": "explicação clara em português",\n  "acao_necessaria": true/false,\n  "urgente": true/false,\n  "o_que_fazer": "o que o utilizador deve fazer (vazio se não necessário)",\n  "prazo": "prazo em português (vazio se não houver)",\n  "passos": ["passo 1","passo 2"],\n  "consequencias": "o que acontece se ignorar (vazio se não aplicável)",\n  "prazo_dias": 0\n}\n\nDocumento:\n${text}`;
   try{
     let messageContent;
     if(hasFile && uploadedFileData) {
@@ -1241,13 +1257,26 @@ function closeDetail(){ document.getElementById('detailOverlay').classList.remov
 
 // ── NOTIFICAÇÕES ───────────────────────────────────────────────────────────
 function renderNotifs(){
-  const el=document.getElementById('notifsList');
-  if(!state.notifs.length){el.innerHTML='<div style="font-size:14px;color:var(--text-muted);text-align:center;padding:48px 0;">Sem avisos por agora.</div>';return;}
-  el.innerHTML=state.notifs.map(n=>`
-    <div class="notif-item">
-      <div class="notif-dot${n.urgent?'':' green'}"></div>
-      <div class="notif-body"><div class="notif-title">${n.urgent?'⚠️ ':'✅ '}${n.title}</div><div class="notif-desc">${n.desc}</div></div>
-    </div>`).join('');
+  var el=document.getElementById('notifsList');
+  var pending = state.savedDocs.filter(function(d){ return d.acao_necessaria; });
+  if(!pending.length){
+    el.innerHTML='<div style="font-size:14px;color:var(--text-muted);text-align:center;padding:48px 0;">Sem avisos por agora.</div>';
+    return;
+  }
+  el.innerHTML=pending.map(function(d){
+    var idx = state.savedDocs.indexOf(d);
+    return '<div class="notif-item" style="flex-direction:column;align-items:stretch;">' +
+      '<div style="display:flex;gap:10px;align-items:flex-start;">' +
+        '<div class="notif-dot' + (d.urgente?'':' green') + '"></div>' +
+        '<div class="notif-body">' +
+          '<div class="notif-title">' + (d.urgente?'⚠️ ':'🔔 ') + d.titulo + '</div>' +
+          (d.o_que_fazer ? '<div class="notif-desc">' + d.o_que_fazer + '</div>' : '') +
+          (d.prazo ? '<div class="notif-time">📅 ' + d.prazo + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      '<button onclick="marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:var(--green-light);border:0.5px solid var(--green-mid);border-radius:8px;font-size:13px;color:var(--green-dark);font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
+    '</div>';
+  }).join('');
 }
 
 // ── PERFIL ─────────────────────────────────────────────────────────────────
