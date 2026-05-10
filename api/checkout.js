@@ -12,8 +12,8 @@ module.exports = async (req, res) => {
     params.append('mode', 'subscription');
     params.append('line_items[0][price]', priceId);
     params.append('line_items[0][quantity]', '1');
-    params.append('success_url', 'https://claro-app.ch?success=true');
-    params.append('cancel_url', 'https://claro-app.ch?cancelled=true');
+    params.append('success_url', 'https://claro-app2.vercel.app?success=true');
+    params.append('cancel_url', 'https://claro-app2.vercel.app?cancelled=true');
 
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
