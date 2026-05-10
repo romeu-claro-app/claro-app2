@@ -542,7 +542,14 @@
       <div class="input-row"><div class="input-label">Email *</div><input class="input-field" id="inputEmail" type="email" placeholder="email@exemplo.com"></div>
       <div class="input-row"><div class="input-label">Telemóvel</div><input class="input-field" id="inputPhone" type="tel" placeholder="+41 79 000 00 00"></div>
       <div class="input-row"><div class="input-label">Data de nascimento</div><input class="input-field" id="inputDob" type="date"></div>
-      <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Cidade / Vila de residência</div><input class="input-field" id="inputCity" type="text" placeholder="Ex: Lausanne, Montreux..."></div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;">
+        <div class="input-row"><div class="input-label">Morada (rua)</div><input class="input-field" id="inputRua" type="text" placeholder="Ex: Rue du Lac"></div>
+        <div class="input-row"><div class="input-label">Número</div><input class="input-field" id="inputNumero" type="text" placeholder="Ex: 12"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-bottom:16px;">
+        <div class="input-row"><div class="input-label">Código postal</div><input class="input-field" id="inputCp" type="text" placeholder="Ex: 1820"></div>
+        <div class="input-row"><div class="input-label">Vila / Cidade</div><input class="input-field" id="inputCity" type="text" placeholder="Ex: Montreux"></div>
+      </div>
       <!-- Agregado no modal -->
       <div class="section-title">Agregado Familiar</div>
       <div id="agregadoEditList" style="margin-bottom:10px;"></div>
@@ -550,6 +557,7 @@
         <button onclick="tryAddMembro()" style="width:100%;padding:10px;background:var(--green-light);border:0.5px dashed var(--green-mid);border-radius:10px;font-size:13px;color:var(--green-dark);font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:16px;">+ Adicionar membro</button>
       </div>
       <button class="btn-primary" onclick="saveProfile()">Guardar alterações</button>
+      <button onclick="closeEditModal()" style="width:100%;padding:12px;background:none;border:none;font-size:14px;color:var(--text-muted);cursor:pointer;font-family:inherit;margin-top:4px;">Anular</button>
     </div>
   </div>
 
@@ -1031,6 +1039,16 @@ async function doRegister() {
   var email=document.getElementById('regEmail').value.trim();
   var phone=document.getElementById('regPhone').value.trim();
   var dob=document.getElementById('regDob').value;
+  var rua=(document.getElementById('regRua')||{value:''}).value.trim();
+  var numero=(document.getElementById('regNumero')||{value:''}).value.trim();
+  var cp=(document.getElementById('regCp')||{value:''}).value.trim();
+  var cidade=(document.getElementById('regCidade')||{value:''}).value.trim();
+  var morada=[rua,numero].filter(Boolean).join(', ');
+  var rua=document.getElementById('regRua').value.trim();
+  var numero=document.getElementById('regNumero').value.trim();
+  var cp=document.getElementById('regCp').value.trim();
+  var cidade=document.getElementById('regCidade').value.trim();
+  var morada = [rua, numero].filter(Boolean).join(', ');
   var password=document.getElementById('regPassword').value;
   var errEl=document.getElementById('registerError');
   var btn=document.getElementById('registerBtn');
@@ -1045,7 +1063,7 @@ async function doRegister() {
   } else {
     if(data.access_token){
       accessToken=data.access_token;
-      await sbPost('profiles',{id:data.user.id,nome:nome,email:email,telefone:phone,data_nascimento:dob||null,plano:'gratuito'});
+      await sbPost('profiles',{id:data.user.id,nome:nome,email:email,telefone:phone,data_nascimento:dob||null,cidade:cidade||null,morada:morada||null,codigo_postal:cp||null,plano:'gratuito'});
     }
     document.getElementById('registerForm').style.display='none';
     document.getElementById('confirmEmail').style.display='block';
@@ -1417,9 +1435,11 @@ async function handlePhotoUpload(event) {
 }
 
 function openEditModal() {
-  // Preencher campos com dados actuais
-  document.getElementById('inputName').value = document.getElementById('profileName').textContent === '—' ? '' : document.getElementById('profileName').textContent;
-  document.getElementById('inputEmail').value = document.getElementById('profileEmail').textContent === '—' ? '' : document.getElementById('profileEmail').textContent;
+  // Preencher campos com dados actuais do Supabase (já carregados)
+  var nome = document.getElementById('profileName').textContent;
+  if(nome && nome !== '—') document.getElementById('inputName').value = nome;
+  var email = document.getElementById('profileEmail').textContent;
+  if(email && email !== '—') document.getElementById('inputEmail').value = email;
   // Foto
   if (profilePhotoData) {
     document.getElementById('editPhotoPreview').src = profilePhotoData;
@@ -1457,8 +1477,12 @@ async function saveProfile() {
   
   // Guardar no Supabase
   var city = document.getElementById('inputCity').value.trim();
+  var rua = document.getElementById('inputRua') ? document.getElementById('inputRua').value.trim() : '';
+  var numero = document.getElementById('inputNumero') ? document.getElementById('inputNumero').value.trim() : '';
+  var cp = document.getElementById('inputCp') ? document.getElementById('inputCp').value.trim() : '';
+  var morada = [rua, numero].filter(Boolean).join(', ');
   if (currentUser) {
-    await sbPatch('profiles', 'id=eq.' + currentUser.id, { nome: name, email: email, telefone: phone, data_nascimento: dob || null, cidade: city || null });
+    await sbPatch('profiles', 'id=eq.' + currentUser.id, { nome: name, email: email, telefone: phone, data_nascimento: dob || null, cidade: city || null, morada: morada || null, codigo_postal: cp || null });
   }
   
   // Pré-preencher booking
