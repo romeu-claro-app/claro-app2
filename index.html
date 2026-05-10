@@ -339,7 +339,10 @@
       <svg class="logo-icon" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
       <span class="logo-main">claro-app</span><span class="logo-sub">.ch</span>
     </div>
-    <div class="avatar" onclick="showScreen('perfil')" id="headerAvatar" style="position:relative;">?</div>
+    <div class="avatar" onclick="showScreen('perfil')" id="headerAvatar" style="position:relative;overflow:hidden;">
+        <img id="headerPhoto" style="display:none;width:34px;height:34px;border-radius:50%;object-fit:cover;position:absolute;top:0;left:0;" src="">
+        <span id="headerInitials">?</span>
+      </div>
   </div>
 
   <div class="nav">
@@ -347,17 +350,17 @@
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M3 10L10 3l7 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8.5V17h4v-4h2v4h4V8.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Início<div class="nav-bar"></div>
     </button>
-    <button class="nav-btn" onclick="showScreen('documentos')" id="nav-documentos">
-      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M5 2h7l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 2v4h4M7 9h6M7 12h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      Documentos<div class="nav-bar"></div>
+    <button class="nav-btn" onclick="goAnalisar()" id="nav-analisar-btn">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M4 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="10" cy="13" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M12 15l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Analisar<div class="nav-bar"></div>
     </button>
     <button class="nav-btn" onclick="showScreen('notificacoes')" id="nav-notificacoes">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 00-6-6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8.5 16a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       Avisos<div class="nav-bar"></div>
     </button>
-    <button class="nav-btn" onclick="goAnalisar()" id="nav-analisar-btn">
-      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M4 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="10" cy="13" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M12 15l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      Analisar<div class="nav-bar"></div>
+    <button class="nav-btn" onclick="showScreen('documentos')" id="nav-documentos">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M5 2h7l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 2v4h4M7 9h6M7 12h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Docs<div class="nav-bar"></div>
     </button>
     <button class="nav-btn" onclick="showScreen('perfil')" id="nav-perfil">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -479,18 +482,17 @@
       </div>
       <div class="profile-name" id="profileName">—</div>
       <div class="profile-email" id="profileEmail">—</div>
+      <div id="profileDobCity" style="font-size:12px;color:var(--text-muted);margin-top:4px;"></div>
     </div>
 
     <!-- Agregado familiar (só leitura) -->
     <div class="block" style="margin-bottom:10px;">
       <div class="block-label">Agregado Familiar</div>
-      <div id="agregadoList">
-        <div style="font-size:13px;color:var(--text-hint);padding:6px 0;">Nenhum membro adicionado.</div>
-      </div>
+      <div id="agregadoList"></div>
     </div>
 
     <!-- Botão editar -->
-    <button class="btn-secondary" onclick="openEditModalCheck()" style="margin-bottom:10px;">✏️ Editar perfil e agregado</button>
+    <button class="btn-secondary" onclick="openEditModalCheck()" style="margin-bottom:10px;">Editar</button>
 
     <!-- Plano -->
     <div class="block" style="margin-bottom:10px;cursor:pointer;" onclick="togglePlano()">
@@ -539,7 +541,8 @@
       <input type="hidden" id="inputName">
       <div class="input-row"><div class="input-label">Email *</div><input class="input-field" id="inputEmail" type="email" placeholder="email@exemplo.com"></div>
       <div class="input-row"><div class="input-label">Telemóvel</div><input class="input-field" id="inputPhone" type="tel" placeholder="+41 79 000 00 00"></div>
-      <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Data de nascimento</div><input class="input-field" id="inputDob" type="date"></div>
+      <div class="input-row"><div class="input-label">Data de nascimento</div><input class="input-field" id="inputDob" type="date"></div>
+      <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Cidade / Vila de residência</div><input class="input-field" id="inputCity" type="text" placeholder="Ex: Lausanne, Montreux..."></div>
       <!-- Agregado no modal -->
       <div class="section-title">Agregado Familiar</div>
       <div id="agregadoEditList" style="margin-bottom:10px;"></div>
@@ -742,7 +745,7 @@ function renderAgregado() {
   var el = document.getElementById('agregadoList');
   if (!el) return;
   if (!agregado.length) {
-    el.innerHTML = '<div style="font-size:13px;color:var(--text-hint);padding:6px 0;">Nenhum membro adicionado.</div>';
+    el.innerHTML = '';
     return;
   }
   el.innerHTML = agregado.map(function(m, i) {
@@ -1066,7 +1069,7 @@ async function loadUserAndStart(user) {
     document.getElementById('profileName').textContent=nome;
     document.getElementById('profileEmail').textContent=profile.email||user.email;
     document.getElementById('profileInitialsText').textContent=initials;
-    document.getElementById('headerAvatar').textContent=initials;
+    document.getElementById('headerInitials').textContent=initials;
     document.getElementById('inputName').value=nome;
     document.getElementById('inputEmail').value=profile.email||user.email;
     if(profile.telefone) document.getElementById('inputPhone').value=profile.telefone;
@@ -1081,6 +1084,10 @@ async function loadUserAndStart(user) {
       document.getElementById('editPhotoPreview').src = profile.foto_url;
       document.getElementById('editPhotoPreview').style.display = 'block';
       document.getElementById('editInitialsPreview').style.display = 'none';
+      // Mostrar foto no header
+      document.getElementById('headerPhoto').src = profile.foto_url;
+      document.getElementById('headerPhoto').style.display = 'block';
+      document.getElementById('headerInitials').style.display = 'none';
     }
     var agData=await sbGet('agregado','user_id=eq.'+user.id+'&select=*');
     if(Array.isArray(agData)&&agData.length){
@@ -1440,8 +1447,9 @@ async function saveProfile() {
   }
   
   // Guardar no Supabase
+  var city = document.getElementById('inputCity').value.trim();
   if (currentUser) {
-    await sbPatch('profiles', 'id=eq.' + currentUser.id, { nome: name, email: email, telefone: phone, data_nascimento: dob || null });
+    await sbPatch('profiles', 'id=eq.' + currentUser.id, { nome: name, email: email, telefone: phone, data_nascimento: dob || null, cidade: city || null });
   }
   
   // Pré-preencher booking
