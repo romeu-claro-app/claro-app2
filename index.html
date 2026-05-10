@@ -509,7 +509,7 @@
 
     <!-- Marcar consulta -->
     <div style="text-align:center;margin-top:8px;margin-bottom:12px;">
-      <button class="float-btn" onclick="openBooking()">📅 Marcar consulta com consultor</button>
+      <button class="float-btn" onclick="goConsulta()">📅 Marcar consulta com consultor</button>
     </div>
     <div style="text-align:center;margin-bottom:24px;">
       <button onclick="doLogout()" style="font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;font-family:inherit;">Terminar sessão</button>
@@ -882,7 +882,7 @@ function goManual() {
 
 function goConsulta() {
   if (!state.isPro) { openPaywall(); return; }
-  openBooking();
+  window.open('https://calendly.com/romeu-m/new-meeting', '_blank');
 }
 
 // Marcar pendente como feito
