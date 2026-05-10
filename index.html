@@ -934,8 +934,25 @@ document.addEventListener('DOMContentLoaded', async function() {
       var session = JSON.parse(saved);
       accessToken = session.access_token;
       currentUser = session.user;
-      await loadUserAndStart(currentUser);
-      return;
+      // Verificar se sessao ainda valida
+      var testRes = await fetch(SUPABASE_URL + '/auth/v1/user', {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken }
+      });
+      if (testRes.ok) {
+        await loadUserAndStart(currentUser);
+        return;
+      } else if (session.refresh_token) {
+        // Tentar renovar sessao
+        var refreshData = await authPost('token?grant_type=refresh_token', { refresh_token: session.refresh_token });
+        if (refreshData.access_token) {
+          accessToken = refreshData.access_token;
+          currentUser = refreshData.user;
+          localStorage.setItem('claro_session', JSON.stringify({ access_token: refreshData.access_token, refresh_token: refreshData.refresh_token || session.refresh_token, user: refreshData.user }));
+          await loadUserAndStart(refreshData.user);
+          return;
+        }
+      }
+      localStorage.removeItem('claro_session');
     } catch(e) { localStorage.removeItem('claro_session'); }
   }
   document.getElementById('authScreen').style.display = 'block';
@@ -966,7 +983,7 @@ async function doLogin() {
     btn.disabled=false; btn.textContent='Entrar';
   } else {
     accessToken=data.access_token; currentUser=data.user;
-    localStorage.setItem('claro_session',JSON.stringify({access_token:data.access_token,user:data.user}));
+    localStorage.setItem('claro_session',JSON.stringify({access_token:data.access_token,refresh_token:data.refresh_token||'',user:data.user}));
     await loadUserAndStart(data.user);
   }
 }
