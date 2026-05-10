@@ -344,7 +344,7 @@
 
   <div class="nav">
     <button class="nav-btn active" onclick="showScreen('analisar')" id="nav-analisar">
-      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M14 14l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M3 10L10 3l7 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8.5V17h4v-4h2v4h4V8.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Início<div class="nav-bar"></div>
     </button>
     <button class="nav-btn" onclick="showScreen('documentos')" id="nav-documentos">
@@ -354,6 +354,10 @@
     <button class="nav-btn" onclick="showScreen('notificacoes')" id="nav-notificacoes">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 00-6-6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8.5 16a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       Avisos<div class="nav-bar"></div>
+    </button>
+    <button class="nav-btn" onclick="goAnalisar()" id="nav-analisar-btn">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M4 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="10" cy="13" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M12 15l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Analisar<div class="nav-bar"></div>
     </button>
     <button class="nav-btn" onclick="showScreen('perfil')" id="nav-perfil">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -434,11 +438,7 @@
         <span style="font-size:11px;color:var(--text-hint);">ou escreve/cola texto</span>
         <div style="flex:1;height:0.5px;background:var(--border);"></div>
       </div>
-      <div style="margin-bottom:6px;">
-        <button class="sample-btn" onclick="loadSample(0)">Exemplo: Krankenkasse</button>
-        <button class="sample-btn" onclick="loadSample(1)">Exemplo: Steuererklärung</button>
-        <button class="sample-btn" onclick="loadSample(2)">Exemplo: Mietvertrag</button>
-      </div>
+
       <textarea class="textarea" id="docInput" placeholder="Cola aqui o texto do documento em alemão, francês ou italiano..." oninput="updateCount()"></textarea>
       <div class="char-count" id="charCount">0 caracteres</div>
       <button class="btn-primary" id="analyseBtn" onclick="analyseDoc()">Analisar com IA</button>
@@ -814,14 +814,14 @@ function updateHome() {
     document.getElementById('noPendingSection').style.display = 'none';
     var html = pending.map(function(d, i) {
       var idx = state.savedDocs.indexOf(d);
-      return '<div class="card" style="margin-bottom:8px;">' +
+      return '<div class="card" style="margin-bottom:8px;cursor:pointer;" onclick="openDocDetail(' + idx + ')">' +
         '<div class="card-header">' +
           '<div class="card-title">' + d.titulo + '</div>' +
           (d.urgente ? '<span class="tag tag-urgent">Urgente</span>' : '<span class="tag tag-action">Ação</span>') +
         '</div>' +
         (d.prazo ? '<div style="font-size:12px;color:var(--red);margin-top:6px;">📅 ' + d.prazo + '</div>' : '') +
         (d.o_que_fazer ? '<div style="font-size:13px;color:var(--text-muted);margin-top:4px;">' + d.o_que_fazer.substring(0,80) + '...</div>' : '') +
-        '<button onclick="marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:#1D9E75;border:none;border-radius:10px;font-size:14px;color:white;font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
+        '<button onclick="event.stopPropagation();marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:#1D9E75;border:none;border-radius:10px;font-size:14px;color:white;font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
       '</div>';
     }).join('');
     document.getElementById('pendingList').innerHTML = html;
@@ -897,6 +897,36 @@ function tryAddMembro() {
     return;
   }
   openAddMembro();
+}
+
+function openDocDetail(idx) {
+  var r = state.savedDocs[idx];
+  if (!r) return;
+  document.getElementById('detailTitle').textContent = r.titulo;
+  var h = '';
+  h += '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;">';
+  if(r.urgente) h += '<span class="tag tag-urgent">Urgente</span>';
+  if(r.acao_necessaria) h += '<span class="tag tag-action">Ação necessária</span>';
+  if(!r.acao_necessaria) h += '<span class="tag tag-info">Informativo</span>';
+  h += '<span class="tag tag-cat">' + r.categoria + '</span></div>';
+  if(r.acao_necessaria) h += '<div class="alert alert-warning"><div class="alert-text">⚠️ Este documento pode exigir uma ação importante.</div></div>';
+  else h += '<div class="alert alert-ok"><div class="alert-text">✅ Não é necessária nenhuma ação.</div></div>';
+  h += '<div class="block"><div class="block-label">Resumo</div><div class="block-text">' + r.resumo + '</div></div>';
+  h += '<div class="block"><div class="block-label">Explicação</div><div class="block-text">' + r.explicacao + '</div></div>';
+  if(r.acao_necessaria) {
+    if(r.o_que_fazer) h += '<div class="block"><div class="block-label">O que tens de fazer</div><div class="block-text">' + r.o_que_fazer + '</div></div>';
+    if(r.prazo) h += '<div class="block"><div class="block-label">Prazo</div><div class="block-text" style="color:var(--red);font-weight:500;">📅 ' + r.prazo + '</div></div>';
+    if(r.passos && r.passos.length) {
+      h += '<div class="block"><div class="block-label">Passo a passo</div><ul class="steps-list">';
+      var passos = Array.isArray(r.passos) ? r.passos : [];
+      passos.forEach(function(s, i){ h += '<li><span class="step-num">' + (i+1) + '</span>' + s + '</li>'; });
+      h += '</ul></div>';
+    }
+    if(r.consequencias) h += '<div class="block"><div class="block-label">Se não fizeres nada</div><div class="block-text">' + r.consequencias + '</div></div>';
+    h += '<button class="btn-primary" style="margin-top:4px;" onclick="marcarFeito(' + idx + ');closeDetail();">✓ Marcar como feito</button>';
+  }
+  document.getElementById('detailContent').innerHTML = h;
+  document.getElementById('detailOverlay').classList.add('open');
 }
 </script>
 <script>
@@ -1312,16 +1342,16 @@ function renderNotifs(){
   }
   el.innerHTML=pending.map(function(d){
     var idx = state.savedDocs.indexOf(d);
-    return '<div class="notif-item" style="flex-direction:column;align-items:stretch;">' +
+    return '<div class="notif-item" style="flex-direction:column;align-items:stretch;cursor:pointer;" onclick="openDocDetail(' + idx + ')">' +
       '<div style="display:flex;gap:10px;align-items:flex-start;">' +
         '<div class="notif-dot' + (d.urgente?'':' green') + '"></div>' +
         '<div class="notif-body">' +
           '<div class="notif-title">' + (d.urgente?'⚠️ ':'🔔 ') + d.titulo + '</div>' +
-          (d.o_que_fazer ? '<div class="notif-desc">' + d.o_que_fazer + '</div>' : '') +
+          (d.o_que_fazer ? '<div class="notif-desc">' + d.o_que_fazer.substring(0,60) + '...</div>' : '') +
           (d.prazo ? '<div class="notif-time">📅 ' + d.prazo + '</div>' : '') +
         '</div>' +
       '</div>' +
-      '<button onclick="marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:#1D9E75;border:none;border-radius:10px;font-size:14px;color:white;font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
+      '<button onclick="event.stopPropagation();marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:#1D9E75;border:none;border-radius:10px;font-size:14px;color:white;font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
     '</div>';
   }).join('');
 }
