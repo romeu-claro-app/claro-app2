@@ -486,7 +486,7 @@
     </div>
 
     <!-- Agregado familiar (só leitura) -->
-    <div class="block" style="margin-bottom:10px;">
+    <div id="agregadoSection" class="block" style="margin-bottom:10px;display:none;">
       <div class="block-label">Agregado Familiar</div>
       <div id="agregadoList"></div>
     </div>
@@ -744,10 +744,13 @@ function formatDob(dob) {
 function renderAgregado() {
   var el = document.getElementById('agregadoList');
   if (!el) return;
+  var section = document.getElementById('agregadoSection');
   if (!agregado.length) {
     el.innerHTML = '';
+    if(section) section.style.display = 'none';
     return;
   }
+  if(section) section.style.display = 'block';
   el.innerHTML = agregado.map(function(m, i) {
     return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border);">' +
       '<div>' +
@@ -1074,6 +1077,12 @@ async function loadUserAndStart(user) {
     document.getElementById('inputEmail').value=profile.email||user.email;
     if(profile.telefone) document.getElementById('inputPhone').value=profile.telefone;
     if(profile.data_nascimento) document.getElementById('inputDob').value=profile.data_nascimento;
+    if(profile.cidade) document.getElementById('inputCity').value=profile.cidade;
+    // Mostrar dob e cidade no card
+    var dobCityParts = [];
+    if(profile.data_nascimento) { var p=profile.data_nascimento.split('-'); dobCityParts.push(p[2]+'/'+p[1]+'/'+p[0]); }
+    if(profile.cidade) dobCityParts.push(profile.cidade);
+    if(dobCityParts.length) document.getElementById('profileDobCity').textContent = dobCityParts.join(' · ');
     if(profile.plano==='pro'){state.isPro=true;updatePlanLabel();}
     // Carregar foto de perfil
     if(profile.foto_url) {
