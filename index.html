@@ -709,9 +709,34 @@
 
 // cancelar subscricao
 async function cancelSubscription() {
-  var ok = window.confirm('Tens a certeza que queres cancelar o Claro-app+?');
+  var ok = window.confirm('Tens a certeza que queres cancelar o Claro-app+?\n\nVais perder acesso aos documentos ilimitados e recursos premium no fim do período pago.');
   if (!ok) return;
-  alert('Para cancelar a subscrição, envia um email para suporte@claro-app.ch com o assunto "Cancelar subscrição". Processamos em 24h.');
+
+  if (!currentUser) { alert('Erro: sessão não encontrada.'); return; }
+
+  var btn = document.querySelector('[onclick="cancelSubscription()"]');
+  if(btn) { btn.disabled = true; btn.textContent = 'A cancelar...'; }
+
+  try {
+    var r = await fetch('/api/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUser.id })
+    });
+    var data = await r.json();
+    if (data.success) {
+      state.isPro = false;
+      updatePlanLabel();
+      if(planoOpen) renderPlanoDetails();
+      alert('Subscrição cancelada com sucesso. O teu acesso Claro-app+ termina no fim do período pago.');
+    } else {
+      alert('Erro ao cancelar: ' + (data.error || 'Tenta novamente ou contacta suporte@claro-app.ch'));
+      if(btn) { btn.disabled = false; btn.textContent = 'Cancelar subscrição'; }
+    }
+  } catch(e) {
+    alert('Erro ao cancelar. Contacta suporte@claro-app.ch');
+    if(btn) { btn.disabled = false; btn.textContent = 'Cancelar subscrição'; }
+  }
 }
 
 // ── AGREGADO FAMILIAR ──────────────────────────────────────────────────────
@@ -1172,7 +1197,6 @@ async function loadUserAndStart(user) {
     var successNome = profile ? (profile.nome || user.email.split('@')[0]) : user.email.split('@')[0];
     history.replaceState({},'','/');
     // Enviar email de upgrade
-    console.log('Enviando email upgrade para:', successEmail);
     fetch('/api/send-upgrade', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
