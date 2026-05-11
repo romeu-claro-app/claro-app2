@@ -1172,6 +1172,7 @@ async function loadUserAndStart(user) {
     var successNome = profile ? (profile.nome || user.email.split('@')[0]) : user.email.split('@')[0];
     history.replaceState({},'','/');
     // Enviar email de upgrade
+    console.log('Enviando email upgrade para:', successEmail);
     fetch('/api/send-upgrade', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
