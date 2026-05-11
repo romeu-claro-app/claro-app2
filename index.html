@@ -311,6 +311,14 @@
     <div class="input-row"><div class="input-label">Email *</div><input class="input-field" id="regEmail" type="email" placeholder="email@exemplo.com" autocomplete="email"></div>
     <div class="input-row"><div class="input-label">Telemóvel</div><input class="input-field" id="regPhone" type="tel" placeholder="+41 79 000 00 00"></div>
     <div class="input-row"><div class="input-label">Data de nascimento</div><input class="input-field" id="regDob" type="date"></div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;">
+      <div class="input-row"><div class="input-label">Morada (rua)</div><input class="input-field" id="regRua" type="text" placeholder="Ex: Rue du Lac"></div>
+      <div class="input-row"><div class="input-label">Número</div><input class="input-field" id="regNumero" type="text" placeholder="Ex: 12"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;">
+      <div class="input-row"><div class="input-label">Código postal</div><input class="input-field" id="regCp" type="text" placeholder="Ex: 1820"></div>
+      <div class="input-row"><div class="input-label">Vila / Cidade</div><input class="input-field" id="regCidade" type="text" placeholder="Ex: Montreux"></div>
+    </div>
     <div class="input-row" style="margin-bottom:16px;">
       <div class="input-label">Password *</div>
       <div style="position:relative;">
@@ -1044,11 +1052,6 @@ async function doRegister() {
   var cp=(document.getElementById('regCp')||{value:''}).value.trim();
   var cidade=(document.getElementById('regCidade')||{value:''}).value.trim();
   var morada=[rua,numero].filter(Boolean).join(', ');
-  var rua=document.getElementById('regRua').value.trim();
-  var numero=document.getElementById('regNumero').value.trim();
-  var cp=document.getElementById('regCp').value.trim();
-  var cidade=document.getElementById('regCidade').value.trim();
-  var morada = [rua, numero].filter(Boolean).join(', ');
   var password=document.getElementById('regPassword').value;
   var errEl=document.getElementById('registerError');
   var btn=document.getElementById('registerBtn');
