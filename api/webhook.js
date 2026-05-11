@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
         body: JSON.stringify({
           sender: { name: 'Romeu | Claro-app', email: 'suporte@claro-app.ch' },
           to: [{ email: email, name: nome }],
-          subject: 'O teu Claro-app+ está ativo! 🎉',
+          subject: 'O teu Claro-app+ está ativo!',
           htmlContent: `<!DOCTYPE html><html lang="pt"><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#0F6E56;font-family:Helvetica,Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F6E56;padding:40px 20px;">
