@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- v4 -->
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
@@ -1169,9 +1168,10 @@ async function loadUserAndStart(user) {
     await sbPatch('profiles','id=eq.'+user.id,{plano:'pro'});
     state.isPro=true; updatePlanLabel();
     history.replaceState({},'','/');
-    // Enviar email de upgrade
-    var upgradeEmail = document.getElementById('profileEmail').textContent;
+    // Enviar email de upgrade usando dados do currentUser
+    var upgradeEmail = currentUser ? currentUser.email : document.getElementById('profileEmail').textContent;
     var upgradeNome = document.getElementById('profileName').textContent;
+    if(upgradeNome === '—' && currentUser) upgradeNome = currentUser.email;
     if(upgradeEmail && upgradeEmail !== '—') {
       fetch('/api/send-upgrade', {
         method: 'POST',
