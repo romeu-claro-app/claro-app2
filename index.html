@@ -1167,17 +1167,16 @@ async function loadUserAndStart(user) {
   if(window.location.search.includes('success=true')){
     await sbPatch('profiles','id=eq.'+user.id,{plano:'pro'});
     state.isPro=true; updatePlanLabel();
+    // Guardar email antes de limpar URL
+    var successEmail = user.email;
+    var successNome = profile ? (profile.nome || user.email.split('@')[0]) : user.email.split('@')[0];
     history.replaceState({},'','/');
     // Enviar email de upgrade
-    if(currentUser && currentUser.email) {
-      var upgradeNome = document.getElementById('profileName').textContent;
-      if(!upgradeNome || upgradeNome === '—') upgradeNome = currentUser.email.split('@')[0];
-      fetch('/api/send-upgrade', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: currentUser.email, nome: upgradeNome })
-      }).catch(function(){});
-    }
+    fetch('/api/send-upgrade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: successEmail, nome: successNome })
+    }).catch(function(){});
     setTimeout(function(){alert('Bem-vindo ao Claro-app+!');},500);
   }
 }
