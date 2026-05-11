@@ -1065,6 +1065,12 @@ async function doRegister() {
       accessToken=data.access_token;
       await sbPost('profiles',{id:data.user.id,nome:nome,email:email,telefone:phone,data_nascimento:dob||null,cidade:cidade||null,morada:morada||null,codigo_postal:cp||null,plano:'gratuito'});
     }
+    // Enviar email de boas-vindas
+    fetch('/api/send-welcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, nome: nome })
+    }).catch(function(){});
     document.getElementById('registerForm').style.display='none';
     document.getElementById('confirmEmail').style.display='block';
     btn.disabled=false; btn.textContent='Criar conta';
@@ -1159,6 +1165,16 @@ async function loadUserAndStart(user) {
     await sbPatch('profiles','id=eq.'+user.id,{plano:'pro'});
     state.isPro=true; updatePlanLabel();
     history.replaceState({},'','/');
+    // Enviar email de upgrade
+    var upgradeEmail = document.getElementById('profileEmail').textContent;
+    var upgradeNome = document.getElementById('profileName').textContent;
+    if(upgradeEmail && upgradeEmail !== '—') {
+      fetch('/api/send-upgrade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: upgradeEmail, nome: upgradeNome })
+      }).catch(function(){});
+    }
     setTimeout(function(){alert('Bem-vindo ao Claro-app+!');},500);
   }
 }
