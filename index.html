@@ -906,6 +906,8 @@ function updateHome() {
 function goAnalisar() {
   if (!state.isPro && state.docsUsed >= state.freeLimit) { openPaywall(); return; }
   showScreen('analisar');
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('nav-analisar-btn').classList.add('active');
   document.getElementById('homeState').style.display = 'none';
   document.getElementById('analyseState').style.display = 'block';
 }
