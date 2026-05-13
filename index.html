@@ -1104,9 +1104,13 @@ async function doRegister() {
     showAuthError(errEl,data.error.message||'Erro ao criar conta.');
     btn.disabled=false; btn.textContent='Criar conta';
   } else {
-    if(data.access_token){
-      accessToken=data.access_token;
-      await sbPost('profiles',{id:data.user.id,nome:nome,email:email,telefone:phone,data_nascimento:dob||null,cidade:cidade||null,morada:morada||null,codigo_postal:cp||null,plano:'gratuito'});
+    if(data.access_token) accessToken=data.access_token;
+    if(data.user && data.user.id){
+      await fetch('/api/create-profile', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({id:data.user.id,nome:nome,email:email,telefone:phone,data_nascimento:dob||null,cidade:cidade||null,morada:morada||null,codigo_postal:cp||null})
+      });
     }
     // Enviar email de boas-vindas
     fetch('/api/send-welcome', {
