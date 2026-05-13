@@ -887,7 +887,8 @@ function updateHome() {
     document.getElementById('noPendingSection').style.display = 'block';
     var recentDocs = state.savedDocs.slice(-3).reverse();
     var html2 = recentDocs.map(function(d, i) {
-      return '<div class="card" style="margin-bottom:8px;">' +
+      var realIdx = state.savedDocs.length - 1 - i;
+      return '<div class="card" style="margin-bottom:8px;cursor:pointer;" onclick="openDocDetail(' + realIdx + ')">' +
         '<div class="card-header">' +
           '<div class="card-title">' + d.titulo + '</div>' +
           '<div class="card-date">' + d.savedAt + '</div>' +
@@ -904,6 +905,7 @@ function updateHome() {
 
 function goAnalisar() {
   if (!state.isPro && state.docsUsed >= state.freeLimit) { openPaywall(); return; }
+  showScreen('analisar');
   document.getElementById('homeState').style.display = 'none';
   document.getElementById('analyseState').style.display = 'block';
 }
