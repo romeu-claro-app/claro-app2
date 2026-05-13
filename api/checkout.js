@@ -16,7 +16,21 @@ module.exports = async (req, res) => {
     params.append("cancel_url", "https://claro-app2.vercel.app?cancelled=true");
 
     if (promoCode) {
-      params.append("discounts[0][promotion_code]", promoCode.toUpperCase());
+      // Procurar o ID interno do promotion code pelo código visível
+      const promoRes = await fetch(
+        `https://api.stripe.com/v1/promotion_codes?code=${encodeURIComponent(promoCode.toUpperCase())}&limit=1`,
+        {
+          headers: {
+            "Authorization": `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+          }
+        }
+      );
+      const promoData = await promoRes.json();
+      if (promoData.data && promoData.data.length > 0) {
+        params.append("discounts[0][promotion_code]", promoData.data[0].id);
+      } else {
+        return res.status(400).json({ error: "Código promocional inválido ou expirado." });
+      }
     }
 
     const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
@@ -32,7 +46,7 @@ module.exports = async (req, res) => {
     if (data.url) {
       return res.status(200).json({ url: data.url });
     } else {
-      return res.status(400).json({ error: data.error?.message || "Código inválido ou erro Stripe" });
+      return res.status(400).json({ error: data.error?.message || "Erro Stripe" });
     }
   } catch (error) {
     return res.status(500).json({ error: error.message });
