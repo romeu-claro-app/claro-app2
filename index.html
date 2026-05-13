@@ -1223,7 +1223,12 @@ async function loadUserAndStart(user) {
         db_id: d.id
       };
     });
-    state.docsUsed = docsData.length;
+    // Contar apenas documentos do mês atual
+    var now = new Date();
+    state.docsUsed = docsData.filter(function(d) {
+      var created = new Date(d.created_at);
+      return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+    }).length;
   }
   updateHome();
   if(window.location.search.includes('success=true')){
