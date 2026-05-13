@@ -7,8 +7,13 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Campos obrigatórios em falta.' });
   }
 
-  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_URL = 'https://vawfgruwwfnpnrnxuvnw.supabase.co';
   const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+
+  if (!SUPABASE_SERVICE_KEY) {
+    console.error('SUPABASE_SERVICE_KEY não definida');
+    return res.status(500).json({ error: 'Configuração em falta no servidor.' });
+  }
 
   const r = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
     method: 'POST',
@@ -32,6 +37,9 @@ export default async function handler(req, res) {
   });
 
   const data = await r.json();
-  if (!r.ok) return res.status(400).json({ error: data });
+  if (!r.ok) {
+    console.error('Supabase insert error:', JSON.stringify(data));
+    return res.status(400).json({ error: data });
+  }
   return res.status(200).json({ success: true });
 }
