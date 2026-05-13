@@ -316,8 +316,8 @@
       <div class="input-row"><div class="input-label">Número</div><input class="input-field" id="regNumero" type="text" placeholder="Ex: 12"></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;">
-      <div class="input-row"><div class="input-label">Código postal</div><input class="input-field" id="regCp" type="text" placeholder="Ex: 1820"></div>
-      <div class="input-row"><div class="input-label">Vila / Cidade</div><input class="input-field" id="regCidade" type="text" placeholder="Ex: Montreux"></div>
+      <div class="input-row"><div class="input-label">Código postal *</div><input class="input-field" id="regCp" type="text" placeholder="Ex: 1820"></div>
+      <div class="input-row"><div class="input-label">Vila / Cidade *</div><input class="input-field" id="regCidade" type="text" placeholder="Ex: Montreux"></div>
     </div>
     <div class="input-row" style="margin-bottom:16px;">
       <div class="input-label">Password *</div>
@@ -499,6 +499,7 @@
       <div class="profile-name" id="profileName">—</div>
       <div class="profile-email" id="profileEmail">—</div>
       <div id="profileDobCity" style="font-size:12px;color:var(--text-muted);margin-top:4px;"></div>
+      <div id="profileExtraInfo" style="font-size:12px;color:var(--text-muted);margin-top:6px;line-height:1.7;"></div>
     </div>
 
     <!-- Agregado familiar (só leitura) -->
@@ -1094,7 +1095,7 @@ async function doRegister() {
   var password=document.getElementById('regPassword').value;
   var errEl=document.getElementById('registerError');
   var btn=document.getElementById('registerBtn');
-  if(!primeiroNome||!apelido||!email||!password){showAuthError(errEl,'Todos os campos obrigatórios devem ser preenchidos.');return;}
+  if(!primeiroNome||!apelido||!email||!cp||!cidade||!password){showAuthError(errEl,'Todos os campos obrigatórios devem ser preenchidos.');return;}
   if(password.length<8){showAuthError(errEl,'A password deve ter pelo menos 8 caracteres.');return;}
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A criar conta...';
   errEl.style.display='none';
@@ -1140,15 +1141,33 @@ async function loadUserAndStart(user) {
     document.getElementById('profileInitialsText').textContent=initials;
     document.getElementById('headerInitials').textContent=initials;
     document.getElementById('inputName').value=nome;
+    // Preencher campos do modal com dados do Supabase
+    var nomeParts=nome.split(' ');
+    document.getElementById('inputPrimeiroNome').value=nomeParts[0]||'';
+    document.getElementById('inputApelido').value=nomeParts.slice(1).join(' ')||'';
     document.getElementById('inputEmail').value=profile.email||user.email;
     if(profile.telefone) document.getElementById('inputPhone').value=profile.telefone;
     if(profile.data_nascimento) document.getElementById('inputDob').value=profile.data_nascimento;
     if(profile.cidade) document.getElementById('inputCity').value=profile.cidade;
-    // Mostrar dob e cidade no card
+    if(profile.morada){
+      var moradaParts=profile.morada.split(', ');
+      document.getElementById('inputRua').value=moradaParts[0]||'';
+      document.getElementById('inputNumero').value=moradaParts[1]||'';
+    }
+    if(profile.codigo_postal) document.getElementById('inputCp').value=profile.codigo_postal;
+    // Mostrar info completa no card
     var dobCityParts = [];
     if(profile.data_nascimento) { var p=profile.data_nascimento.split('-'); dobCityParts.push(p[2]+'/'+p[1]+'/'+p[0]); }
     if(profile.cidade) dobCityParts.push(profile.cidade);
     if(dobCityParts.length) document.getElementById('profileDobCity').textContent = dobCityParts.join(' · ');
+    var extraParts = [];
+    if(profile.telefone) extraParts.push('📞 '+profile.telefone);
+    var moradaDisplay = [];
+    if(profile.morada) moradaDisplay.push(profile.morada);
+    if(profile.codigo_postal) moradaDisplay.push(profile.codigo_postal);
+    if(profile.cidade && !dobCityParts.includes(profile.cidade)) moradaDisplay.push(profile.cidade);
+    if(moradaDisplay.length) extraParts.push('📍 '+moradaDisplay.join(', '));
+    if(extraParts.length) document.getElementById('profileExtraInfo').innerHTML = extraParts.join('<br>');
     if(profile.plano==='pro'){state.isPro=true;updatePlanLabel();}
     // Carregar foto de perfil
     if(profile.foto_url) {
@@ -1492,16 +1511,18 @@ async function handlePhotoUpload(event) {
 }
 
 function openEditModal() {
-  // Preencher campos com dados actuais do Supabase (já carregados)
+  // Os campos já foram preenchidos pelo loadUserAndStart — apenas garantir foto e iniciais
   var nome = document.getElementById('profileName').textContent;
-  if(nome && nome !== '—') document.getElementById('inputName').value = nome;
-  var email = document.getElementById('profileEmail').textContent;
-  if(email && email !== '—') document.getElementById('inputEmail').value = email;
+  var initials = nome !== '—' ? nome.split(' ').map(function(n){return n[0];}).join('').substring(0,2).toUpperCase() : '?';
+  document.getElementById('editInitialsPreview').textContent = initials;
   // Foto
   if (profilePhotoData) {
     document.getElementById('editPhotoPreview').src = profilePhotoData;
     document.getElementById('editPhotoPreview').style.display = 'block';
     document.getElementById('editInitialsPreview').style.display = 'none';
+  } else {
+    document.getElementById('editPhotoPreview').style.display = 'none';
+    document.getElementById('editInitialsPreview').style.display = 'flex';
   }
   renderAgregadoEdit();
   document.getElementById('editModal').style.display = 'flex';
@@ -1512,7 +1533,10 @@ function closeEditModal() {
 }
 
 async function saveProfile() {
-  var name = document.getElementById('inputName').value.trim();
+  var primeiroNome = document.getElementById('inputPrimeiroNome').value.trim();
+  var apelido = document.getElementById('inputApelido').value.trim();
+  var name = (primeiroNome + ' ' + apelido).trim();
+  document.getElementById('inputName').value = name;
   var email = document.getElementById('inputEmail').value.trim();
   var phone = document.getElementById('inputPhone').value.trim();
   var dob = document.getElementById('inputDob').value;
@@ -1541,6 +1565,20 @@ async function saveProfile() {
   if (currentUser) {
     await sbPatch('profiles', 'id=eq.' + currentUser.id, { nome: name, email: email, telefone: phone, data_nascimento: dob || null, cidade: city || null, morada: morada || null, codigo_postal: cp || null });
   }
+  
+  // Actualizar card completo
+  var dobCityParts = [];
+  if(dob) { var p=dob.split('-'); dobCityParts.push(p[2]+'/'+p[1]+'/'+p[0]); }
+  if(city) dobCityParts.push(city);
+  document.getElementById('profileDobCity').textContent = dobCityParts.join(' · ');
+  var extraParts = [];
+  if(phone) extraParts.push('📞 '+phone);
+  var moradaDisplay = [];
+  if(morada) moradaDisplay.push(morada);
+  if(cp) moradaDisplay.push(cp);
+  if(city && !dobCityParts.includes(city)) moradaDisplay.push(city);
+  if(moradaDisplay.length) extraParts.push('📍 '+moradaDisplay.join(', '));
+  document.getElementById('profileExtraInfo').innerHTML = extraParts.join('<br>');
   
   // Pré-preencher booking
   document.getElementById('bkName').value = name;
