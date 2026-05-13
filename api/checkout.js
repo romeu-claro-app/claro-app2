@@ -6,6 +6,7 @@ module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   const { priceId, promoCode } = req.body;
+  const cleanPromo = promoCode && promoCode.trim() !== "" ? promoCode.trim().toUpperCase() : null;
 
   try {
     const params = new URLSearchParams();
@@ -15,10 +16,10 @@ module.exports = async (req, res) => {
     params.append("success_url", "https://claro-app2.vercel.app?success=true");
     params.append("cancel_url", "https://claro-app2.vercel.app?cancelled=true");
 
-    if (promoCode) {
+    if (cleanPromo) {
       // Procurar o ID interno do promotion code pelo código visível
       const promoRes = await fetch(
-        `https://api.stripe.com/v1/promotion_codes?code=${encodeURIComponent(promoCode.toUpperCase())}&limit=1`,
+        `https://api.stripe.com/v1/promotion_codes?code=${encodeURIComponent(cleanPromo)}&limit=1`,
         {
           headers: {
             "Authorization": `Bearer ${process.env.STRIPE_SECRET_KEY}`,
@@ -46,9 +47,11 @@ module.exports = async (req, res) => {
     if (data.url) {
       return res.status(200).json({ url: data.url });
     } else {
+      console.error("Stripe error:", JSON.stringify(data));
       return res.status(400).json({ error: data.error?.message || "Erro Stripe" });
     }
   } catch (error) {
+    console.error("Checkout error:", error.message);
     return res.status(500).json({ error: error.message });
   }
 };
