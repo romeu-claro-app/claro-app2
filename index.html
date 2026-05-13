@@ -121,7 +121,7 @@
     .textarea:focus{outline:none;border-color:var(--green)}
     .char-count{font-size:12px;color:var(--text-hint);text-align:right;margin-bottom:10px}
     .sample-btn{font-size:12px;color:var(--green);background:none;border:0.5px solid var(--green-mid);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit;margin-right:6px;margin-bottom:10px}
- 
+
     /* SPINNER */
     .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
     @keyframes spin{to{transform:rotate(360deg)}}
@@ -619,12 +619,12 @@
     <div class="paywall-title">Continua sem limites</div>
     <div class="paywall-sub">Usaste o teu documento grátis.<br>Faz upgrade para continuar.</div>
     <div class="toggle-row">
-      <span class="toggle-label active" id="pw-label-monthly">Mensal</span>
-      <button class="toggle-switch" id="pwToggle" onclick="togglePaywall()"><div class="toggle-dot" id="pwDot"></div></button>
-      <span class="toggle-label" id="pw-label-annual">Anual</span>
-      <span class="badge-save" id="pw-badge" style="display:none;">Poupa CHF 34</span>
+      <span class="toggle-label" id="pw-label-monthly">Mensal</span>
+      <button class="toggle-switch annual" id="pwToggle" onclick="togglePaywall()"><div class="toggle-dot" id="pwDot"></div></button>
+      <span class="toggle-label active" id="pw-label-annual">Anual</span>
+      <span class="badge-save" id="pw-badge">Poupa CHF 34</span>
     </div>
-    <div class="price-big"><span id="pw-price">CHF 14.90</span><small id="pw-period">/mês</small></div>
+    <div class="price-big"><span id="pw-price">CHF 144</span><small id="pw-period">/ano</small></div>
     <div class="price-note" id="pw-note"></div>
     <ul class="paywall-features">
       <li><span class="check">✓</span> Documentos ilimitados</li>
@@ -1600,7 +1600,7 @@ function updatePlanLabel(){
 }
 
 // ── PAYWALL ────────────────────────────────────────────────────────────────
-let pwAnnual=false;
+let pwAnnual=true;
 function openPaywall(){ document.getElementById('paywallOverlay').classList.add('open'); }
 function closePaywall(){ document.getElementById('paywallOverlay').classList.remove('open'); }
 function togglePaywall(){
