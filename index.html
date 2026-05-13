@@ -1840,6 +1840,66 @@ function clearFile() {
   document.getElementById('fileName').textContent = '';
 }
 
+
+// ── SWIPE NAVIGATION ──────────────────────────────────────────────────────
+// Ordem de navegação por swipe
+// 'analisar' = ecrã Início, 'analisar-form' = ecrã Analisar (estado interno)
+var swipeOrder = ['analisar', 'analisar-form', 'notificacoes', 'documentos', 'perfil'];
+
+function getSwipeCurrent() {
+  // Verificar se estamos no ecrã analisar em que estado
+  var screen = null;
+  document.querySelectorAll('.screen').forEach(function(s) {
+    if (s.classList.contains('active')) screen = s.id.replace('screen-', '');
+  });
+  if (screen === 'analisar') {
+    var homeVisible = document.getElementById('homeState').style.display !== 'none';
+    return homeVisible ? 'analisar' : 'analisar-form';
+  }
+  return screen;
+}
+
+function swipeNavigate(direction) {
+  var current = getSwipeCurrent();
+  var idx = swipeOrder.indexOf(current);
+  if (idx === -1) return;
+  var next = direction === 'left' ? swipeOrder[idx + 1] : swipeOrder[idx - 1];
+  if (!next) return;
+  if (next === 'analisar') {
+    showScreen('analisar');
+    document.getElementById('homeState').style.display = 'block';
+    document.getElementById('analyseState').style.display = 'none';
+    document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+    document.getElementById('nav-analisar').classList.add('active');
+  } else if (next === 'analisar-form') {
+    goAnalisar();
+  } else {
+    showScreen(next);
+  }
+}
+
+var touchStartX = 0;
+var touchStartY = 0;
+
+document.addEventListener('touchstart', function(e) {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchStartX;
+  var dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
+  var target = e.target;
+  while (target) {
+    if (target.id === 'editModal' || target.id === 'paywallOverlay' || 
+        target.id === 'bookingOverlay' || target.id === 'detailOverlay' ||
+        target.id === 'membroModal') return;
+    target = target.parentElement;
+  }
+  swipeNavigate(dx < 0 ? 'left' : 'right');
+}, { passive: true });
+
 // PWA Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
