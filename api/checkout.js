@@ -5,7 +5,7 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { priceId } = req.body;
+  const { priceId, promoCode } = req.body;
 
   try {
     const params = new URLSearchParams();
@@ -14,6 +14,11 @@ module.exports = async (req, res) => {
     params.append('line_items[0][quantity]', '1');
     params.append('success_url', 'https://claro-app2.vercel.app?success=true');
     params.append('cancel_url', 'https://claro-app2.vercel.app?cancelled=true');
+    params.append('allow_promotion_codes', 'false');
+
+    if (promoCode) {
+      params.append('discounts[0][promotion_code]', promoCode);
+    }
 
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
