@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
 </div>
 <p style="font-size:14px;color:#5A5955;line-height:1.7;margin:0 0 28px;">Fotografa, importa ou cola o texto de qualquer documento em alemão, francês ou italiano. A nossa IA explica-te tudo — o que significa, o que tens de fazer e quando.</p>
 <div style="text-align:center;margin-bottom:28px;">
-<a href="https://claro-app2.vercel.app" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Abrir o Claro-app →</a>
+<a href="#" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Abre o Claro-app no teu telemóvel e começa já 📱</a>
 </div>
 <div style="border-top:1px solid #E8E6DF;padding-top:20px;">
 <p style="font-size:13px;color:#A8A69F;margin:0;">Dúvidas? Contacta-nos em <a href="mailto:suporte@claro-app.ch" style="color:#1D9E75;">suporte@claro-app.ch</a></p>
