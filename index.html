@@ -649,7 +649,8 @@
         <div class="bonus-price">CHF 4.90</div>
       </div>
     </div>
-    <button class="btn-primary" id="pw-cta">Começar com Claro-app+</button>
+    <input id="promoCode" type="text" placeholder="Código promo (opcional)" style="width:100%;padding:12px 14px;border:0.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;margin-bottom:6px;" oninput="this.value=this.value.toUpperCase()">
+  <button class="btn-primary" id="pw-cta">Começar com Claro-app+</button>
     <button class="paywall-close" onclick="closePaywall()">Agora não</button>
   </div>
 </div>
@@ -1625,7 +1626,7 @@ document.getElementById('pw-cta').addEventListener('click', async ()=>{
     const res = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ priceId })
+      body: JSON.stringify({ priceId, promoCode: (document.getElementById('promoCode')||{value:''}).value.trim() || null })
     });
     const data = await res.json();
     if (data.url) {
