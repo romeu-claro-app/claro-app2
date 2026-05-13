@@ -618,24 +618,21 @@
       <span style="font-size:18px;font-weight:600;color:#1D9E75;">claro-app</span><span style="font-size:13px;color:#0F6E56;">.ch</span>
     </div>
     <div class="paywall-title">Continua sem limites</div>
-    <div class="paywall-sub">Usaste o teu documento grátis.<br>Faz upgrade para continuar.</div>
-    <div class="toggle-row">
-      <span class="toggle-label" id="pw-label-monthly">Mensal</span>
-      <button class="toggle-switch annual" id="pwToggle" onclick="togglePaywall()"><div class="toggle-dot" id="pwDot"></div></button>
-      <span class="toggle-label active" id="pw-label-annual">Anual</span>
-      <span class="badge-save" id="pw-badge">Poupa CHF 34</span>
-    </div>
-    <div class="price-big"><span id="pw-price">CHF 144</span><small id="pw-period">/ano</small></div>
-    <div class="price-note" id="pw-note"></div>
+    <div class="paywall-sub">Chegaste ao limite do plano gratuito.<br>Faz upgrade para continuar.</div>
+    <div class="price-big"><span id="pw-price">CHF 12</span><small id="pw-period">/mês</small></div>
+    <div class="price-note" id="pw-note" style="color:var(--text-muted);font-size:13px;margin-bottom:12px;">cobrado CHF 144/ano — cancela quando quiseres</div>
     <ul class="paywall-features">
-      <li><span class="check">✓</span> Documentos ilimitados</li>
-      <li><span class="check">✓</span> Histórico completo de documentos</li>
-      <li><span class="check">✓</span> Notificações e prazos automáticos</li>
-      <li><span class="check">✓</span> Marcações de consulta/conselho com um profissional — ilimitadas</li>
-      <li><span class="check">✓</span> Gestão do agregado familiar</li>
-      <li><span class="check">✓</span> Análise em 3 idiomas (DE, FR, IT)</li>
-      <li><span class="check">✓</span> Acesso prioritário a novas funcionalidades</li>
-      <li><span class="check">✓</span> Suporte direto por email</li>
+      <li><span class="check">✓</span> Análises ilimitadas de documentos — sem limites, sem stress</li>
+      <li><span class="check">✓</span> Alemão, francês e italiano — qualquer carta, qualquer cantão</li>
+      <li><span class="check">✓</span> Resumo em português simples com o que tens de fazer e quando</li>
+      <li><span class="check">✓</span> Alertas automáticos para prazos importantes</li>
+      <li><span class="check">✓</span> Histórico completo de todos os teus documentos guardados</li>
+      <li><span class="check">✓</span> Gestão do agregado familiar — toda a família protegida</li>
+      <li><span class="check">✓</span> Marcações ilimitadas com consultor especializado</li>
+      <li><span class="check">✓</span> Manual do Emigrante em PDF — seguros, impostos, habitação, tudo</li>
+      <li><span class="check">✓</span> Budget Mensal Suíça em Excel — controla as tuas despesas em CHF</li>
+      <li><span class="check">✓</span> Suporte direto por email com resposta prioritária</li>
+      <li><span class="check">✓</span> Acesso antecipado a todas as novas funcionalidades</li>
     </ul>
     <div class="bonus-box">
       <div class="bonus-title">✦ Incluído no Claro-app+</div>
@@ -887,8 +884,7 @@ function updateHome() {
     document.getElementById('noPendingSection').style.display = 'block';
     var recentDocs = state.savedDocs.slice(-3).reverse();
     var html2 = recentDocs.map(function(d, i) {
-      var realIdx = state.savedDocs.length - 1 - i;
-      return '<div class="card" style="margin-bottom:8px;cursor:pointer;" onclick="openDocDetail(' + realIdx + ')">' +
+      return '<div class="card" style="margin-bottom:8px;">' +
         '<div class="card-header">' +
           '<div class="card-title">' + d.titulo + '</div>' +
           '<div class="card-date">' + d.savedAt + '</div>' +
@@ -1266,7 +1262,7 @@ async function doLogout() {
 const ANTHROPIC_API_KEY = '';
 
 // ── STATE ──────────────────────────────────────────────────────────────────
-const state = { docsUsed:0, freeLimit:1, isPro:false, savedDocs:[], notifs:[], activeFilter:'' };
+const state = { docsUsed:0, freeLimit:3, isPro:false, savedDocs:[], notifs:[], activeFilter:'' };
 
 const samples = [
   `Krankenkasse Helsana AG\nPrämienrechnung April 2025\n\nSehr geehrte Frau Rodrigues,\n\nwir stellen Ihnen die Monatsprämie für April 2025 in Rechnung.\n\nVersicherungsnehmer: Maria Rodrigues\nGrundversicherung (KVG): CHF 312.40\nZusatzversicherung (VVG): CHF 30.40\nTotal: CHF 342.80\n\nZahlungsfrist: 27. April 2025\n\nBei verspäteter Zahlung werden Verzugszinsen erhoben. Nach 3 Mahnungen wird der Fall an das kantonale Betreibungsamt weitergeleitet.\n\nHelsana AG, Zürich`,
@@ -1643,28 +1639,14 @@ function updatePlanLabel(){
     document.getElementById('planLabel').textContent='Claro-app+ ativo ✓';
     if(planoOpen) renderPlanoDetails();
   }
-  else{const r=Math.max(0,state.freeLimit-state.docsUsed);document.getElementById('planLabel').textContent=`Grátis · ${r} documento${r!==1?'s':''} restante${r!==1?'s':''}`;}
+  else{const r=Math.max(0,state.freeLimit-state.docsUsed);document.getElementById('planLabel').textContent='Grátis · '+r+' de 3 análises mensais restantes';}
 }
 
 // ── PAYWALL ────────────────────────────────────────────────────────────────
-let pwAnnual=true;
 function openPaywall(){ document.getElementById('paywallOverlay').classList.add('open'); }
 function closePaywall(){ document.getElementById('paywallOverlay').classList.remove('open'); }
-function togglePaywall(){
-  pwAnnual=!pwAnnual;
-  document.getElementById('pwToggle').className='toggle-switch'+(pwAnnual?' annual':'');
-  document.getElementById('pw-label-monthly').className='toggle-label'+(pwAnnual?'':' active');
-  document.getElementById('pw-label-annual').className='toggle-label'+(pwAnnual?' active':'');
-  document.getElementById('pw-badge').style.display=pwAnnual?'inline-block':'none';
-  document.getElementById('pw-price').textContent=pwAnnual?'CHF 144':'CHF 14.90';
-  document.getElementById('pw-period').textContent=pwAnnual?'/ano':'/mês';
-  document.getElementById('pw-note').textContent=pwAnnual?'equivale a CHF 12/mês — poupa CHF 34':'';
-  document.getElementById('pw-cta').textContent=pwAnnual?'Começar com Claro-app+ anual':'Começar com Claro-app+';
-}
 document.getElementById('pw-cta').addEventListener('click', async ()=>{
-  const priceId = pwAnnual 
-    ? 'price_1TSyGTI7lWm5a7C9lAylEzX5' 
-    : 'price_1TSyFmI7lWm5a7C9ipF7Sgu0';
+  const priceId = 'price_1TSyGTI7lWm5a7C9lAylEzX5';
   const btn = document.getElementById('pw-cta');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>A redirecionar...';
