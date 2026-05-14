@@ -1862,28 +1862,59 @@ var uploadedFiles = []; // [{data: base64, type: 'image'|'pdf', name: '...'}]
 var uploadedFileData = null;
 var uploadedFileType = null;
 
+function compressImage(file, callback) {
+  // Comprimir imagens para max 800px e qualidade 0.7
+  var img = new Image();
+  var url = URL.createObjectURL(file);
+  img.onload = function() {
+    var canvas = document.createElement('canvas');
+    var maxDim = 1200;
+    var w = img.width, h = img.height;
+    if (w > maxDim || h > maxDim) {
+      if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+      else { w = Math.round(w * maxDim / h); h = maxDim; }
+    }
+    canvas.width = w; canvas.height = h;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    var compressed = canvas.toDataURL('image/jpeg', 0.75);
+    URL.revokeObjectURL(url);
+    callback(compressed);
+  };
+  img.src = url;
+}
+
 function handleFile(event) {
   var files = Array.from(event.target.files);
   if (!files.length) return;
-  var maxSize = 5 * 1024 * 1024;
-  var added = 0;
+  var maxSize = 10 * 1024 * 1024;
   files.forEach(function(file) {
-    if (file.size > maxSize) { alert(file.name + ': demasiado grande. Máximo 5MB.'); return; }
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var result = e.target.result;
-      var base64 = result.split(',')[1];
-      var type = file.type === 'application/pdf' ? 'pdf' : 'image';
-      uploadedFiles.push({ data: base64, type: type, name: file.name, size: file.size, src: result });
-      // Compatibilidade com código antigo (usa o primeiro ficheiro)
-      if (uploadedFiles.length === 1) { uploadedFileData = base64; uploadedFileType = type; }
-      renderPreviews();
-      document.getElementById('docInput').value = '';
-      document.getElementById('charCount').textContent = '0 caracteres';
-      document.getElementById('resultArea').innerHTML = '';
-    };
-    reader.readAsDataURL(file);
-    added++;
+    if (file.size > maxSize) { alert(file.name + ': demasiado grande. Máximo 10MB.'); return; }
+    var type = file.type === 'application/pdf' ? 'pdf' : 'image';
+    if (type === 'image') {
+      compressImage(file, function(compressed) {
+        var base64 = compressed.split(',')[1];
+        uploadedFiles.push({ data: base64, type: 'image', name: file.name, size: file.size, src: compressed });
+        if (uploadedFiles.length === 1) { uploadedFileData = base64; uploadedFileType = 'image'; }
+        renderPreviews();
+        document.getElementById('docInput').value = '';
+        document.getElementById('charCount').textContent = '0 caracteres';
+        document.getElementById('resultArea').innerHTML = '';
+      });
+    } else {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var result = e.target.result;
+        var base64 = result.split(',')[1];
+        uploadedFiles.push({ data: base64, type: 'pdf', name: file.name, size: file.size, src: result });
+        if (uploadedFiles.length === 1) { uploadedFileData = base64; uploadedFileType = 'pdf'; }
+        renderPreviews();
+        document.getElementById('docInput').value = '';
+        document.getElementById('charCount').textContent = '0 caracteres';
+        document.getElementById('resultArea').innerHTML = '';
+      };
+      reader.readAsDataURL(file);
+    }
   });
   event.target.value = '';
 }
