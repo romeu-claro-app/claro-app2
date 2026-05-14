@@ -327,8 +327,16 @@
       </div>
     </div>
     <div id="registerError" style="display:none;background:var(--red-light,#FCEBEB);border-radius:8px;padding:10px 12px;font-size:13px;color:#791F1F;margin-bottom:12px;"></div>
+    <label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;cursor:pointer;">
+      <input type="checkbox" id="regTermos" style="margin-top:3px;accent-color:var(--green);width:16px;height:16px;flex-shrink:0;">
+      <span style="font-size:12px;color:var(--text-muted);line-height:1.5;">Li e aceito os <a href="https://claro-app.ch/termos.html" target="_blank" style="color:var(--green);">Termos de Serviço</a> e a <a href="https://claro-app.ch/privacidade.html" target="_blank" style="color:var(--green);">Política de Privacidade</a> *</span>
+    </label>
+    <label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;cursor:pointer;">
+      <input type="checkbox" id="regMarketing" style="margin-top:3px;accent-color:var(--green);width:16px;height:16px;flex-shrink:0;">
+      <span style="font-size:12px;color:var(--text-muted);line-height:1.5;">Aceito receber novidades e comunicações do Claro-app por email (opcional)</span>
+    </label>
+    <div id="registerError" style="display:none;background:var(--red-light,#FCEBEB);border-radius:8px;padding:10px 12px;font-size:13px;color:#791F1F;margin-bottom:12px;"></div>
     <button class="btn-primary" id="registerBtn" onclick="doRegister()">Criar conta</button>
-    <p style="font-size:11px;color:var(--text-hint);text-align:center;margin-top:12px;line-height:1.5;">Ao criar conta, aceitas os nossos termos de serviço e política de privacidade.</p>
   </div>
 
   <!-- CONFIRMAÇÃO EMAIL -->
@@ -1110,6 +1118,8 @@ async function doRegister() {
   var errEl=document.getElementById('registerError');
   var btn=document.getElementById('registerBtn');
   if(!primeiroNome||!apelido||!email||!cp||!cidade||!password){showAuthError(errEl,'Todos os campos obrigatórios devem ser preenchidos.');return;}
+  if(!document.getElementById('regTermos').checked){showAuthError(errEl,'Deves aceitar os Termos de Serviço e a Política de Privacidade para criar conta.');return;}
+  var aceitaMarketing = document.getElementById('regMarketing').checked;
   if(password.length<8){showAuthError(errEl,'A password deve ter pelo menos 8 caracteres.');return;}
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A criar conta...';
   errEl.style.display='none';
@@ -1123,7 +1133,7 @@ async function doRegister() {
       await fetch('/api/create-profile', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({id:data.user.id,nome:nome,email:email,telefone:phone,data_nascimento:dob||null,cidade:cidade||null,morada:morada||null,codigo_postal:cp||null})
+        body: JSON.stringify({id:data.user.id,nome:nome,email:email,telefone:phone,data_nascimento:dob||null,cidade:cidade||null,morada:morada||null,codigo_postal:cp||null,aceita_marketing:aceitaMarketing})
       });
     }
     // Enviar email de boas-vindas
