@@ -1882,11 +1882,9 @@ function compressImage(file, callback) {
         ctx.drawImage(img, 0, 0, w, h);
         var compressed = canvas.toDataURL('image/jpeg', 0.5);
         // Só usar comprimido se for menor
-        if (compressed.length < dataUrl.length) {
-          callback(compressed);
-        } else {
-          callback(dataUrl);
-        }
+        var chosen = (compressed.length < dataUrl.length) ? compressed : dataUrl;
+        console.log('Original:', Math.round(dataUrl.length/1024), 'KB | Compressed:', Math.round(compressed.length/1024), 'KB | Using:', Math.round(chosen.length/1024), 'KB');
+        callback(chosen);
       } catch(err) {
         callback(dataUrl);
       }
@@ -1907,6 +1905,12 @@ function handleFile(event) {
     if (type === 'image') {
       compressImage(file, function(compressed) {
         var base64 = compressed.split(',')[1];
+        // Verificar tamanho após compressão (base64 ~33% maior que binário)
+        var sizeBytes = base64.length * 0.75;
+        if (sizeBytes > 3.5 * 1024 * 1024) {
+          alert('A imagem é demasiado grande mesmo após compressão. Por favor tira a foto diretamente pela câmara em vez de importar da galeria.');
+          return;
+        }
         uploadedFiles.push({ data: base64, type: 'image', name: file.name, size: file.size, src: compressed });
         if (uploadedFiles.length === 1) { uploadedFileData = base64; uploadedFileType = 'image'; }
         renderPreviews();
