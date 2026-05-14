@@ -1949,6 +1949,14 @@ document.addEventListener('touchend', function(e) {
   swipeNavigate(dx < 0 ? 'left' : 'right');
 }, { passive: true });
 
+// Repor botão paywall quando a página volta ao foco (ex: depois do Stripe)
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    var btn = document.getElementById('pw-cta');
+    if(btn && btn.disabled) { btn.disabled = false; btn.innerHTML = 'Começar com Claro-app+'; }
+  }
+});
+
 // PWA Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
