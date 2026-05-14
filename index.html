@@ -1149,7 +1149,7 @@ async function doRegister() {
     fetch('/api/send-welcome', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, nome: nome })
+      body: JSON.stringify({ email: email, nome: nome, aceita_marketing: aceitaMarketing })
     }).catch(function(){});
     document.getElementById('registerForm').style.display='none';
     document.getElementById('confirmEmail').style.display='block';
