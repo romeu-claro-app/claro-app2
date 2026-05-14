@@ -1863,16 +1863,11 @@ var uploadedFileData = null;
 var uploadedFileType = null;
 
 function compressImage(file, callback) {
-  try {
+  // Usar FileReader primeiro, depois comprimir via canvas
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var dataUrl = e.target.result;
     var img = new Image();
-    var url = URL.createObjectURL(file);
-    img.onerror = function() {
-      URL.revokeObjectURL(url);
-      // Fallback: usar FileReader sem compressão
-      var reader = new FileReader();
-      reader.onload = function(e) { callback(e.target.result); };
-      reader.readAsDataURL(file);
-    };
     img.onload = function() {
       try {
         var canvas = document.createElement('canvas');
@@ -1886,21 +1881,20 @@ function compressImage(file, callback) {
         var ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, w, h);
         var compressed = canvas.toDataURL('image/jpeg', 0.5);
-        URL.revokeObjectURL(url);
-        callback(compressed);
-      } catch(e) {
-        URL.revokeObjectURL(url);
-        var reader = new FileReader();
-        reader.onload = function(ev) { callback(ev.target.result); };
-        reader.readAsDataURL(file);
+        // Só usar comprimido se for menor
+        if (compressed.length < dataUrl.length) {
+          callback(compressed);
+        } else {
+          callback(dataUrl);
+        }
+      } catch(err) {
+        callback(dataUrl);
       }
     };
-    img.src = url;
-  } catch(e) {
-    var reader = new FileReader();
-    reader.onload = function(ev) { callback(ev.target.result); };
-    reader.readAsDataURL(file);
-  }
+    img.onerror = function() { callback(dataUrl); };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
 }
 
 function handleFile(event) {
