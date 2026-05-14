@@ -1898,9 +1898,9 @@ function compressImage(file, callback) {
 function handleFile(event) {
   var files = Array.from(event.target.files);
   if (!files.length) return;
-  var maxSize = 10 * 1024 * 1024;
+  var maxSize = 4 * 1024 * 1024;
   files.forEach(function(file) {
-    if (file.size > maxSize) { alert(file.name + ': demasiado grande. Máximo 10MB.'); return; }
+    if (file.size > maxSize) { alert('Esta imagem é demasiado grande (máximo 4MB). Para documentos da galeria, tira uma screenshot do documento ou usa o botão 📷 para fotografar diretamente.'); return; }
     var type = file.type === 'application/pdf' ? 'pdf' : 'image';
     if (type === 'image') {
       compressImage(file, function(compressed) {
