@@ -319,11 +319,18 @@
       <div class="input-row"><div class="input-label">Código postal *</div><input class="input-field" id="regCp" type="text" placeholder="Ex: 1820"></div>
       <div class="input-row"><div class="input-label">Vila / Cidade *</div><input class="input-field" id="regCidade" type="text" placeholder="Ex: Montreux"></div>
     </div>
-    <div class="input-row" style="margin-bottom:16px;">
+    <div class="input-row">
       <div class="input-label">Password *</div>
       <div style="position:relative;">
         <input class="input-field" id="regPassword" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" style="padding-right:40px;">
         <button type="button" onclick="togglePw('regPassword','eyeReg')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-muted);" id="eyeReg">👁</button>
+      </div>
+    </div>
+    <div class="input-row" style="margin-bottom:16px;">
+      <div class="input-label">Confirmar password *</div>
+      <div style="position:relative;">
+        <input class="input-field" id="regPasswordConfirm" type="password" placeholder="Repete a password" autocomplete="new-password" style="padding-right:40px;">
+        <button type="button" onclick="togglePw('regPasswordConfirm','eyeRegConfirm')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-muted);" id="eyeRegConfirm">👁</button>
       </div>
     </div>
     <div id="registerError" style="display:none;background:var(--red-light,#FCEBEB);border-radius:8px;padding:10px 12px;font-size:13px;color:#791F1F;margin-bottom:12px;"></div>
@@ -1121,6 +1128,8 @@ async function doRegister() {
   if(!document.getElementById('regTermos').checked){showAuthError(errEl,'Deves aceitar os Termos de Serviço e a Política de Privacidade para criar conta.');return;}
   var aceitaMarketing = document.getElementById('regMarketing').checked;
   if(password.length<8){showAuthError(errEl,'A password deve ter pelo menos 8 caracteres.');return;}
+  var passwordConfirm=document.getElementById('regPasswordConfirm').value;
+  if(password !== passwordConfirm){showAuthError(errEl,'As passwords não coincidem. Verifica e tenta novamente.');return;}
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A criar conta...';
   errEl.style.display='none';
   var data=await authPost('signup',{email:email,password:password,data:{nome:nome,phone:phone,dob:dob}});
