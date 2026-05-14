@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { id, nome, email, telefone, data_nascimento, cidade, morada, codigo_postal } = req.body;
+  const { id, nome, email, telefone, data_nascimento, cidade, morada, codigo_postal, aceita_marketing } = req.body;
 
   if (!id || !nome || !email) {
     return res.status(400).json({ error: 'Campos obrigatórios em falta.' });
