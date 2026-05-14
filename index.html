@@ -718,10 +718,18 @@
 
 // cancelar subscricao
 async function cancelSubscription() {
-  var ok = window.confirm('Tens a certeza que queres cancelar o Claro-app+?\n\nVais perder acesso aos documentos ilimitados e recursos premium no fim do período pago.');
-  if (!ok) return;
-
   if (!currentUser) { alert('Erro: sessão não encontrada.'); return; }
+
+  // Verificar se tem consultas realizadas
+  var consultasData = await sbGet('consultas', 'user_id=eq.'+currentUser.id+'&status=eq.realizada&limit=1');
+  var temConsultaRealizada = Array.isArray(consultasData) && consultasData.length > 0;
+
+  var mensagem = temConsultaRealizada
+    ? 'Tens a certeza que queres cancelar o Claro-app+?\n\nJá realizaste uma consulta com o consultor, por isso não há reembolso disponível.\n\nO teu acesso mantém-se ativo até ao fim do período pago e não renova automaticamente.'
+    : 'Tens a certeza que queres cancelar o Claro-app+?\n\nComo ainda não realizaste nenhuma consulta com o consultor, tens direito a um reembolso de 50% do valor pago (CHF 72).\n\nQueres cancelar e receber o reembolso?';
+
+  var ok = window.confirm(mensagem);
+  if (!ok) return;
 
   var btn = document.querySelector('[onclick="cancelSubscription()"]');
   if(btn) { btn.disabled = true; btn.textContent = 'A cancelar...'; }
@@ -730,14 +738,18 @@ async function cancelSubscription() {
     var r = await fetch('/api/cancel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: currentUser.id })
+      body: JSON.stringify({ userId: currentUser.id, requestRefund: !temConsultaRealizada })
     });
     var data = await r.json();
     if (data.success) {
       state.isPro = false;
       updatePlanLabel();
       if(planoOpen) renderPlanoDetails();
-      alert('Subscrição cancelada com sucesso. O teu acesso Claro-app+ termina no fim do período pago.');
+      if(!temConsultaRealizada) {
+        alert('Subscrição cancelada. O reembolso de CHF 72 será processado em 5-10 dias úteis para o teu método de pagamento original.');
+      } else {
+        alert('Subscrição cancelada. O teu acesso Claro-app+ termina no fim do período pago.');
+      }
     } else {
       alert('Erro ao cancelar: ' + (data.error || 'Tenta novamente ou contacta suporte@claro-app.ch'));
       if(btn) { btn.disabled = false; btn.textContent = 'Cancelar subscrição'; }
@@ -1783,7 +1795,7 @@ function updateSummary(){
   document.getElementById('sumType').textContent=TYPE_LABELS[selType];
 }
 
-function confirmBooking(){
+async function confirmBooking(){
   const name=document.getElementById('bkName').value.trim();
   const email=document.getElementById('bkEmail').value.trim();
   const dob=document.getElementById('bkDob').value;
@@ -1796,6 +1808,19 @@ function confirmBooking(){
   const p=dob.split('-'); document.getElementById('cDob').textContent=p[2]+'/'+p[1]+'/'+p[0];
   document.getElementById('cPhone').textContent=phone;
   document.getElementById('cEmail').textContent=email;
+  // Guardar consulta no Supabase
+  if(currentUser) {
+    var dataStr = selDate.getFullYear()+'-'+String(selDate.getMonth()+1).padStart(2,'0')+'-'+String(selDate.getDate()).padStart(2,'0');
+    await sbPost('consultas', {
+      user_id: currentUser.id,
+      data: dataStr,
+      hora: selTime,
+      tipo: selType,
+      nome: name,
+      email: email,
+      status: 'pendente'
+    });
+  }
   document.getElementById('bookingForm').style.display='none';
   document.getElementById('bookingSuccess').classList.add('show');
 }
