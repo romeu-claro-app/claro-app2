@@ -5,8 +5,10 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { email, nome } = req.body;
-  if (!email || !nome) return res.status(400).json({ error: 'Missing fields' });
+  // Aceitar formato do Brevo (webhook) ou formato direto
+  const email = req.body.email;
+  const nome = req.body.nome || req.body.FIRSTNAME || req.body.LASTNAME || 'amigo';
+  if (!email) return res.status(400).json({ error: 'Missing email' });
 
   const primeiroNome = nome.split(' ')[0];
 
