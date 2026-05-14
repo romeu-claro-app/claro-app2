@@ -1868,7 +1868,7 @@ function compressImage(file, callback) {
   var url = URL.createObjectURL(file);
   img.onload = function() {
     var canvas = document.createElement('canvas');
-    var maxDim = 800;
+    var maxDim = 600;
     var w = img.width, h = img.height;
     if (w > maxDim || h > maxDim) {
       if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
@@ -1877,7 +1877,7 @@ function compressImage(file, callback) {
     canvas.width = w; canvas.height = h;
     var ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0, w, h);
-    var compressed = canvas.toDataURL('image/jpeg', 0.6);
+    var compressed = canvas.toDataURL('image/jpeg', 0.5);
     URL.revokeObjectURL(url);
     callback(compressed);
   };
