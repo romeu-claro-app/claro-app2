@@ -440,17 +440,15 @@
         <button onclick="backToHome()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--green);padding:0;">←</button>
         <div style="font-size:16px;font-weight:500;color:var(--text);">Analisar documento</div>
       </div>
-      <input type="file" id="fileInput" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="handleFile(event)">
+      <input type="file" id="fileInput" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="handleFile(event)" multiple>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
         <button class="upload-btn" onclick="document.getElementById('fileInput').removeAttribute('capture');document.getElementById('fileInput').click()" style="font-size:13px;padding:12px;">📎 Importar ficheiro</button>
         <button class="upload-btn" onclick="document.getElementById('fileInput').setAttribute('capture','environment');document.getElementById('fileInput').click()" style="font-size:13px;padding:12px;">📷 Tirar foto</button>
       </div>
       <div id="imagePreview" style="display:none;margin-bottom:12px;">
-        <div style="position:relative;display:inline-block;width:100%;">
-          <img id="previewImg" style="width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:0.5px solid var(--border);background:var(--surface);">
-          <button onclick="clearFile()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;">✕</button>
-        </div>
-        <div id="fileName" style="font-size:12px;color:var(--text-muted);margin-top:6px;text-align:center;"></div>
+        <div id="previewList" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;"></div>
+        <div id="fileName" style="font-size:12px;color:var(--text-muted);text-align:center;"></div>
+        <button onclick="clearFile()" style="margin-top:6px;font-size:12px;color:var(--text-muted);background:none;border:0.5px solid var(--border);border-radius:8px;padding:4px 12px;cursor:pointer;font-family:inherit;">✕ Limpar tudo</button>
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
         <div style="flex:1;height:0.5px;background:var(--border);"></div>
@@ -1308,7 +1306,7 @@ function updateCount(){ document.getElementById('charCount').textContent=documen
 async function analyseDoc(){
   if(!state.isPro && state.docsUsed>=state.freeLimit){ openPaywall(); return; }
   const text=document.getElementById('docInput').value.trim();
-  const hasFile = uploadedFileData !== null;
+  const hasFile = uploadedFiles.length > 0 || uploadedFileData !== null;
   if(!text && !hasFile){ alert('Importa um ficheiro ou cola o texto do documento.'); return; }
   const btn=document.getElementById('analyseBtn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A analisar...';
@@ -1316,7 +1314,17 @@ async function analyseDoc(){
   const hoje = new Date().toLocaleDateString('pt-PT'); const prompt=`És um assistente especializado a ajudar imigrantes portugueses na Suíça a compreender documentos oficiais em alemão, francês ou italiano. A data de hoje é ${hoje}.\n\nAnalisa o seguinte documento e responde APENAS em JSON válido sem markdown:\n{\n  "titulo": "título curto",\n  "idioma_original": "Alemão/Francês/Italiano",\n  "categoria": "Seguro/Impostos/Renda/Trabalho/Saúde/Outro",\n  "resumo": "resumo simples em 2-3 frases em português",\n  "explicacao": "explicação clara em português",\n  "acao_necessaria": true/false,\n  "urgente": true/false,\n  "o_que_fazer": "o que o utilizador deve fazer (vazio se não necessário)",\n  "prazo": "prazo em português (vazio se não houver)",\n  "passos": ["passo 1","passo 2"],\n  "consequencias": "o que acontece se ignorar (vazio se não aplicável)",\n  "prazo_dias": 0\n}\n\nDocumento:\n${text}`;
   try{
     let messageContent;
-    if(hasFile && uploadedFileData) {
+    if(hasFile && uploadedFiles.length > 0) {
+      messageContent = [];
+      uploadedFiles.forEach(function(f) {
+        if(f.type === 'image') {
+          messageContent.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:f.data}});
+        } else {
+          messageContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:f.data}});
+        }
+      });
+      messageContent.push({type:'text',text:prompt});
+    } else if(hasFile && uploadedFileData) {
       if(uploadedFileType === 'image') {
         messageContent = [
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:uploadedFileData}},
@@ -1795,48 +1803,75 @@ function resetBooking(){
 }
 
 // ── UPLOAD DE FICHEIROS ────────────────────────────────────────────────────
-let uploadedFileData = null;
-let uploadedFileType = null;
+// Suporte a múltiplos ficheiros
+var uploadedFiles = []; // [{data: base64, type: 'image'|'pdf', name: '...'}]
+
+// Compatibilidade com código antigo
+var uploadedFileData = null;
+var uploadedFileType = null;
 
 function handleFile(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  
-  const maxSize = 5 * 1024 * 1024; // 5MB
-  if (file.size > maxSize) {
-    alert('Ficheiro demasiado grande. Máximo 5MB.');
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const result = e.target.result;
-    const base64 = result.split(',')[1];
-    uploadedFileData = base64;
-    
-    if (file.type === 'application/pdf') {
-      uploadedFileType = 'pdf';
-      document.getElementById('previewImg').src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>';
-    } else {
-      uploadedFileType = 'image';
-      document.getElementById('previewImg').src = result;
-    }
-    
-    document.getElementById('imagePreview').style.display = 'block';
-    document.getElementById('fileName').textContent = file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)';
-    document.getElementById('docInput').value = '';
-    document.getElementById('charCount').textContent = '0 caracteres';
-    document.getElementById('resultArea').innerHTML = '';
-  };
-  reader.readAsDataURL(file);
+  var files = Array.from(event.target.files);
+  if (!files.length) return;
+  var maxSize = 5 * 1024 * 1024;
+  var added = 0;
+  files.forEach(function(file) {
+    if (file.size > maxSize) { alert(file.name + ': demasiado grande. Máximo 5MB.'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var result = e.target.result;
+      var base64 = result.split(',')[1];
+      var type = file.type === 'application/pdf' ? 'pdf' : 'image';
+      uploadedFiles.push({ data: base64, type: type, name: file.name, size: file.size, src: result });
+      // Compatibilidade com código antigo (usa o primeiro ficheiro)
+      if (uploadedFiles.length === 1) { uploadedFileData = base64; uploadedFileType = type; }
+      renderPreviews();
+      document.getElementById('docInput').value = '';
+      document.getElementById('charCount').textContent = '0 caracteres';
+      document.getElementById('resultArea').innerHTML = '';
+    };
+    reader.readAsDataURL(file);
+    added++;
+  });
   event.target.value = '';
 }
 
+function renderPreviews() {
+  var list = document.getElementById('previewList');
+  list.innerHTML = '';
+  uploadedFiles.forEach(function(f, i) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:relative;width:80px;height:80px;flex-shrink:0;';
+    if (f.type === 'pdf') {
+      wrap.innerHTML = '<div style="width:80px;height:80px;border-radius:10px;border:0.5px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:32px;">📄</div>';
+    } else {
+      wrap.innerHTML = '<img src="' + f.src + '" style="width:80px;height:80px;object-fit:cover;border-radius:10px;border:0.5px solid var(--border);">';
+    }
+    var btn = document.createElement('button');
+    btn.innerHTML = '✕';
+    btn.style.cssText = 'position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:11px;line-height:1;';
+    btn.onclick = function() { removeFile(i); };
+    wrap.appendChild(btn);
+    list.appendChild(wrap);
+  });
+  var count = uploadedFiles.length;
+  document.getElementById('fileName').textContent = count + ' ficheiro' + (count !== 1 ? 's' : '') + ' selecionado' + (count !== 1 ? 's' : '');
+  document.getElementById('imagePreview').style.display = uploadedFiles.length ? 'block' : 'none';
+}
+
+function removeFile(i) {
+  uploadedFiles.splice(i, 1);
+  uploadedFileData = uploadedFiles.length ? uploadedFiles[0].data : null;
+  uploadedFileType = uploadedFiles.length ? uploadedFiles[0].type : null;
+  renderPreviews();
+}
+
 function clearFile() {
+  uploadedFiles = [];
   uploadedFileData = null;
   uploadedFileType = null;
   document.getElementById('imagePreview').style.display = 'none';
-  document.getElementById('previewImg').src = '';
+  document.getElementById('previewList').innerHTML = '';
   document.getElementById('fileName').textContent = '';
 }
 
@@ -1909,3 +1944,4 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+      
