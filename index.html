@@ -1660,7 +1660,11 @@ function updatePlanLabel(){
 }
 
 // ── PAYWALL ────────────────────────────────────────────────────────────────
-function openPaywall(){ document.getElementById('paywallOverlay').classList.add('open'); }
+function openPaywall(){
+  var btn = document.getElementById('pw-cta');
+  if(btn) { btn.disabled = false; btn.innerHTML = 'Começar com Claro-app+'; }
+  document.getElementById('paywallOverlay').classList.add('open');
+}
 function closePaywall(){ document.getElementById('paywallOverlay').classList.remove('open'); }
 document.getElementById('pw-cta').addEventListener('click', async ()=>{
   const priceId = 'price_1TSyGTI7lWm5a7C9lAylEzX5';
