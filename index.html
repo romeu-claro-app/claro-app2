@@ -1863,25 +1863,44 @@ var uploadedFileData = null;
 var uploadedFileType = null;
 
 function compressImage(file, callback) {
-  // Comprimir imagens para max 800px e qualidade 0.7
-  var img = new Image();
-  var url = URL.createObjectURL(file);
-  img.onload = function() {
-    var canvas = document.createElement('canvas');
-    var maxDim = 600;
-    var w = img.width, h = img.height;
-    if (w > maxDim || h > maxDim) {
-      if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-      else { w = Math.round(w * maxDim / h); h = maxDim; }
-    }
-    canvas.width = w; canvas.height = h;
-    var ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, w, h);
-    var compressed = canvas.toDataURL('image/jpeg', 0.5);
-    URL.revokeObjectURL(url);
-    callback(compressed);
-  };
-  img.src = url;
+  try {
+    var img = new Image();
+    var url = URL.createObjectURL(file);
+    img.onerror = function() {
+      URL.revokeObjectURL(url);
+      // Fallback: usar FileReader sem compressão
+      var reader = new FileReader();
+      reader.onload = function(e) { callback(e.target.result); };
+      reader.readAsDataURL(file);
+    };
+    img.onload = function() {
+      try {
+        var canvas = document.createElement('canvas');
+        var maxDim = 600;
+        var w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+          else { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        canvas.width = w; canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        var compressed = canvas.toDataURL('image/jpeg', 0.5);
+        URL.revokeObjectURL(url);
+        callback(compressed);
+      } catch(e) {
+        URL.revokeObjectURL(url);
+        var reader = new FileReader();
+        reader.onload = function(ev) { callback(ev.target.result); };
+        reader.readAsDataURL(file);
+      }
+    };
+    img.src = url;
+  } catch(e) {
+    var reader = new FileReader();
+    reader.onload = function(ev) { callback(ev.target.result); };
+    reader.readAsDataURL(file);
+  }
 }
 
 function handleFile(event) {
