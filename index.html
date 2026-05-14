@@ -911,9 +911,11 @@ function updateHome() {
   } else if (state.savedDocs.length > 0) {
     document.getElementById('pendingSection').style.display = 'none';
     document.getElementById('noPendingSection').style.display = 'block';
-    var recentDocs = state.savedDocs.slice(-3).reverse();
+    var totalDocs = state.savedDocs.length;
+    var recentDocs = state.savedDocs.slice(-2).reverse();
     var html2 = recentDocs.map(function(d, i) {
-      return '<div class="card" style="margin-bottom:8px;">' +
+      var docId = totalDocs - 1 - i;
+      return '<div class="card" style="margin-bottom:8px;cursor:pointer;" onclick="openDocFromHome(' + docId + ')">' +
         '<div class="card-header">' +
           '<div class="card-title">' + d.titulo + '</div>' +
           '<div class="card-date">' + d.savedAt + '</div>' +
@@ -926,6 +928,10 @@ function updateHome() {
     }).join('');
     document.getElementById('homeDocsList').innerHTML = html2;
   }
+}
+
+function openDocFromHome(idx) {
+  openDoc(idx);
 }
 
 function goAnalisar() {
