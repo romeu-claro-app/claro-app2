@@ -1934,6 +1934,12 @@ document.addEventListener('touchend', function(e) {
     if (target.id === 'editModal' || target.id === 'paywallOverlay' || 
         target.id === 'bookingOverlay' || target.id === 'detailOverlay' ||
         target.id === 'membroModal') return;
+    // Ignorar swipe em zonas com scroll horizontal (ex: categorias)
+    if (target.classList && target.classList.contains('filter-row')) return;
+    if (target.scrollWidth > target.clientWidth && target.scrollLeft !== undefined) {
+      var style = window.getComputedStyle(target);
+      if (style.overflowX === 'auto' || style.overflowX === 'scroll') return;
+    }
     target = target.parentElement;
   }
   swipeNavigate(dx < 0 ? 'left' : 'right');
