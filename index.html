@@ -2077,7 +2077,6 @@ function getOS() {
 
 function showInstallBanner() {
   if (isInStandaloneMode()) return;
-  if (localStorage.getItem('installDismissed')) return;
   var banner = document.getElementById('installBanner');
   var instructions = document.getElementById('installInstructions');
   var installBtn = document.getElementById('installBtnPWA');
@@ -2085,63 +2084,36 @@ function showInstallBanner() {
   if (os === 'ios') {
     instructions.innerHTML = `
       <div style="background:var(--surface);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
-        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">Como instalar no iPhone / iPad:</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">Como instalar no iPhone:</div>
         <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <div style="width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
-            <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Abre esta página no <strong style="color:var(--text);">Safari</strong> (não funciona noutros browsers)</div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <div style="width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
-            <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Clica no botão de partilha <strong style="color:var(--text);">📤</strong> na barra inferior do Safari</div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <div style="width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
-            <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Clica em <strong style="color:var(--text);">"Adicionar ao ecrã inicial"</strong></div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <div style="width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
-            <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Confirma clicando em <strong style="color:var(--text);">"Adicionar"</strong> no canto superior direito</div>
-          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div><div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Abre no <strong style="color:var(--text);">Safari</strong> — não funciona noutros browsers</div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div><div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Clica no botão de partilha <strong style="color:var(--text);">⎙</strong> na barra inferior</div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div><div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Clica em <strong style="color:var(--text);">"Adicionar ao ecrã inicial"</strong></div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div><div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Confirma clicando em <strong style="color:var(--text);">"Adicionar"</strong> no canto superior direito</div></div>
         </div>
       </div>
-      <a href="https://youtube.com/shorts/ior6sEBbD-c?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--green);color:white;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:8px;">
-        ▶ Ver vídeo com as instruções
-      </a>
+      <a href="https://youtube.com/shorts/ior6sEBbD-c?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--green);color:white;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:10px;">▶ Ver vídeo com as instruções</a>
     `;
   } else if (os === 'android' && deferredPrompt) {
     instructions.innerHTML = `
       <div style="background:var(--surface);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
-        <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Instala a app para acesso rápido e melhor experiência — é grátis e não ocupa espaço.</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Instala a app para acesso rápido e melhor experiência — é grátis.</div>
       </div>
+      <a href="https://youtube.com/shorts/3WJ0TsYsnSw?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--green);color:white;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:10px;">▶ Ver vídeo com as instruções</a>
     `;
     installBtn.style.display = 'block';
   } else if (os === 'android') {
     instructions.innerHTML = `
       <div style="background:var(--surface);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
-        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;">Como instalar no Android:</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">Como instalar no Android:</div>
         <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <div style="width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
-            <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Abre esta página no <strong style="color:var(--text);">Google Chrome</strong></div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <div style="width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
-            <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Clica no menu <strong style="color:var(--text);">⋮</strong> no canto superior direito</div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <div style="width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
-            <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Clica em <strong style="color:var(--text);">"Adicionar ao ecrã inicial"</strong></div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:10px;">
-            <div style="width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
-            <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Confirma clicando em <strong style="color:var(--text);">"Adicionar"</strong></div>
-          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div><div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Abre no <strong style="color:var(--text);">Google Chrome</strong></div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div><div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Clica no menu <strong style="color:var(--text);">⋮</strong> no canto superior direito</div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div><div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Clica em <strong style="color:var(--text);">"Adicionar ao ecrã inicial"</strong></div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div><div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Confirma clicando em <strong style="color:var(--text);">"Adicionar"</strong></div></div>
         </div>
       </div>
-      <a href="https://youtube.com/shorts/3WJ0TsYsnSw?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--green);color:white;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:8px;">
-        ▶ Ver vídeo com as instruções
-      </a>
+      <a href="https://youtube.com/shorts/3WJ0TsYsnSw?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--green);color:white;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:10px;">▶ Ver vídeo com as instruções</a>
     `;
   } else {
     return;
@@ -2162,7 +2134,7 @@ function triggerInstall() {
 }
 
 setTimeout(function() {
-  if (!isInStandaloneMode() && !localStorage.getItem('installDismissed')) {
+  if (!isInStandaloneMode()) {
     showInstallBanner();
   }
 }, 3000);
@@ -2176,19 +2148,23 @@ if ('serviceWorker' in navigator) {
 </script>
 
 <!-- Banner de instalação PWA -->
-<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--card);border-top:0.5px solid var(--border);padding:20px 20px 40px;box-shadow:0 -8px 32px rgba(0,0,0,0.18);max-height:85vh;overflow-y:auto;">
-  <button onclick="document.getElementById('installBanner').style.display='none';localStorage.setItem('installDismissed','1')" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;color:var(--text-muted);cursor:pointer;line-height:1;">✕</button>
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-    <div style="width:48px;height:48px;border-radius:12px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-      <svg width="30" height="30" viewBox="0 0 36 36"><circle cx="18" cy="18" r="11" fill="rgba(255,255,255,0.3)"/><circle cx="18" cy="18" r="5" fill="white"/></svg>
-    </div>
-    <div>
-      <div style="font-size:17px;font-weight:700;color:var(--text);">Instalar o Claro-app</div>
-      <div style="font-size:13px;color:var(--text-muted);">Grátis · Acesso rápido no teu telemóvel</div>
+<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--card);border-top:0.5px solid var(--border);box-shadow:0 -8px 32px rgba(0,0,0,0.18);max-height:90vh;overflow-y:auto;">
+  <div style="background:var(--green);padding:20px 16px 16px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="28" height="28" viewBox="0 0 36 36"><circle cx="18" cy="18" r="11" fill="rgba(255,255,255,0.3)"/><circle cx="18" cy="18" r="5" fill="white"/></svg>
+      </div>
+      <div>
+        <div style="font-size:16px;font-weight:700;color:white;">Instalar o Claro-app</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.75);">Grátis · Acesso rápido no teu telemóvel</div>
+      </div>
     </div>
   </div>
-  <div id="installInstructions"></div>
-  <button id="installBtnPWA" onclick="triggerInstall()" style="display:none;width:100%;padding:14px;background:var(--green);color:white;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:12px;">Instalar agora</button>
+  <div style="padding:16px 16px 32px;">
+    <div id="installInstructions"></div>
+    <button id="installBtnPWA" onclick="triggerInstall()" style="display:none;width:100%;padding:14px;background:var(--green);color:white;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:10px;">Instalar agora</button>
+    <button onclick="document.getElementById('installBanner').style.display='none'" style="width:100%;padding:10px;background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;font-family:inherit;">Continuar no browser</button>
+  </div>
 </div>
 
 </body>
