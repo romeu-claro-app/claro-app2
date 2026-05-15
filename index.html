@@ -2098,7 +2098,9 @@ function showInstallBanner() {
       <a href="https://youtube.com/shorts/3WJ0TsYsnSw?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#1D9E75;color:white;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;margin-top:14px;">▶ Ver vídeo com as instruções</a>
     `;
   }
-  document.getElementById('installBanner').style.display = 'block';
+  var banner = document.getElementById('installBanner');
+  document.body.appendChild(banner);
+  banner.style.display = 'block';
 }
 
 setTimeout(showInstallBanner, 2000);
