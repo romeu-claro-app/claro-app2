@@ -1456,20 +1456,45 @@ function filterDocs(chip,cat){
   renderDocs();
 }
 
+async function deleteDoc(idx, event) {
+  event.stopPropagation();
+  var doc = state.savedDocs[idx];
+  if (!doc) return;
+  if (!window.confirm('Apagar "' + doc.titulo + '"?')) return;
+  if (currentUser && doc.db_id) {
+    await fetch(SUPABASE_URL + '/rest/v1/documentos?id=eq.' + doc.db_id, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY) }
+    });
+  }
+  state.savedDocs.splice(idx, 1);
+  renderDocs();
+  updateHome();
+}
+
 function renderDocs(){
   const el=document.getElementById('savedDocsList');
   const docs=state.activeFilter?state.savedDocs.filter(d=>d.categoria===state.activeFilter):state.savedDocs;
   if(!docs.length){el.innerHTML='<div style="font-size:14px;color:var(--text-muted);text-align:center;padding:48px 0;line-height:1.6;">Ainda não tens documentos guardados.<br>Analisa um documento para o guardar aqui.</div>';return;}
-  el.innerHTML=docs.map((d,i)=>`
-    <div class="card" onclick="openDoc(${state.savedDocs.indexOf(d)})">
-      <div class="card-header"><div class="card-title">${d.titulo}</div><div class="card-date">${d.savedAt}</div></div>
+  el.innerHTML=docs.map((d,i)=>{
+    var idx = state.savedDocs.indexOf(d);
+    return `
+    <div class="card" onclick="openDoc(${idx})">
+      <div class="card-header">
+        <div class="card-title">${d.titulo}</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          <div class="card-date">${d.savedAt}</div>
+          <button onclick="deleteDoc(${idx}, event)" style="background:none;border:none;color:var(--text-hint);cursor:pointer;font-size:16px;padding:0;line-height:1;" title="Apagar">🗑</button>
+        </div>
+      </div>
       <div class="card-meta">
         ${d.urgente?'<span class="tag tag-urgent">Urgente</span>':''}
         ${d.acao_necessaria?'<span class="tag tag-action">Ação necessária</span>':'<span class="tag tag-info">Informativo</span>'}
         <span class="tag tag-cat">${d.categoria}</span>
       </div>
       ${d.resumo?`<div class="card-preview">${d.resumo.substring(0,80)}...</div>`:''}
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function openDoc(i){
