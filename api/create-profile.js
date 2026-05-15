@@ -34,6 +34,7 @@ export default async function handler(req, res) {
       cidade: cidade || null,
       morada: morada || null,
       codigo_postal: codigo_postal || null,
+      aceita_marketing: aceita_marketing || false,
       plano: 'gratuito'
     })
   });
