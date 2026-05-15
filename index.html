@@ -2056,10 +2056,6 @@ document.addEventListener('visibilitychange', function() {
 });
 
 
-
-<!-- PWA Install Banner — gerado dinamicamente pelo JS abaixo -->
-
-<script>
 // PWA Install Banner
 function getOS() {
   var ua = navigator.userAgent;
@@ -2075,14 +2071,18 @@ function isInstalled() {
 
 function makeBanner(os) {
   var steps = os === 'ios'
-    ? [['1', 'Abre no <b>Safari</b> — não funciona noutros browsers'],
-       ['2', 'Clica no botão <b>⎙ Partilhar</b> na barra inferior'],
-       ['3', 'Clica em <b>"Adicionar ao ecrã inicial"</b>'],
-       ['4', 'Confirma em <b>"Adicionar"</b> no canto superior direito']]
-    : [['1', 'Abre no <b>Google Chrome</b>'],
-       ['2', 'Clica no menu <b>⋮</b> em cima à direita'],
-       ['3', 'Clica em <b>"Adicionar ao ecrã inicial"</b>'],
-       ['4', 'Confirma em <b>"Adicionar"</b>']];
+    ? [
+        'Abre no <b>Safari</b> — não funciona noutros browsers',
+        'Clica no botão <b>Partilhar</b> na barra inferior',
+        'Clica em <b>Adicionar ao ecrã inicial</b>',
+        'Confirma em <b>Adicionar</b> no canto superior direito'
+      ]
+    : [
+        'Abre no <b>Google Chrome</b>',
+        'Clica no menu <b>⋮</b> em cima à direita',
+        'Clica em <b>Adicionar ao ecrã inicial</b>',
+        'Confirma em <b>Adicionar</b>'
+      ];
 
   var videoUrl = os === 'ios'
     ? 'https://youtube.com/shorts/ior6sEBbD-c?feature=share'
@@ -2090,53 +2090,111 @@ function makeBanner(os) {
 
   var title = os === 'ios' ? 'Como instalar no iPhone:' : 'Como instalar no Android:';
 
-  var stepHtml = steps.map(function(s, i) {
-    return '<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;">'
-      + '<div style="min-width:22px;height:22px;border-radius:50%;background:#1D9E75;color:white;'
-      + 'font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
-      + (i + 1)
-      + '</div>'
-      + '<div style="font-size:13px;color:#cccccc;line-height:1.5;">' + s[1] + '</div>'
-      + '</div>';
-  }).join('');
-
   var d = document.createElement('div');
   d.id = 'installBanner';
-  d.style.cssText = [
-    'position:fixed',
-    'bottom:0',
-    'left:0',
-    'right:0',
-    'z-index:99999',
-    'background:#222222',
-    'border-top:2px solid #1D9E75',
-    'max-width:430px',
-    'margin:0 auto'
-  ].join(';');
+  d.setAttribute('style',
+    'position:fixed;bottom:0;left:0;right:0;z-index:99999;' +
+    'background:#222222;border-top:2px solid #1D9E75;' +
+    'max-width:430px;margin:0 auto;'
+  );
 
-  // Monta o HTML em partes — evita problemas de parsing com aspas aninhadas
-  var header =
-    '<div style="background:#1D9E75;padding:14px 16px;">'
-  + '<div style="display:flex;align-items:center;gap:10px;">'
-  + '<div style="width:38px;height:38px;border-radius:9px;background:rgba(255,255,255,0.2);'
-  +      'display:flex;align-items:center;justify-content:center;">'
-  + '<svg width="24" height="24" viewBox="0 0 36 36">'
-  + '<circle cx="18" cy="18" r="11" fill="rgba(255,255,255,0.3)"/>'
-  + '<circle cx="18" cy="18" r="5" fill="white"/>'
-  + '</svg>'
-  + '</div>'
-  + '<div>'
-  + '<div style="font-size:14px;font-weight:700;color:white;">Instalar o Claro-app</div>'
-  + '<div style="font-size:11px;color:rgba(255,255,255,0.75);">Grátis \u00b7 Acesso r\u00e1pido</div>'
-  + '</div>'
-  + '</div>'
-  + '</div>';
+  var inner = document.createElement('div');
 
-  var body =
-    '<div style="padding:14px 16px 28px;">'
-  + '<div style="font-size:13px;font-weight:600;color:white;margin-bottom:10px;">' + title + '</div>'
-  + stepHtml
-  + '<a href="' + videoUrl + '" target="_blank" rel="noopener" '
-  +    'style="display:block;width:100%;padding:12px;background:#1D9E75;color:white;'
-  +    'border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;'
-  +    'text-align:center;ma
+  // Cabeçalho verde
+  var hdr = document.createElement('div');
+  hdr.setAttribute('style', 'background:#1D9E75;padding:14px 16px;');
+  hdr.innerHTML =
+    '<div style="display:flex;align-items:center;gap:10px;">' +
+    '<div style="width:38px;height:38px;border-radius:9px;background:rgba(255,255,255,0.2);' +
+    'display:flex;align-items:center;justify-content:center;">' +
+    '<svg width="24" height="24" viewBox="0 0 36 36">' +
+    '<circle cx="18" cy="18" r="11" fill="rgba(255,255,255,0.3)"/>' +
+    '<circle cx="18" cy="18" r="5" fill="white"/>' +
+    '</svg></div>' +
+    '<div>' +
+    '<div style="font-size:14px;font-weight:700;color:white;">Instalar o Claro-app</div>' +
+    '<div style="font-size:11px;color:rgba(255,255,255,0.75);">Grátis · Acesso rápido</div>' +
+    '</div></div>';
+
+  // Corpo com passos
+  var bdy = document.createElement('div');
+  bdy.setAttribute('style', 'padding:14px 16px 28px;');
+
+  var titleEl = document.createElement('div');
+  titleEl.setAttribute('style', 'font-size:13px;font-weight:600;color:white;margin-bottom:10px;');
+  titleEl.textContent = title;
+  bdy.appendChild(titleEl);
+
+  steps.forEach(function(txt, i) {
+    var row = document.createElement('div');
+    row.setAttribute('style', 'display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;');
+
+    var num = document.createElement('div');
+    num.setAttribute('style',
+      'min-width:22px;height:22px;border-radius:50%;background:#1D9E75;color:white;' +
+      'font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;'
+    );
+    num.textContent = String(i + 1);
+
+    var lbl = document.createElement('div');
+    lbl.setAttribute('style', 'font-size:13px;color:#cccccc;line-height:1.5;');
+    lbl.innerHTML = txt;
+
+    row.appendChild(num);
+    row.appendChild(lbl);
+    bdy.appendChild(row);
+  });
+
+  // Botão vídeo
+  var videoBtn = document.createElement('a');
+  videoBtn.href = videoUrl;
+  videoBtn.target = '_blank';
+  videoBtn.rel = 'noopener';
+  videoBtn.setAttribute('style',
+    'display:block;width:100%;padding:12px;background:#1D9E75;color:white;' +
+    'border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;' +
+    'text-align:center;margin-top:12px;box-sizing:border-box;'
+  );
+  videoBtn.textContent = 'Ver vídeo com as instruções';
+  bdy.appendChild(videoBtn);
+
+  // Botão fechar
+  var closeBtn = document.createElement('button');
+  closeBtn.setAttribute('style',
+    'width:100%;padding:10px;background:none;border:none;font-size:12px;' +
+    'color:#888888;cursor:pointer;font-family:inherit;margin-top:4px;'
+  );
+  closeBtn.textContent = 'Continuar no browser';
+  closeBtn.addEventListener('click', function() {
+    d.remove();
+    try { sessionStorage.setItem('installBannerDismissed', '1'); } catch(e) {}
+  });
+  bdy.appendChild(closeBtn);
+
+  inner.appendChild(hdr);
+  inner.appendChild(bdy);
+  d.appendChild(inner);
+  return d;
+}
+
+function showInstallBanner() {
+  if (isInstalled()) return;
+  var os = getOS();
+  if (os === 'other') return;
+  if (document.getElementById('installBanner')) return;
+  try { if (sessionStorage.getItem('installBannerDismissed') === '1') return; } catch(e) {}
+  document.body.appendChild(makeBanner(os));
+}
+
+setTimeout(showInstallBanner, 2000);
+
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js');
+  });
+}
+</script>
+
+</body>
+</html>
