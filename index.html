@@ -2078,9 +2078,11 @@ function getOS() {
 function showInstallBanner() {
   if (isInStandaloneMode()) return;
   var banner = document.getElementById('installBanner');
+  if (!banner) return;
   var instructions = document.getElementById('installInstructions');
   var installBtn = document.getElementById('installBtnPWA');
   var os = getOS();
+  console.log('showInstallBanner called, os:', os, 'standalone:', isInStandaloneMode());
   if (os === 'ios') {
     instructions.innerHTML = `
       <div style="background:var(--surface);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
