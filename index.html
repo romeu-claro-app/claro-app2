@@ -2099,14 +2099,6 @@ function showInstallBanner() {
       </div>
       <a href="https://youtube.com/shorts/ior6sEBbD-c?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--green);color:white;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:10px;">▶ Ver vídeo com as instruções</a>
     `;
-  } else if (os === 'android' && deferredPrompt) {
-    instructions.innerHTML = `
-      <div style="background:var(--surface);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
-        <div style="font-size:13px;color:var(--text-muted);line-height:1.5;">Instala a app para acesso rápido e melhor experiência — é grátis.</div>
-      </div>
-      <a href="https://youtube.com/shorts/3WJ0TsYsnSw?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--green);color:white;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:10px;">▶ Ver vídeo com as instruções</a>
-    `;
-    installBtn.style.display = 'block';
   } else if (os === 'android') {
     instructions.innerHTML = `
       <div style="background:var(--surface);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
@@ -2120,6 +2112,7 @@ function showInstallBanner() {
       </div>
       <a href="https://youtube.com/shorts/3WJ0TsYsnSw?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--green);color:white;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:10px;">▶ Ver vídeo com as instruções</a>
     `;
+    if (deferredPrompt) installBtn.style.display = 'block';
   } else {
     return;
   }
