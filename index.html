@@ -2069,6 +2069,10 @@ function isInstalled() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
 
+var ios_html = '<div style="font-size:13px;font-weight:500;color:white;margin-bottom:10px;">Como instalar no iPhone:</div><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"><div style="display:flex;gap:8px;align-items:flex-start;"><div style="min-width:20px;height:20px;border-radius:50%;background:#1D9E75;color:white;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div><div style="font-size:12px;color:#ccc;line-height:1.5;">Abre no <strong style="color:white;">Safari</strong> — não funciona noutros browsers</div></div><div style="display:flex;gap:8px;align-items:flex-start;"><div style="min-width:20px;height:20px;border-radius:50%;background:#1D9E75;color:white;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div><div style="font-size:12px;color:#ccc;line-height:1.5;">Clica no botão <strong style="color:white;">⎙ Partilhar</strong> na barra inferior</div></div><div style="display:flex;gap:8px;align-items:flex-start;"><div style="min-width:20px;height:20px;border-radius:50%;background:#1D9E75;color:white;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div><div style="font-size:12px;color:#ccc;line-height:1.5;">Clica em <strong style="color:white;">Adicionar ao ecrã inicial</strong></div></div><div style="display:flex;gap:8px;align-items:flex-start;"><div style="min-width:20px;height:20px;border-radius:50%;background:#1D9E75;color:white;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div><div style="font-size:12px;color:#ccc;line-height:1.5;">Confirma em <strong style="color:white;">Adicionar</strong> no canto superior direito</div></div></div><a href="https://youtube.com/shorts/ior6sEBbD-c?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#1D9E75;color:white;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;margin-bottom:8px;">▶ Ver vídeo com as instruções</a>';
+
+var android_html = '<div style="font-size:13px;font-weight:500;color:white;margin-bottom:10px;">Como instalar no Android:</div><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"><div style="display:flex;gap:8px;align-items:flex-start;"><div style="min-width:20px;height:20px;border-radius:50%;background:#1D9E75;color:white;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div><div style="font-size:12px;color:#ccc;line-height:1.5;">Abre no <strong style="color:white;">Google Chrome</strong></div></div><div style="display:flex;gap:8px;align-items:flex-start;"><div style="min-width:20px;height:20px;border-radius:50%;background:#1D9E75;color:white;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div><div style="font-size:12px;color:#ccc;line-height:1.5;">Clica no menu <strong style="color:white;">⋮</strong> em cima à direita</div></div><div style="display:flex;gap:8px;align-items:flex-start;"><div style="min-width:20px;height:20px;border-radius:50%;background:#1D9E75;color:white;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div><div style="font-size:12px;color:#ccc;line-height:1.5;">Clica em <strong style="color:white;">Adicionar ao ecrã inicial</strong></div></div><div style="display:flex;gap:8px;align-items:flex-start;"><div style="min-width:20px;height:20px;border-radius:50%;background:#1D9E75;color:white;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div><div style="font-size:12px;color:#ccc;line-height:1.5;">Confirma em <strong style="color:white;">Adicionar</strong></div></div></div><a href="https://youtube.com/shorts/3WJ0TsYsnSw?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#1D9E75;color:white;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;margin-bottom:8px;">▶ Ver vídeo com as instruções</a>';
+
 function showInstallBanner() {
   if (isInstalled()) return;
   var os = getOS();
@@ -2098,9 +2102,13 @@ function showInstallBanner() {
       <a href="https://youtube.com/shorts/3WJ0TsYsnSw?feature=share" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#1D9E75;color:white;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;margin-top:14px;">▶ Ver vídeo com as instruções</a>
     `;
   }
-  var banner = document.getElementById('installBanner');
+  var existing = document.getElementById('installBanner');
+  if (existing) existing.remove();
+  var banner = document.createElement('div');
+  banner.id = 'installBanner';
+  banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1A1A18;border-top:2px solid #1D9E75;max-height:85vh;overflow-y:auto;';
+  banner.innerHTML = '<div style="background:#1D9E75;padding:16px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width='26' height='26' viewBox='0 0 36 36'><circle cx='18' cy='18' r='11' fill='rgba(255,255,255,0.3)'/><circle cx='18' cy='18' r='5' fill='white'/></svg></div><div><div style="font-size:15px;font-weight:700;color:white;">Instalar o Claro-app</div><div style="font-size:11px;color:rgba(255,255,255,0.75);">Grátis · Acesso rápido no teu telemóvel</div></div></div></div><div style="padding:16px 16px 32px;">' + (os==='ios' ? ios_html : android_html) + '<button onclick="document.getElementById('installBanner').remove()" style="width:100%;padding:10px;background:none;border:none;font-size:12px;color:#888;cursor:pointer;font-family:inherit;margin-top:4px;">Continuar no browser</button></div>';
   document.body.appendChild(banner);
-  banner.style.display = 'block';
 }
 
 setTimeout(showInstallBanner, 2000);
@@ -2127,12 +2135,5 @@ if ('serviceWorker' in navigator) {
 </div>
 
 
-<!-- Banner instalação PWA -->
-<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1A1A18;border-top:1px solid #333;box-shadow:0 -8px 32px rgba(0,0,0,0.18);max-height:90vh;overflow-y:auto;">
-  <div style="background:#1D9E75;padding:16px;">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="26" height="26" viewBox="0 0 36 36"><circle cx="18" cy="18" r="11" fill="rgba(255,255,255,0.3)"/><circle cx="18" cy="18" r="5" fill="white"/></svg>
-      </div>
 </body>
 </html>
