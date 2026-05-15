@@ -2055,6 +2055,64 @@ document.addEventListener('visibilitychange', function() {
   }
 });
 
+
+// PWA Install Banner
+var deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+function isInStandaloneMode() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function getOS() {
+  var ua = navigator.userAgent;
+  if (/iPad|iPhone|iPod/.test(ua)) return 'ios';
+  if (/android/i.test(ua)) return 'android';
+  return 'other';
+}
+
+function showInstallBanner() {
+  if (isInStandaloneMode()) return;
+  if (localStorage.getItem('installDismissed')) return;
+  var banner = document.getElementById('installBanner');
+  var instructions = document.getElementById('installInstructions');
+  var installBtn = document.getElementById('installBtnPWA');
+  var os = getOS();
+  if (os === 'ios') {
+    instructions.innerHTML = 'Para instalar no iPhone:<br><strong>1.</strong> Clica no botão de partilha 📤 em baixo<br><strong>2.</strong> Clica em <strong>"Adicionar ao ecrã inicial"</strong>';
+  } else if (os === 'android' && deferredPrompt) {
+    instructions.innerHTML = 'Instala a app para acesso rápido e melhor experiência.';
+    installBtn.style.display = 'block';
+  } else if (os === 'android') {
+    instructions.innerHTML = 'Para instalar no Android:<br><strong>1.</strong> Clica no menu ⋮ do Chrome<br><strong>2.</strong> Clica em <strong>"Adicionar ao ecrã inicial"</strong>';
+  } else {
+    return;
+  }
+  banner.style.display = 'block';
+}
+
+function triggerInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(result) {
+      if (result.outcome === 'accepted') {
+        document.getElementById('installBanner').style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+  }
+}
+
+setTimeout(function() {
+  if (!isInStandaloneMode() && !localStorage.getItem('installDismissed')) {
+    showInstallBanner();
+  }
+}, 3000);
+
 // PWA Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
@@ -2062,5 +2120,22 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+
+<!-- Banner de instalação PWA -->
+<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--card);border-top:0.5px solid var(--border);padding:16px 20px 32px;box-shadow:0 -4px 24px rgba(0,0,0,0.12);">
+  <button onclick="document.getElementById('installBanner').style.display='none';localStorage.setItem('installDismissed','1')" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:18px;color:var(--text-muted);cursor:pointer;">✕</button>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+    <div style="width:44px;height:44px;border-radius:10px;background:var(--green);display:flex;align-items:center;justify-content:center;">
+      <svg width="28" height="28" viewBox="0 0 36 36"><circle cx="18" cy="18" r="11" fill="rgba(255,255,255,0.3)"/><circle cx="18" cy="18" r="5" fill="white"/></svg>
+    </div>
+    <div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);">Instalar Claro-app</div>
+      <div style="font-size:12px;color:var(--text-muted);">Para a melhor experiência</div>
+    </div>
+  </div>
+  <div id="installInstructions" style="font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:14px;"></div>
+  <button id="installBtnPWA" onclick="triggerInstall()" style="display:none;width:100%;padding:12px;background:var(--green);color:white;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;">Instalar agora</button>
+</div>
+
 </body>
 </html>
