@@ -2065,7 +2065,9 @@ window.addEventListener('beforeinstallprompt', function(e) {
 });
 
 function isInStandaloneMode() {
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  console.log('isInStandaloneMode:', standalone, 'navigator.standalone:', window.navigator.standalone, 'matchMedia:', window.matchMedia('(display-mode: standalone)').matches);
+  return standalone;
 }
 
 function getOS() {
