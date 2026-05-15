@@ -3,6 +3,8 @@ export default async function handler(req, res) {
 
   const { id, nome, email, telefone, data_nascimento, cidade, morada, codigo_postal, aceita_marketing } = req.body;
 
+  console.log('create-profile body:', JSON.stringify({ id, nome, email, cidade, codigo_postal, aceita_marketing }));
+
   if (!id || !nome || !email) {
     return res.status(400).json({ error: 'Campos obrigatórios em falta.' });
   }
@@ -32,7 +34,6 @@ export default async function handler(req, res) {
       cidade: cidade || null,
       morada: morada || null,
       codigo_postal: codigo_postal || null,
-      aceita_marketing: aceita_marketing || false,
       plano: 'gratuito'
     })
   });
