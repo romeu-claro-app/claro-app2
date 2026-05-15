@@ -2062,7 +2062,7 @@ var deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', function(e) {
   e.preventDefault();
   deferredPrompt = e;
-  showInstallBanner();
+  setTimeout(showInstallBanner, 100);
 });
 
 function isInStandaloneMode() {
@@ -2153,7 +2153,7 @@ if ('serviceWorker' in navigator) {
 </script>
 
 <!-- Banner de instalação PWA -->
-<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--card);border-top:0.5px solid var(--border);box-shadow:0 -8px 32px rgba(0,0,0,0.18);max-height:90vh;overflow-y:auto;">
+<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--card);border-top:0.5px solid var(--border);box-shadow:0 -8px 32px rgba(0,0,0,0.18);max-height:90vh;overflow-y:auto;min-height:200px;">
   <div style="background:var(--green);padding:20px 16px 16px;">
     <div style="display:flex;align-items:center;gap:10px;">
       <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
