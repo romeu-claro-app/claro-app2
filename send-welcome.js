@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
   const primeiroNome = nome.split(' ')[0];
 
   try {
+    // Email de boas-vindas ao utilizador
     const r = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: {
@@ -40,7 +41,7 @@ module.exports = async (req, res) => {
 </div>
 <p style="font-size:14px;color:#5A5955;line-height:1.7;margin:0 0 28px;">Fotografa, importa ou cola o texto de qualquer documento em alemão, francês ou italiano. A nossa IA explica-te tudo — o que significa, o que tens de fazer e quando.</p>
 <div style="text-align:center;margin-bottom:28px;">
-<a href="https://claro-app2.vercel.app" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Abrir o Claro-app →</a>
+<a href="https://app.claro-app.ch" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Abrir o Claro-app →</a>
 </div>
 <div style="border-top:1px solid #E8E6DF;padding-top:20px;">
 <p style="font-size:13px;color:#A8A69F;margin:0;">Dúvidas? Contacta-nos em <a href="mailto:suporte@claro-app.ch" style="color:#1D9E75;">suporte@claro-app.ch</a></p>
@@ -56,6 +57,27 @@ module.exports = async (req, res) => {
       })
     });
     const data = await r.json();
+
+    // Notificacao interna — novo utilizador
+    await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': process.env.BREVO_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: { name: 'Claro-app', email: 'suporte@claro-app.ch' },
+        to: [{ email: 'suporte@claro-app.ch', name: 'Romeu' }],
+        subject: '🆕 Novo utilizador — ' + nome,
+        htmlContent: `<p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#1A1A18;">
+          Novo registo no Claro-app:<br><br>
+          <strong>Nome:</strong> ${nome}<br>
+          <strong>Email:</strong> ${email}<br><br>
+          <a href="https://app.supabase.com" style="color:#1D9E75;">Ver no Supabase →</a>
+        </p>`
+      })
+    });
+
     return res.status(200).json({ success: true, messageId: data.messageId });
   } catch (error) {
     return res.status(500).json({ error: error.message });
