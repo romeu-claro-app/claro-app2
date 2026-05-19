@@ -1443,7 +1443,7 @@ function renderResult(r){
       h+=`</ul></div>`;
     }
     if(r.consequencias) h+=`<div class="block"><div class="block-label">Se não fizeres nada</div><div class="block-text">${r.consequencias}</div></div>`;
-    h+=`<div class="help-box"><div class="help-text">Evita erros ou custos desnecessários. Um consultor pode ajudar-te com este documento.</div><button class="help-btn" onclick="openBooking()">Precisas de ajuda com este documento?</button></div>`;
+    h+=`<div class="help-box"><div class="help-text">Evita erros ou custos desnecessários. Um consultor pode ajudar-te com este documento.</div><button class="help-btn" onclick="goConsulta()">Precisas de ajuda com este documento?</button></div>`;
   }
   h+=`<button class="btn-primary" style="margin-top:4px;" onclick="showScreen('documentos')">Ver documentos guardados →</button>`;
   document.getElementById('resultArea').innerHTML=h;
@@ -1520,7 +1520,7 @@ function openDoc(i){
       r.passos.forEach((s,idx)=>{h+=`<li><span class="step-num">${idx+1}</span>${s}</li>`;});
       h+=`</ul></div>`;
     }
-    h+=`<div class="help-box"><div class="help-text">Evita erros ou custos desnecessários.</div><button class="help-btn" onclick="openBooking()">Precisas de ajuda com este documento?</button></div>`;
+    h+=`<div class="help-box"><div class="help-text">Evita erros ou custos desnecessários.</div><button class="help-btn" onclick="goConsulta()">Precisas de ajuda com este documento?</button></div>`;
   }
   document.getElementById('detailContent').innerHTML=h;
   document.getElementById('detailOverlay').classList.add('open');
@@ -1772,7 +1772,7 @@ const UNAVAILABLE=['10:00','15:30'];
 const TIMES=['09:00','09:30','10:00','10:30','11:00','11:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00'];
 let curMonth,curYear,selDate=null,selTime=null,selType='video';
 
-function openBooking(){
+function goConsulta(){
   if(!state.isPro){ openPaywall(); return; }
   document.getElementById('bookingOverlay').classList.add('open');
   if(!curMonth){ const n=new Date(); curMonth=n.getMonth(); curYear=n.getFullYear(); }
