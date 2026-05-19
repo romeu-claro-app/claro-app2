@@ -1408,15 +1408,16 @@ var savedDoc = await sbPost('documentos', {
   consequencias: r.consequencias || '',
   idioma_original: r.idioma_original || ''
 });
-if (Array.isArray(savedDoc) && savedDoc[0]) {
-  doc.db_id = savedDoc[0].id;
-}
-    clearFile();
-    updateHome();
-    if(r.acao_necessaria) state.notifs.push({title:r.titulo,desc:r.o_que_fazer,urgent:r.urgente});
-    updatePlanLabel();
-    renderResult(r);
-  }catch(e){
+    if (Array.isArray(savedDoc) && savedDoc[0]) {
+      doc.db_id = savedDoc[0].id;
+    }
+  }
+  clearFile();
+  updateHome();
+  if(r.acao_necessaria) state.notifs.push({title:r.titulo,desc:r.o_que_fazer,urgent:r.urgente});
+  updatePlanLabel();
+  renderResult(r);
+  } catch(e) {
     document.getElementById('resultArea').innerHTML=`<div class="block"><div class="block-text" style="color:var(--red);">Erro ao analisar. Verifica a tua ligação ou a chave de API e tenta novamente.</div></div>`;
   }
   btn.disabled=false; btn.innerHTML='Analisar com IA';
