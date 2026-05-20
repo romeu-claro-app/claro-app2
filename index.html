@@ -1775,12 +1775,7 @@ let curMonth,curYear,selDate=null,selTime=null,selType='video';
 
 function goConsulta(){
   if(!state.isPro){ openPaywall(); return; }
-  document.getElementById('bookingOverlay').classList.add('open');
-  if(!curMonth){ const n=new Date(); curMonth=n.getMonth(); curYear=n.getFullYear(); }
-  // Pré-preencher com dados do perfil
-  document.getElementById('bkName').value=document.getElementById('inputName').value||'';
-  document.getElementById('bkEmail').value=document.getElementById('inputEmail').value||'';
-  renderCal();
+  window.open('https://calendly.com/romeu-m/new-meeting', '_blank');
 }
 function closeBooking(){ document.getElementById('bookingOverlay').classList.remove('open'); }
 
