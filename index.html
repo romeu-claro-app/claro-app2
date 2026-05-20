@@ -1386,6 +1386,8 @@ async function analyseDoc(){
       body:JSON.stringify({messages:[{role:'user',content:messageContent}]})
     });
     const data=await res.json();
+    if(data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    if(!data.content || !data.content[0] || !data.content[0].text) throw new Error('Resposta inválida da API');
     const raw=data.content[0].text.replace(/```json|```/g,'').trim();
     const r=JSON.parse(raw);
     state.docsUsed++;
@@ -1418,7 +1420,17 @@ var savedDoc = await sbPost('documentos', {
   updatePlanLabel();
   renderResult(r);
   } catch(e) {
-    document.getElementById('resultArea').innerHTML=`<div class="block"><div class="block-text" style="color:var(--red);">Erro ao analisar. Verifica a tua ligação ou a chave de API e tenta novamente.</div></div>`;
+    var errMsg = e.message || 'Erro desconhecido';
+    var userMsg = 'Erro ao analisar. Tenta novamente.';
+    if(errMsg.includes('too large') || errMsg.includes('file size') || errMsg.includes('Request too large')) {
+      userMsg = 'Ficheiro demasiado grande. Tenta com uma imagem mais pequena ou cola o texto diretamente.';
+    } else if(errMsg.includes('rate') || errMsg.includes('overload')) {
+      userMsg = 'Serviço temporariamente sobrecarregado. Aguarda uns segundos e tenta novamente.';
+    } else if(errMsg.includes('invalid_api_key') || errMsg.includes('authentication')) {
+      userMsg = 'Erro de autenticação. Contacta suporte@claro-app.ch';
+    }
+    document.getElementById('resultArea').innerHTML=`<div class="block"><div class="block-text" style="color:var(--red);">${userMsg}</div></div>`;
+    console.error('analyseDoc error:', errMsg);
   }
   btn.disabled=false; btn.innerHTML='Analisar com IA';
 }
