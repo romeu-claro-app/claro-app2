@@ -750,7 +750,7 @@ async function cancelSubscription() {
   if(btn) { btn.disabled = true; btn.textContent = 'A cancelar...'; }
 
   try {
-    var r = await fetch('/api/cancel', {
+    var r = await fetch('https://app.claro-app.ch/api/cancel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: currentUser.id, requestRefund: !temConsultaRealizada })
@@ -1145,14 +1145,14 @@ async function doRegister() {
   } else {
     if(data.access_token) accessToken=data.access_token;
     if(data.user && data.user.id){
-      await fetch('/api/create-profile', {
+      await fetch('https://app.claro-app.ch/api/create-profile', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({id:data.user.id,nome:nome,email:email,telefone:phone,data_nascimento:dob||null,cidade:cidade||null,morada:morada||null,codigo_postal:cp||null,aceita_marketing:aceitaMarketing})
       });
     }
     // Enviar email de boas-vindas
-    fetch('/api/send-welcome', {
+    fetch('https://app.claro-app.ch/api/send-welcome', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email, nome: nome, aceita_marketing: aceitaMarketing })
@@ -1278,7 +1278,7 @@ async function loadUserAndStart(user) {
     var successNome = profile ? (profile.nome || user.email.split('@')[0]) : user.email.split('@')[0];
     history.replaceState({},'','/');
     // Enviar email de upgrade
-    fetch('/api/send-upgrade', {
+    fetch('https://app.claro-app.ch/api/send-upgrade', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: successEmail, nome: successNome })
@@ -1380,7 +1380,7 @@ async function analyseDoc(){
     } else {
       messageContent = prompt;
     }
-    const res=await fetch('/api/analyse',{
+    const res=await fetch('https://app.claro-app.ch/api/analyse',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({messages:[{role:'user',content:messageContent}]})
@@ -1749,7 +1749,7 @@ document.getElementById('pw-cta').addEventListener('click', async ()=>{
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>A redirecionar...';
   try {
-    const res = await fetch('/api/checkout', {
+    const res = await fetch('https://app.claro-app.ch/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ priceId, promoCode: (document.getElementById('promoCode')||{value:''}).value.trim() || null })
