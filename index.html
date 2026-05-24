@@ -1285,6 +1285,56 @@ async function loadUserAndStart(user) {
     }).catch(function(){});
     setTimeout(function(){alert('Bem-vindo ao Claro-app+!');},500);
   }
+
+  // ── NOTIFICAÇÕES PUSH ──
+  initPushNotifications();
+}
+
+async function initPushNotifications() {
+  // Só funciona na app Android/iOS (Capacitor), não no browser
+  if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+
+  try {
+    const { PushNotifications } = window.Capacitor.Plugins;
+
+    // Pedir permissão ao utilizador
+    const permResult = await PushNotifications.requestPermissions();
+    if (permResult.receive !== 'granted') return;
+
+    // Registar no Firebase
+    await PushNotifications.register();
+
+    // Quando o Firebase devolve o token do dispositivo
+    PushNotifications.addListener('registration', function(token) {
+      console.log('FCM Token:', token.value);
+      // Guardar o token no Supabase para poder enviar notificações depois
+      if (currentUser && token.value) {
+        sbPatch('profiles', 'id=eq.' + currentUser.id, { fcm_token: token.value })
+          .catch(function(e) { console.log('Erro a guardar token:', e); });
+      }
+    });
+
+    // Quando chega uma notificação com a app aberta
+    PushNotifications.addListener('pushNotificationReceived', function(notification) {
+      console.log('Notificação recebida:', notification);
+      // Mostrar como alerta simples por agora
+      if (notification.title) {
+        var msg = notification.title;
+        if (notification.body) msg += '\n' + notification.body;
+        alert(msg);
+      }
+    });
+
+    // Quando o utilizador clica numa notificação
+    PushNotifications.addListener('pushNotificationActionPerformed', function(action) {
+      console.log('Notificação clicada:', action);
+      // Por agora vai para o ecrã principal
+      showScreen('analisar');
+    });
+
+  } catch(e) {
+    console.log('Push notifications não disponíveis:', e);
+  }
 }
 
 async function doLogout() {
