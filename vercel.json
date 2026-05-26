@@ -18,6 +18,10 @@
     {
       "path": "/api/notify-conversion",
       "schedule": "0 9 * * 1"
+    },
+    {
+      "path": "/api/notify-inactive",
+      "schedule": "0 10 * * *"
     }
   ]
 }
