@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { id, nome, email, telefone, data_nascimento, cidade, morada, codigo_postal, aceita_marketing } = req.body;
+  const { id, nome, email, telefone, data_nascimento, cidade, morada, codigo_postal, aceita_marketing, plataforma } = req.body;
 
   console.log('create-profile body:', JSON.stringify({ id, nome, email, cidade, codigo_postal, aceita_marketing }));
 
@@ -35,7 +35,8 @@ export default async function handler(req, res) {
       morada: morada || null,
       codigo_postal: codigo_postal || null,
       aceita_marketing: aceita_marketing === true ? true : false,
-      plano: 'gratuito'
+      plano: 'gratuito',
+      plataforma: plataforma || null
     })
   });
 
