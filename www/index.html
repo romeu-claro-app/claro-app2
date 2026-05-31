@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Claro-app.ch — Documentos oficiais em português</title>
+  <meta name="description" content="Ajudamos imigrantes portugueses na Suíça a entender documentos oficiais em alemão, francês e italiano.">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --green:#1D9E75;--green-dark:#0F6E56;--green-light:#E1F5EE;--green-mid:#9FE1CB;
+      --bg:#F7FAF9;--card:#ffffff;--border:#D0EAE2;--text:#2C2C2A;--text-muted:#5F5E5A;
+      --text-hint:#B4B2A9;--surface:#F1EFE8;--red:#E24B4A;--amber:#EF9F27;
+      --amber-light:#FAEEDA;--amber-dark:#633806;--red-light:#FCEBEB;--red-dark:#791F1F;
+    }
+    @media(prefers-color-scheme:dark){
+      :root{--bg:#1a1a18;--card:#242422;--border:#2e2e2b;--text:#f0ede8;
+        --text-muted:#9a9890;--text-hint:#5a5956;--surface:#2e2e2b;
+        --green-light:#0d3326;--green-mid:#0f4d38;}
+    }
+    html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text)}
+    .app{max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+
+    /* ONBOARDING */
+    .onboard{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center}
+    .onboard-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px}
+    .onboard-title{font-size:26px;font-weight:500;color:var(--text);margin-bottom:10px;line-height:1.3}
+    .onboard-sub{font-size:15px;color:var(--text-muted);margin-bottom:36px;line-height:1.6}
+    .onboard-features{width:100%;margin-bottom:32px}
+    .onboard-feat{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--border);text-align:left}
+    .onboard-feat:last-child{border-bottom:none}
+    .feat-icon{width:40px;height:40px;border-radius:10px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .feat-text{font-size:14px;color:var(--text);font-weight:500}
+    .feat-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+
+    /* HEADER */
+    .header{background:var(--card);padding:14px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+    .logo-wrap{display:flex;align-items:center;gap:9px}
+    .logo-icon{width:34px;height:34px}
+    .logo-main{font-size:20px;font-weight:600;color:var(--green);letter-spacing:-0.3px}
+    .logo-sub{font-size:14px;color:var(--green-dark)}
+    .avatar{width:34px;height:34px;border-radius:50%;background:var(--green-light);color:var(--green-dark);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--green-mid);cursor:pointer}
+
+    /* NAV */
+    .nav{display:flex;background:var(--card);border-bottom:0.5px solid var(--border)}
+    .nav-btn{flex:1;padding:10px 4px 8px;font-size:11px;color:var(--text-muted);background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit;transition:color 0.15s}
+    .nav-btn.active{color:var(--green);font-weight:500}
+    .nav-bar{width:20px;height:2px;background:transparent;border-radius:2px;margin-top:2px}
+    .nav-btn.active .nav-bar{background:var(--green)}
+    .nav-icon{width:20px;height:20px}
+
+    /* SCREENS */
+    .screen{display:none;flex:1;padding:16px;overflow-y:auto}
+    .screen.active{display:block !important}
+    .section-title{font-size:11px;color:var(--text-hint);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.6px;font-weight:500}
+
+    /* CARDS */
+    .card{background:var(--card);border-radius:14px;border:0.5px solid var(--border);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.15s}
+    .card:hover{border-color:var(--green-mid)}
+    .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+    .card-title{font-size:14px;font-weight:500;color:var(--text);line-height:1.3}
+    .card-date{font-size:11px;color:var(--text-hint);white-space:nowrap;margin-left:8px}
+    .card-meta{display:flex;gap:5px;flex-wrap:wrap}
+    .card-preview{font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.5}
+
+    /* TAGS */
+    .tag{font-size:10px;padding:3px 8px;border-radius:10px;font-weight:500}
+    .tag-urgent{background:#FCEBEB;color:#791F1F}
+    .tag-action{background:#FAEEDA;color:#633806}
+    .tag-info{background:#E1F5EE;color:#085041}
+    .tag-deadline{background:#FAECE7;color:#712B13}
+    .tag-cat{background:var(--surface);color:var(--text-muted)}
+
+    /* BUTTONS */
+    .btn-primary{width:100%;background:var(--green);color:white;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;transition:background 0.15s}
+    .btn-primary:hover{background:var(--green-dark)}
+    .btn-primary:disabled{background:var(--surface);color:var(--text-hint);cursor:default}
+    .btn-secondary{width:100%;background:var(--surface);color:var(--text);border:0.5px solid var(--border);border-radius:10px;padding:14px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+    .stat-card{background:var(--surface);border-radius:10px;padding:14px}
+    .stat-num{font-size:26px;font-weight:500;color:var(--text)}
+    .stat-label{font-size:12px;color:var(--text-muted);margin-top:2px}
+
+    /* FILTER */
+    .filter-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
+    .filter-row::-webkit-scrollbar{display:none}
+    .filter-chip{font-size:12px;padding:6px 13px;border-radius:20px;border:0.5px solid var(--border);background:var(--card);color:var(--text-muted);cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit}
+    .filter-chip.active{background:var(--green);color:white;border-color:var(--green)}
+
+    /* ALERTS */
+    .alert{border-radius:10px;padding:14px 16px;margin-bottom:12px}
+    .alert-warning{background:#FAEEDA;border:0.5px solid #FAC775}
+    .alert-warning .alert-text{font-size:14px;color:#633806;font-weight:500}
+    .alert-ok{background:#E1F5EE;border:0.5px solid #9FE1CB}
+    .alert-ok .alert-text{font-size:14px;color:#085041;font-weight:500}
+
+    /* BLOCK */
+    .block{background:var(--card);border-radius:10px;border:0.5px solid var(--border);padding:14px 16px;margin-bottom:10px}
+    .block-label{font-size:11px;color:var(--text-hint);text-transform:uppercase;letter-spacing:0.5px;font-weight:500;margin-bottom:6px}
+    .block-text{font-size:14px;color:var(--text);line-height:1.6}
+
+    /* STEPS */
+    .steps-list{list-style:none;padding:0}
+    .steps-list li{display:flex;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);font-size:14px;color:var(--text);line-height:1.5;align-items:flex-start}
+    .steps-list li:last-child{border-bottom:none}
+    .step-num{min-width:22px;height:22px;background:var(--green);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;margin-top:1px}
+
+    /* HELP BOX */
+    .help-box{background:var(--green-light);border-radius:10px;border:0.5px solid var(--green-mid);padding:16px;margin-bottom:12px}
+    .help-text{font-size:13px;color:#085041;margin-bottom:12px;line-height:1.5}
+    .help-btn{background:var(--green);color:white;border:none;border-radius:8px;padding:13px 16px;font-size:14px;font-weight:500;width:100%;cursor:pointer;font-family:inherit}
+
+    /* UPLOAD */
+    .upload-btn{width:100%;background:var(--green);color:white;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;font-family:inherit}
+    .upload-btn:hover{background:var(--green-dark)}
+
+    /* TEXTAREA */
+    .textarea{width:100%;min-height:130px;padding:12px;border-radius:10px;border:0.5px solid var(--border);background:var(--card);font-size:14px;color:var(--text);font-family:inherit;resize:vertical;line-height:1.6;margin-bottom:8px}
+    .textarea:focus{outline:none;border-color:var(--green)}
+    .char-count{font-size:12px;color:var(--text-hint);text-align:right;margin-bottom:10px}
+    .sample-btn{font-size:12px;color:var(--green);background:none;border:0.5px solid var(--green-mid);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:inherit;margin-right:6px;margin-bottom:10px}
+
+    /* SPINNER */
+    .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* DETAIL */
+    .detail-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:100;max-width:430px;margin:0 auto;overflow-y:auto}
+    .detail-overlay.open{display:block}
+    .detail-header{background:var(--card);padding:14px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px;position:sticky;top:0}
+    .back-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--green);line-height:1;padding:0 8px 0 0}
+    .detail-title{font-size:15px;font-weight:500;color:var(--text)}
+    .detail-content{padding:16px}
+
+    /* PAYWALL */
+    .paywall-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;max-width:430px;margin:0 auto;overflow-y:auto}
+    .paywall-overlay.open{display:block}
+    .paywall-sheet{background:var(--card);border-radius:0;padding:24px 20px 48px;width:100%;min-height:100%;}
+    .paywall-logo{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:16px}
+    .paywall-title{font-size:20px;font-weight:500;color:var(--text);text-align:center;margin-bottom:6px}
+    .paywall-sub{font-size:14px;color:var(--text-muted);text-align:center;margin-bottom:20px;line-height:1.5}
+    .toggle-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px}
+    .toggle-label{font-size:13px;color:var(--text-muted)}
+    .toggle-label.active{color:var(--text);font-weight:500}
+    .toggle-switch{width:44px;height:26px;border-radius:13px;background:var(--green);border:none;cursor:pointer;position:relative;flex-shrink:0}
+    .toggle-dot{position:absolute;top:3px;width:20px;height:20px;border-radius:50%;background:white;transition:left 0.2s;left:3px}
+    .toggle-switch.annual .toggle-dot{left:21px}
+    .badge-save{font-size:11px;background:var(--green-light);color:#085041;border-radius:10px;padding:3px 8px;font-weight:500}
+    .price-big{text-align:center;margin-bottom:4px}
+    .price-big span{font-size:36px;font-weight:500;color:var(--text)}
+    .price-big small{font-size:15px;color:var(--text-muted)}
+    .price-note{font-size:12px;color:var(--text-hint);text-align:center;margin-bottom:20px;min-height:18px}
+    .paywall-features{list-style:none;margin-bottom:12px}
+    .paywall-features li{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);padding:6px 0}
+    .paywall-features li span.check{color:var(--green);font-size:16px}
+    .bonus-box{background:linear-gradient(135deg,#0F6E56 0%,#1D9E75 100%);border-radius:12px;padding:14px;margin-bottom:16px}
+    .bonus-title{font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+    .bonus-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:0.5px solid rgba(255,255,255,0.15)}
+    .bonus-item:last-child{border-bottom:none;padding-bottom:0}
+    .bonus-icon{width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .bonus-info{flex:1}
+    .bonus-name{font-size:13px;font-weight:500;color:white}
+    .bonus-desc{font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;line-height:1.4}
+    .bonus-price{font-size:11px;color:rgba(255,255,255,0.5);text-decoration:line-through;flex-shrink:0;margin-top:2px}
+    .paywall-close{width:100%;padding:13px;background:var(--surface);border:none;border-radius:10px;font-size:14px;color:var(--text-muted);cursor:pointer;font-family:inherit;margin-top:10px}
+
+    /* PROFILE */
+    .profile-card{background:var(--card);border-radius:14px;border:0.5px solid var(--border);padding:24px 16px;margin-bottom:14px;text-align:center}
+    .profile-avatar{width:64px;height:64px;border-radius:50%;background:var(--green-light);color:var(--green-dark);font-size:22px;font-weight:600;display:flex;align-items:center;justify-content:center;border:2px solid var(--green-mid);margin:0 auto 12px}
+    .profile-name{font-size:18px;font-weight:500;color:var(--text)}
+    .profile-email{font-size:13px;color:var(--text-muted);margin-top:4px}
+    .input-row{margin-bottom:12px}
+    .input-label{font-size:12px;color:var(--text-muted);margin-bottom:5px}
+    .input-field{width:100%;padding:11px 13px;border-radius:10px;border:0.5px solid var(--border);background:var(--surface);font-size:14px;color:var(--text);font-family:inherit}
+    .input-field:focus{outline:none;border-color:var(--green)}
+
+    /* NOTIFS */
+    .notif-item{background:var(--card);border-radius:10px;border:0.5px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+    .notif-dot{width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:5px;flex-shrink:0}
+    .notif-dot.green{background:var(--green)}
+    .notif-body{flex:1}
+    .notif-title{font-size:14px;font-weight:500;color:var(--text)}
+    .notif-desc{font-size:13px;color:var(--text-muted);margin-top:2px}
+    .notif-time{font-size:11px;color:var(--text-hint);margin-top:4px}
+
+    /* BOOKING */
+    .booking-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:150;max-width:430px;margin:0 auto;overflow-y:auto}
+    .booking-overlay.open{display:block}
+    .type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+    .type-btn{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:12px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font-family:inherit}
+    .type-btn.selected{border:2px solid var(--green);background:var(--green-light)}
+    .type-icon{font-size:20px}
+    .type-label{font-size:12px;font-weight:500;color:var(--text)}
+    .type-sub{font-size:10px;color:var(--text-muted)}
+    .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .cal-month{font-size:15px;font-weight:500;color:var(--text)}
+    .cal-nav{background:none;border:0.5px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:15px;color:var(--text);display:flex;align-items:center;justify-content:center;font-family:inherit}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:16px}
+    .cal-day-label{font-size:11px;color:var(--text-hint);text-align:center;padding:4px 0;font-weight:500}
+    .cal-wrap{display:flex;flex-direction:column;align-items:center}
+    .cal-day{width:100%;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;color:var(--text);background:none;border:none;font-family:inherit}
+    .cal-day.today{color:var(--green);font-weight:500}
+    .cal-day.selected{background:var(--green);color:white}
+    .cal-day.disabled{color:var(--text-hint);cursor:default;opacity:0.3}
+    .cal-day:hover:not(.disabled):not(.empty){background:var(--green-light)}
+    .dot{width:4px;height:4px;border-radius:50%;background:var(--green);margin-top:1px}
+    .dot.hidden{visibility:hidden}
+    .times-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+    .time-btn{background:var(--card);border:0.5px solid var(--border);border-radius:10px;padding:10px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;font-family:inherit;text-align:center}
+    .time-btn:hover:not(.unavailable){border-color:var(--green-mid)}
+    .time-btn.selected{background:var(--green);color:white;border-color:var(--green)}
+    .time-btn.unavailable{opacity:0.3;cursor:default;text-decoration:line-through}
+    .summary-box{background:var(--green-light);border:0.5px solid var(--green-mid);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+    .summary-row{display:flex;justify-content:space-between;font-size:13px;color:#085041;padding:4px 0;border-bottom:0.5px solid var(--green-mid)}
+    .summary-row:last-child{border-bottom:none}
+    .summary-row span:first-child{opacity:0.7}
+    .summary-row span:last-child{font-weight:500}
+    .success-screen{display:none;padding:28px 20px;text-align:center}
+    .success-screen.show{display:block}
+    .success-icon{width:64px;height:64px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px}
+    .success-title{font-size:20px;font-weight:500;color:var(--text);margin-bottom:8px}
+    .success-sub{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:20px}
+    .success-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:0 16px;margin-bottom:16px;text-align:left}
+    .success-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border);font-size:13px}
+    .success-row:last-child{border-bottom:none}
+    .success-row .lbl{color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+    .success-row .val{color:var(--text);font-weight:500;text-align:right}
+    .float-btn{background:var(--green);color:white;border:none;border-radius:24px;padding:13px 18px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:7px;margin:16px auto 0;font-family:inherit}
+  </style>
+<link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Claro-app">
+<meta name="theme-color" content="#1D9E75">
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<!-- DESKTOP PAGE -->
+<div id="desktopPage" style="display:none;min-height:100vh;background:var(--bg);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px 24px;max-width:430px;margin:0 auto;">
+  <div style="margin-bottom:32px;">
+    <svg width="72" height="72" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
+  </div>
+  <div style="font-size:28px;font-weight:600;color:#1D9E75;margin-bottom:8px;">claro-app<span style="color:#0F6E56;font-size:20px;">.ch</span></div>
+  <div style="font-size:18px;font-weight:500;color:var(--text);margin-bottom:12px;line-height:1.4;">Documentos suíços,<br>explicados em português.</div>
+  <div style="font-size:14px;color:var(--text-muted);margin-bottom:40px;line-height:1.6;">O Claro-app é uma aplicação móvel.<br>Descarrega-a no teu telemóvel para começar.</div>
+  
+  <div style="width:100%;max-width:300px;">
+    <a href="https://apps.apple.com" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:12px;background:#000;color:white;border-radius:12px;padding:14px 20px;text-decoration:none;margin-bottom:12px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      <div style="text-align:left;">
+        <div style="font-size:10px;opacity:0.8;">Disponível na</div>
+        <div style="font-size:16px;font-weight:600;">App Store</div>
+      </div>
+    </a>
+    
+    <a href="https://play.google.com" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:12px;background:#1a1a1a;color:white;border-radius:12px;padding:14px 20px;text-decoration:none;margin-bottom:32px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M3 20.5v-17c0-.83.94-1.3 1.6-.8l14 8.5c.6.37.6 1.23 0 1.6l-14 8.5c-.66.5-1.6.03-1.6-.8z"/></svg>
+      <div style="text-align:left;">
+        <div style="font-size:10px;opacity:0.8;">Disponível no</div>
+        <div style="font-size:16px;font-weight:600;">Google Play</div>
+      </div>
+    </a>
+    
+    <div style="font-size:12px;color:var(--text-hint);line-height:1.6;">
+      Já tens conta?<br>Abre a app no teu telemóvel para entrar.
+    </div>
+  </div>
+</div>
+
+<!-- AUTH SCREENS -->
+<div id="authScreen" style="display:none;min-height:100vh;background:var(--bg);max-width:430px;margin:0 auto;">
+  
+  <!-- LOGO TOPO -->
+  <div style="padding:48px 24px 24px;text-align:center;">
+    <svg width="56" height="56" viewBox="0 0 36 36" style="margin-bottom:12px;"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
+    <div style="font-size:26px;font-weight:600;color:#1D9E75;">claro-app<span style="font-size:18px;color:#0F6E56;">.ch</span></div>
+    <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">Documentos suíços em português</div>
+  </div>
+
+  <!-- TABS LOGIN / CRIAR CONTA -->
+  <div style="display:flex;margin:0 24px 24px;background:var(--surface);border-radius:10px;padding:3px;">
+    <button id="tabLogin" onclick="switchTab('login')" style="flex:1;padding:9px;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;background:var(--card);color:var(--text);">Entrar</button>
+    <button id="tabRegister" onclick="switchTab('register')" style="flex:1;padding:9px;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;background:transparent;color:var(--text-muted);">Criar conta</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginForm" style="padding:0 24px;">
+    <div class="input-row"><div class="input-label">Email</div><input class="input-field" id="loginEmail" type="email" placeholder="email@exemplo.com" autocomplete="email"></div>
+    <div class="input-row" style="margin-bottom:6px;">
+      <div class="input-label">Password</div>
+      <div style="position:relative;">
+        <input class="input-field" id="loginPassword" type="password" placeholder="A tua password" autocomplete="current-password" style="padding-right:40px;">
+        <button type="button" onclick="togglePw('loginPassword','eyeLogin')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-muted);" id="eyeLogin">👁</button>
+      </div>
+    </div>
+    <button onclick="forgotPassword()" style="font-size:12px;color:var(--green);background:none;border:none;cursor:pointer;font-family:inherit;margin-bottom:16px;padding:0;">Esqueci-me da password</button>
+    <div id="loginError" style="display:none;background:var(--red-light,#FCEBEB);border-radius:8px;padding:10px 12px;font-size:13px;color:#791F1F;margin-bottom:12px;"></div>
+    <button class="btn-primary" id="loginBtn" onclick="doLogin()">Entrar</button>
+    
+  </div>
+
+  <!-- REGISTO -->
+  <div id="registerForm" style="display:none;padding:0 24px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="input-row"><div class="input-label">Primeiro nome *</div><input class="input-field" id="regPrimeiroNome" type="text" placeholder="Ex: João" autocomplete="given-name"></div>
+        <div class="input-row"><div class="input-label">Apelido *</div><input class="input-field" id="regApelido" type="text" placeholder="Ex: Silva" autocomplete="family-name"></div>
+      </div>
+    <div class="input-row"><div class="input-label">Email *</div><input class="input-field" id="regEmail" type="email" placeholder="email@exemplo.com" autocomplete="email"></div>
+    <div class="input-row"><div class="input-label">Telemóvel</div><input class="input-field" id="regPhone" type="tel" placeholder="+41 79 000 00 00"></div>
+    <div class="input-row"><div class="input-label">Data de nascimento</div><input class="input-field" id="regDob" type="date"></div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;">
+      <div class="input-row"><div class="input-label">Morada (rua)</div><input class="input-field" id="regRua" type="text" placeholder="Ex: Rue du Lac"></div>
+      <div class="input-row"><div class="input-label">Número</div><input class="input-field" id="regNumero" type="text" placeholder="Ex: 12"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;">
+      <div class="input-row"><div class="input-label">Código postal *</div><input class="input-field" id="regCp" type="text" placeholder="Ex: 1820"></div>
+      <div class="input-row"><div class="input-label">Vila / Cidade *</div><input class="input-field" id="regCidade" type="text" placeholder="Ex: Montreux"></div>
+    </div>
+    <div class="input-row">
+      <div class="input-label">Password *</div>
+      <div style="position:relative;">
+        <input class="input-field" id="regPassword" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" style="padding-right:40px;">
+        <button type="button" onclick="togglePw('regPassword','eyeReg')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-muted);" id="eyeReg">👁</button>
+      </div>
+    </div>
+    <div class="input-row" style="margin-bottom:16px;">
+      <div class="input-label">Confirmar password *</div>
+      <div style="position:relative;">
+        <input class="input-field" id="regPasswordConfirm" type="password" placeholder="Repete a password" autocomplete="new-password" style="padding-right:40px;">
+        <button type="button" onclick="togglePw('regPasswordConfirm','eyeRegConfirm')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-muted);" id="eyeRegConfirm">👁</button>
+      </div>
+    </div>
+    <div id="registerError" style="display:none;background:var(--red-light,#FCEBEB);border-radius:8px;padding:10px 12px;font-size:13px;color:#791F1F;margin-bottom:12px;"></div>
+    <label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;cursor:pointer;">
+      <input type="checkbox" id="regTermos" style="margin-top:3px;accent-color:var(--green);width:16px;height:16px;flex-shrink:0;">
+      <span style="font-size:12px;color:var(--text-muted);line-height:1.5;">Li e aceito os <a href="https://claro-app.ch/termos.html" target="_blank" style="color:var(--green);">Termos de Serviço</a> e a <a href="https://claro-app.ch/privacidade.html" target="_blank" style="color:var(--green);">Política de Privacidade</a> *</span>
+    </label>
+    <label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;cursor:pointer;">
+      <input type="checkbox" id="regMarketing" style="margin-top:3px;accent-color:var(--green);width:16px;height:16px;flex-shrink:0;">
+      <span style="font-size:12px;color:var(--text-muted);line-height:1.5;">Aceito receber novidades e comunicações do Claro-app por email (opcional)</span>
+    </label>
+    <div id="registerError" style="display:none;background:var(--red-light,#FCEBEB);border-radius:8px;padding:10px 12px;font-size:13px;color:#791F1F;margin-bottom:12px;"></div>
+    <button class="btn-primary" id="registerBtn" onclick="doRegister()">Criar conta</button>
+  </div>
+
+  <!-- CONFIRMAÇÃO EMAIL -->
+  <div id="confirmEmail" style="display:none;padding:24px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">📧</div>
+    <div style="font-size:18px;font-weight:500;color:var(--text);margin-bottom:8px;">Bem-vindo ao Claro! 🎉</div>
+    <div style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:20px;">Enviámos um email de boas-vindas. Já podes entrar na tua conta.</div>
+    <button class="btn-primary" onclick="switchTab('login')">Entrar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app" style="display:none;">
+  <div class="header">
+    <div class="logo-wrap">
+      <svg class="logo-icon" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
+      <span class="logo-main">claro-app</span><span class="logo-sub">.ch</span>
+    </div>
+    <div class="avatar" onclick="showScreen('perfil')" id="headerAvatar" style="position:relative;overflow:hidden;">
+        <img id="headerPhoto" style="display:none;width:34px;height:34px;border-radius:50%;object-fit:cover;position:absolute;top:0;left:0;" src="">
+        <span id="headerInitials">?</span>
+      </div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" onclick="showScreen('analisar')" id="nav-analisar">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M3 10L10 3l7 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8.5V17h4v-4h2v4h4V8.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Início<div class="nav-bar"></div>
+    </button>
+    <button class="nav-btn" onclick="goAnalisar()" id="nav-analisar-btn">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M4 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="10" cy="13" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M12 15l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Analisar<div class="nav-bar"></div>
+    </button>
+    <button class="nav-btn" onclick="showScreen('notificacoes')" id="nav-notificacoes">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 00-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 00-6-6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8.5 16a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Avisos<div class="nav-bar"></div>
+    </button>
+    <button class="nav-btn" onclick="showScreen('documentos')" id="nav-documentos">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><path d="M5 2h7l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 2v4h4M7 9h6M7 12h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Docs<div class="nav-bar"></div>
+    </button>
+    <button class="nav-btn" onclick="showScreen('perfil')" id="nav-perfil">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Perfil<div class="nav-bar"></div>
+    </button>
+  </div>
+
+  <!-- HOME + ANALISAR (ecrã único com dois estados) -->
+  <div id="screen-analisar" class="screen active">
+    
+    <!-- ESTADO 1: HOME -->
+    <div id="homeState">
+      <div style="padding:4px 0 20px;">
+        <div style="font-size:22px;font-weight:500;color:var(--text);margin-bottom:4px;">Olá, <span id="homeNome">👋</span></div>
+        <div style="font-size:13px;color:var(--text-muted);">O que queres fazer hoje?</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+        <button onclick="goAnalisar()" style="background:var(--green);color:white;border:none;border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;">
+          <div style="width:44px;height:44px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📄</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;">Analisar documento</div>
+            <div style="font-size:12px;opacity:0.8;margin-top:2px;" id="homeDocsLeft">Fotografa, importa ou cola o texto</div>
+          </div>
+          <div style="margin-left:auto;font-size:20px;opacity:0.7;">›</div>
+        </button>
+        <button onclick="goManual()" style="background:var(--card);color:var(--text);border:0.5px solid var(--border);border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;">
+          <div style="width:44px;height:44px;background:var(--green-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📖</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;">Manual do Emigrante</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Guia completo de vida na Suíça</div>
+          </div>
+          <div style="margin-left:auto;font-size:20px;color:var(--text-hint);">›</div>
+        </button>
+        <button onclick="goBudget()" style="background:var(--card);color:var(--text);border:0.5px solid var(--border);border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;">
+          <div style="width:44px;height:44px;background:var(--green-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📊</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;">Budget Mensal</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Excel para controlar as tuas despesas</div>
+          </div>
+          <div style="margin-left:auto;font-size:20px;color:var(--text-hint);">›</div>
+        </button>
+        <button onclick="goConsulta()" style="background:var(--card);color:var(--text);border:0.5px solid var(--border);border-radius:14px;padding:18px 20px;text-align:left;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:14px;">
+          <div style="width:44px;height:44px;background:var(--green-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📅</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;">Marcar consulta</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Fala com o teu consultor</div>
+          </div>
+          <div style="margin-left:auto;font-size:20px;color:var(--text-hint);">›</div>
+        </button>
+      </div>
+      <div id="pendingSection" style="display:none;">
+        <div class="section-title">⚠️ Ações pendentes</div>
+        <div id="pendingList"></div>
+      </div>
+      <div id="noPendingSection">
+        <div class="section-title">Últimos documentos</div>
+        <div id="homeDocsList">
+          <div style="text-align:center;padding:32px 0;font-size:14px;color:var(--text-muted);line-height:1.6;">
+            Ainda não analisaste nenhum documento.<br>
+            <span style="font-size:13px;color:var(--text-hint);">Começa por fotografar ou importar um.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESTADO 2: FORMULÁRIO ANÁLISE -->
+    <div id="analyseState" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <button onclick="backToHome()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--green);padding:0;">←</button>
+        <div style="font-size:16px;font-weight:500;color:var(--text);">Analisar documento</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="handleFile(event)" multiple>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <button class="upload-btn" onclick="document.getElementById('fileInput').removeAttribute('capture');document.getElementById('fileInput').click()" style="font-size:13px;padding:12px;">📎 Importar ficheiro</button>
+        <button class="upload-btn" onclick="document.getElementById('fileInput').setAttribute('capture','environment');document.getElementById('fileInput').click()" style="font-size:13px;padding:12px;">📷 Tirar foto</button>
+      </div>
+      <div id="imagePreview" style="display:none;margin-bottom:12px;">
+        <div id="previewList" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;"></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <button onclick="document.getElementById('fileInput').setAttribute('capture','environment');document.getElementById('fileInput').click()" style="font-size:12px;color:var(--green);background:var(--green-light);border:0.5px solid var(--green-mid);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;">📷 + Adicionar página</button>
+          <button onclick="document.getElementById('fileInput').removeAttribute('capture');document.getElementById('fileInput').click()" style="font-size:12px;color:var(--green);background:var(--green-light);border:0.5px solid var(--green-mid);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;">📎 + Importar página</button>
+          <button onclick="clearFile()" style="font-size:12px;color:var(--text-muted);background:none;border:0.5px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;">✕ Limpar tudo</button>
+        </div>
+        <div id="fileName" style="font-size:12px;color:var(--text-muted);margin-top:6px;"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <div style="flex:1;height:0.5px;background:var(--border);"></div>
+        <span style="font-size:11px;color:var(--text-hint);">ou escreve/cola texto</span>
+        <div style="flex:1;height:0.5px;background:var(--border);"></div>
+      </div>
+
+      <textarea class="textarea" id="docInput" placeholder="Cola aqui o texto do documento em alemão, francês ou italiano..." oninput="updateCount()"></textarea>
+      <div class="char-count" id="charCount">0 caracteres</div>
+      <button class="btn-primary" id="analyseBtn" onclick="analyseDoc()">Analisar com IA</button>
+      <div id="resultArea" style="margin-top:14px;"></div>
+    </div>
+  </div>
+
+  <!-- DOCUMENTOS -->
+  <div id="screen-documentos" class="screen">
+    <div class="section-title">Os meus documentos</div>
+    <div class="filter-row">
+      <div class="filter-chip active" onclick="filterDocs(this,'')">Todos</div>
+      <div class="filter-chip" onclick="filterDocs(this,'Seguro')">Seguro</div>
+      <div class="filter-chip" onclick="filterDocs(this,'Impostos')">Impostos</div>
+      <div class="filter-chip" onclick="filterDocs(this,'Renda')">Renda</div>
+      <div class="filter-chip" onclick="filterDocs(this,'Trabalho')">Trabalho</div>
+      <div class="filter-chip" onclick="filterDocs(this,'Saúde')">Saúde</div>
+    </div>
+    <div id="savedDocsList"><div style="font-size:14px;color:var(--text-muted);text-align:center;padding:48px 0;line-height:1.6;">Ainda não tens documentos guardados.<br>Analisa um documento para o guardar aqui.</div></div>
+  </div>
+
+  <!-- NOTIFICAÇÕES -->
+  <div id="screen-notificacoes" class="screen">
+    <div class="section-title">Avisos</div>
+    <div id="notifsList"><div style="font-size:14px;color:var(--text-muted);text-align:center;padding:48px 0;">Sem avisos por agora.</div></div>
+  </div>
+
+  <!-- PERFIL -->
+  <div id="screen-perfil" class="screen">
+
+    <!-- Card principal -->
+    <div class="profile-card" style="position:relative;">
+      <div style="position:relative;width:72px;height:72px;margin:0 auto 12px;">
+        <div class="profile-avatar" id="profileInitials" style="width:72px;height:72px;font-size:22px;margin:0;overflow:hidden;">
+          <img id="profilePhoto" style="display:none;width:72px;height:72px;border-radius:50%;object-fit:cover;" src="">
+          <span id="profileInitialsText">?</span>
+        </div>
+      </div>
+      <div class="profile-name" id="profileName">—</div>
+      <div class="profile-email" id="profileEmail">—</div>
+      <div id="profileDobCity" style="font-size:12px;color:var(--text-muted);margin-top:4px;"></div>
+      <div id="profileExtraInfo" style="font-size:12px;color:var(--text-muted);margin-top:6px;line-height:1.7;"></div>
+    </div>
+
+    <!-- Agregado familiar (só leitura) -->
+    <div id="agregadoSection" class="block" style="margin-bottom:10px;display:none;">
+      <div class="block-label">Agregado Familiar</div>
+      <div id="agregadoList"></div>
+    </div>
+
+    <!-- Botão editar -->
+    <button class="btn-secondary" onclick="openEditModalCheck()" style="margin-bottom:10px;">Editar</button>
+
+    <!-- Plano -->
+    <div class="block" style="margin-bottom:10px;cursor:pointer;" onclick="togglePlano()">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div class="block-label">Plano atual</div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);" id="planLabel">Grátis</div>
+        </div>
+        <span id="planoChevron" style="font-size:20px;color:var(--text-muted);transition:transform 0.2s;">›</span>
+      </div>
+      <div id="planoDetails" style="display:none;margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border);">
+      </div>
+    </div>
+
+    <!-- Marcar consulta -->
+    <div style="text-align:center;margin-top:8px;margin-bottom:12px;">
+      <button class="float-btn" onclick="goConsulta()">📅 Marcar consulta com consultor</button>
+    </div>
+    <div style="text-align:center;margin-bottom:24px;">
+      <button onclick="doLogout()" style="font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;font-family:inherit;">Terminar sessão</button>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR PERFIL -->
+  <div id="editModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;max-width:430px;margin:0 auto;">
+    <div style="background:var(--card);border-radius:20px 20px 0 0;padding:20px 20px 36px;width:100%;max-height:92vh;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:16px;font-weight:500;color:var(--text);">Editar Perfil</div>
+        <button onclick="closeEditModal()" style="background:none;border:none;font-size:20px;color:var(--text-muted);cursor:pointer;">✕</button>
+      </div>
+      <!-- Foto -->
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--green-light);border:2px solid var(--green-mid);display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 8px;" id="editAvatarPreview">
+          <img id="editPhotoPreview" style="display:none;width:72px;height:72px;object-fit:cover;border-radius:50%;" src="">
+          <span id="editInitialsPreview" style="font-size:22px;font-weight:600;color:var(--green-dark);">?</span>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+        <button onclick="document.getElementById('photoInput').click()" style="font-size:12px;color:var(--green);background:none;border:0.5px solid var(--green-mid);border-radius:8px;padding:5px 12px;cursor:pointer;font-family:inherit;">📷 Alterar foto</button>
+      </div>
+      <!-- Dados -->
+      <div class="section-title">Dados Pessoais</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="input-row"><div class="input-label">Primeiro nome *</div><input class="input-field" id="inputPrimeiroNome" type="text" placeholder="Ex: João" autocomplete="given-name"></div>
+        <div class="input-row"><div class="input-label">Apelido *</div><input class="input-field" id="inputApelido" type="text" placeholder="Ex: Silva" autocomplete="family-name"></div>
+      </div>
+      <input type="hidden" id="inputName">
+      <div class="input-row"><div class="input-label">Email *</div><input class="input-field" id="inputEmail" type="email" placeholder="email@exemplo.com"></div>
+      <div class="input-row"><div class="input-label">Telemóvel</div><input class="input-field" id="inputPhone" type="tel" placeholder="+41 79 000 00 00"></div>
+      <div class="input-row"><div class="input-label">Data de nascimento</div><input class="input-field" id="inputDob" type="date"></div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;">
+        <div class="input-row"><div class="input-label">Morada (rua)</div><input class="input-field" id="inputRua" type="text" placeholder="Ex: Rue du Lac"></div>
+        <div class="input-row"><div class="input-label">Número</div><input class="input-field" id="inputNumero" type="text" placeholder="Ex: 12"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-bottom:16px;">
+        <div class="input-row"><div class="input-label">Código postal</div><input class="input-field" id="inputCp" type="text" placeholder="Ex: 1820"></div>
+        <div class="input-row"><div class="input-label">Vila / Cidade</div><input class="input-field" id="inputCity" type="text" placeholder="Ex: Montreux"></div>
+      </div>
+      <!-- Agregado no modal -->
+      <div class="section-title">Agregado Familiar</div>
+      <div id="agregadoEditList" style="margin-bottom:10px;"></div>
+      <div id="addMembroWrap">
+        <button onclick="tryAddMembro()" style="width:100%;padding:10px;background:var(--green-light);border:0.5px dashed var(--green-mid);border-radius:10px;font-size:13px;color:var(--green-dark);font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:16px;">+ Adicionar membro</button>
+      </div>
+      <button class="btn-primary" onclick="saveProfile()">Guardar alterações</button>
+      <button onclick="closeEditModal()" style="width:100%;padding:12px;background:none;border:none;font-size:14px;color:var(--text-muted);cursor:pointer;font-family:inherit;margin-top:4px;">Anular</button>
+    </div>
+  </div>
+
+  <!-- MODAL ADICIONAR MEMBRO -->
+  <div id="membroModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;align-items:flex-end;max-width:430px;margin:0 auto;">
+    <div style="background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;">
+      <div style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:16px;">Adicionar membro</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="input-row"><div class="input-label">Primeiro nome *</div><input class="input-field" id="membroPrimeiroNome" type="text" placeholder="Ex: Maria"></div>
+        <div class="input-row"><div class="input-label">Apelido *</div><input class="input-field" id="membroApelido" type="text" placeholder="Ex: Silva"></div>
+      </div>
+      <div class="input-row"><div class="input-label">Data de nascimento *</div><input class="input-field" id="membroDob" type="date"></div>
+      <div class="input-row" style="margin-bottom:16px;"><div class="input-label">Relação *</div>
+        <select class="input-field" id="membroTipo">
+          <option value="">Seleciona...</option>
+          <option value="Conjuge">Cônjuge</option>
+          <option value="Filho/a">Filho/a</option>
+          <option value="Pai/Mae">Pai/Mãe</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="saveMembro()" style="margin-bottom:10px;">Guardar</button>
+      <button onclick="closeAddMembro()" style="width:100%;padding:12px;background:none;border:none;font-size:14px;color:var(--text-muted);cursor:pointer;font-family:inherit;">Cancelar</button>
+    </div>
+  </div>
+
+<!-- DETAIL OVERLAY -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-header">
+    <button class="back-btn" onclick="closeDetail()">←</button>
+    <div class="detail-title" id="detailTitle"></div>
+  </div>
+  <div class="detail-content" id="detailContent"></div>
+</div>
+
+<!-- PAYWALL -->
+<div class="paywall-overlay" id="paywallOverlay">
+  <div class="paywall-sheet">
+    <div class="paywall-logo">
+      <svg width="28" height="28" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
+      <span style="font-size:18px;font-weight:600;color:#1D9E75;">claro-app</span><span style="font-size:13px;color:#0F6E56;">.ch</span>
+    </div>
+    <div class="paywall-title">Continua sem limites</div>
+    <div class="paywall-sub">Chegaste ao limite do plano gratuito.<br>Faz upgrade para continuar.</div>
+    <div class="price-big"><span id="pw-price">CHF 12</span><small id="pw-period">/mês</small></div>
+    <div class="price-note" id="pw-note" style="color:var(--text-muted);font-size:13px;margin-bottom:12px;">cobrado CHF 144/ano — cancela quando quiseres</div>
+    <ul class="paywall-features">
+      <li><span class="check">✓</span> Análises ilimitadas de documentos — sem limites, sem stress</li>
+      <li><span class="check">✓</span> Alemão, francês e italiano — qualquer carta, qualquer cantão</li>
+      <li><span class="check">✓</span> Resumo em português simples com o que tens de fazer e quando</li>
+      <li><span class="check">✓</span> Alertas automáticos para prazos importantes</li>
+      <li><span class="check">✓</span> Histórico completo de todos os teus documentos guardados</li>
+      <li><span class="check">✓</span> Gestão do agregado familiar — toda a família protegida</li>
+      <li><span class="check">✓</span> Marcações ilimitadas com consultor especializado</li>
+      <li><span class="check">✓</span> Manual do Emigrante em PDF — seguros, impostos, habitação, tudo</li>
+      <li><span class="check">✓</span> Budget Mensal Suíça em Excel — controla as tuas despesas em CHF</li>
+      <li><span class="check">✓</span> Suporte direto por email com resposta prioritária</li>
+      <li><span class="check">✓</span> Acesso antecipado a todas as novas funcionalidades</li>
+    </ul>
+    <div class="bonus-box">
+      <div class="bonus-title">✦ Incluído no Claro-app+</div>
+      <div class="bonus-item">
+        <div class="bonus-icon">📖</div>
+        <div class="bonus-info"><div class="bonus-name">Manual do Emigrante</div><div class="bonus-desc">Guia completo de integração na Suíça — seguros, impostos, habitação e muito mais.</div></div>
+        <div class="bonus-price">CHF 9.90</div>
+      </div>
+      <div class="bonus-item">
+        <div class="bonus-icon">📊</div>
+        <div class="bonus-info"><div class="bonus-name">Budget Mensal Suíça</div><div class="bonus-desc">Excel completo para controlar as tuas despesas em francos suíços.</div></div>
+        <div class="bonus-price">CHF 4.90</div>
+      </div>
+    </div>
+    <input id="promoCode" type="text" placeholder="Código promo (opcional)" style="width:100%;padding:12px 14px;border:0.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;margin-bottom:6px;" oninput="this.value=this.value.toUpperCase()">
+  <button class="btn-primary" id="pw-cta">Começar com Claro-app+</button>
+    <button class="paywall-close" onclick="closePaywall()">Agora não</button>
+  </div>
+</div>
+
+<!-- BOOKING OVERLAY -->
+<div class="booking-overlay" id="bookingOverlay">
+  <div class="header">
+    <div class="logo-wrap">
+      <svg class="logo-icon" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
+      <span class="logo-main">claro-app</span><span class="logo-sub">.ch</span>
+    </div>
+    <button class="back-btn" onclick="closeBooking()" style="padding:0;">✕</button>
+  </div>
+  <div style="padding:16px;" id="bookingForm">
+    <div class="section-title">Marcar consulta</div>
+    <div class="section-title" style="margin-top:12px;">Tipo de consulta</div>
+    <div class="type-grid">
+      <button class="type-btn selected" onclick="selectType('video',this)"><div class="type-icon">🎥</div><div class="type-label">Vídeo</div><div class="type-sub">Google Meet</div></button>
+      <button class="type-btn" onclick="selectType('phone',this)"><div class="type-icon">📞</div><div class="type-label">Chamada</div><div class="type-sub">Telefone</div></button>
+      <button class="type-btn" onclick="selectType('presencial',this)"><div class="type-icon">🤝</div><div class="type-label">Presencial</div><div class="type-sub">Zürich</div></button>
+    </div>
+    <div class="section-title">Escolhe o dia</div>
+    <div class="cal-header"><button class="cal-nav" onclick="prevMonth()">‹</button><div class="cal-month" id="calMonth"></div><button class="cal-nav" onclick="nextMonth()">›</button></div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div id="timesSection" style="display:none;">
+      <div class="section-title" id="timesLabel">Horários disponíveis</div>
+      <div class="times-grid" id="timesGrid"></div>
+    </div>
+    <div id="bookingFormSection" style="display:none;">
+      <div class="section-title">Os teus dados</div>
+      <div class="block" style="margin-bottom:12px;">
+        <div class="input-row"><div class="input-label">Nome completo <span style="color:var(--green);">*</span></div><input class="input-field" id="bkName" type="text" placeholder="Maria Rodrigues"></div>
+        <div class="input-row"><div class="input-label">Data de nascimento <span style="color:var(--green);">*</span></div><input class="input-field" id="bkDob" type="date"></div>
+        <div class="input-row"><div class="input-label">Telemóvel <span style="color:var(--green);">*</span></div><input class="input-field" id="bkPhone" type="tel" placeholder="+41 79 000 00 00"></div>
+        <div class="input-row"><div class="input-label">Email <span style="color:var(--green);">*</span></div><input class="input-field" id="bkEmail" type="email" placeholder="email@exemplo.com"></div>
+        <div class="input-row" style="margin-bottom:0;"><div class="input-label">Assunto (opcional)</div><textarea class="textarea" id="bkNote" placeholder="Ex: Recebi uma carta dos impostos e não sei o que fazer..." style="min-height:70px;margin-bottom:0;"></textarea></div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-row"><span>Data</span><span id="sumDate">—</span></div>
+        <div class="summary-row"><span>Hora</span><span id="sumTime">—</span></div>
+        <div class="summary-row"><span>Tipo</span><span id="sumType">Videochamada</span></div>
+      </div>
+      <button class="btn-primary" onclick="confirmBooking()">Confirmar marcação</button>
+      <p style="font-size:12px;color:var(--text-hint);text-align:center;margin-top:10px;margin-bottom:20px;">Receberás confirmação por email em poucos minutos.</p>
+    </div>
+  </div>
+  <div class="success-screen" id="bookingSuccess">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Marcação confirmada!</div>
+    <div class="success-sub">O consultor recebeu os teus dados e entrará em contacto para confirmar.</div>
+    <div class="success-card">
+      <div class="success-row"><span class="lbl">Data</span><span class="val" id="cDate">—</span></div>
+      <div class="success-row"><span class="lbl">Hora</span><span class="val" id="cTime">—</span></div>
+      <div class="success-row"><span class="lbl">Tipo</span><span class="val" id="cType">—</span></div>
+      <div class="success-row"><span class="lbl">Nome</span><span class="val" id="cName">—</span></div>
+      <div class="success-row"><span class="lbl">Nasc.</span><span class="val" id="cDob">—</span></div>
+      <div class="success-row"><span class="lbl">Telemóvel</span><span class="val" id="cPhone">—</span></div>
+      <div class="success-row"><span class="lbl">Email</span><span class="val" id="cEmail">—</span></div>
+    </div>
+    <button class="btn-primary" onclick="resetBooking()">Fazer nova marcação</button>
+  </div>
+</div>
+
+<script>
+
+// cancelar subscricao
+async function cancelSubscription() {
+  if (!currentUser) { alert('Erro: sessão não encontrada.'); return; }
+
+  // Verificar se tem consultas realizadas
+  var consultasData = await sbGet('consultas', 'user_id=eq.'+currentUser.id+'&status=eq.realizada&limit=1');
+  var temConsultaRealizada = Array.isArray(consultasData) && consultasData.length > 0;
+
+  var mensagem = temConsultaRealizada
+    ? 'Tens a certeza que queres cancelar o Claro-app+?\n\nJá realizaste uma consulta com o consultor, por isso não há reembolso disponível.\n\nO teu acesso mantém-se ativo até ao fim do período pago e não renova automaticamente.'
+    : 'Tens a certeza que queres cancelar o Claro-app+?\n\nComo ainda não realizaste nenhuma consulta com o consultor, tens direito a um reembolso de 50% do valor pago (CHF 72).\n\nQueres cancelar e receber o reembolso?';
+
+  var ok = window.confirm(mensagem);
+  if (!ok) return;
+
+  var btn = document.querySelector('[onclick="cancelSubscription()"]');
+  if(btn) { btn.disabled = true; btn.textContent = 'A cancelar...'; }
+
+  try {
+    var r = await fetch('/api/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUser.id, requestRefund: !temConsultaRealizada })
+    });
+    var data = await r.json();
+    if (data.success) {
+      state.isPro = false;
+      updatePlanLabel();
+      if(planoOpen) renderPlanoDetails();
+      if(!temConsultaRealizada) {
+        alert('Subscrição cancelada. O reembolso de CHF 72 será processado em 5-10 dias úteis para o teu método de pagamento original.');
+      } else {
+        alert('Subscrição cancelada. O teu acesso Claro-app+ termina no fim do período pago.');
+      }
+    } else {
+      alert('Erro ao cancelar: ' + (data.error || 'Tenta novamente ou contacta suporte@claro-app.ch'));
+      if(btn) { btn.disabled = false; btn.textContent = 'Cancelar subscrição'; }
+    }
+  } catch(e) {
+    alert('Erro ao cancelar. Contacta suporte@claro-app.ch');
+    if(btn) { btn.disabled = false; btn.textContent = 'Cancelar subscrição'; }
+  }
+}
+
+// ── AGREGADO FAMILIAR ──────────────────────────────────────────────────────
+var agregado = [];
+
+function openAddMembro() {
+  document.getElementById('membroNome').value = '';
+  document.getElementById('membroDob').value = '';
+  document.getElementById('membroTipo').value = '';
+  document.getElementById('membroModal').style.display = 'flex';
+}
+
+function closeAddMembro() {
+  document.getElementById('membroModal').style.display = 'none';
+}
+
+async function saveMembro() {
+  var primeiroNome = document.getElementById('membroPrimeiroNome').value.trim();
+  var apelido = document.getElementById('membroApelido').value.trim();
+  var nome = (primeiroNome+' '+apelido).trim();
+  var dob = document.getElementById('membroDob').value;
+  var tipo = document.getElementById('membroTipo').value;
+  if (!primeiroNome || !apelido || !dob || !tipo) { alert('Preenche todos os campos.'); return; }
+  var newMembro = { nome: nome, dob: dob, tipo: tipo };
+  if (currentUser) {
+    var result = await sbPost('agregado', { user_id: currentUser.id, nome: nome, data_nascimento: dob, relacao: tipo });
+    if (Array.isArray(result) && result[0]) newMembro.id = result[0].id;
+  }
+  agregado.push(newMembro);
+  renderAgregado();
+  renderAgregadoEdit();
+  closeAddMembro();
+}
+
+function removeMembro(i) {
+  agregado.splice(i, 1);
+  renderAgregado();
+  renderAgregadoEdit();
+}
+
+function formatDob(dob) {
+  var parts = dob.split('-');
+  return parts[2] + '/' + parts[1] + '/' + parts[0];
+}
+
+function renderAgregado() {
+  var el = document.getElementById('agregadoList');
+  if (!el) return;
+  var section = document.getElementById('agregadoSection');
+  if (!agregado.length) {
+    el.innerHTML = '';
+    if(section) section.style.display = 'none';
+    return;
+  }
+  if(section) section.style.display = 'block';
+  el.innerHTML = agregado.map(function(m, i) {
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border);">' +
+      '<div>' +
+        '<div style="font-size:14px;font-weight:500;color:var(--text);">' + m.nome + '</div>' +
+        '<div style="font-size:12px;color:var(--text-muted);">' + m.tipo + ' · ' + formatDob(m.dob) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderAgregadoEdit() {
+  var el = document.getElementById('agregadoEditList');
+  if (!el) return;
+  if (!agregado.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--text-hint);padding:6px 0;">Nenhum membro adicionado.</div>';
+    return;
+  }
+  el.innerHTML = agregado.map(function(m, i) {
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border);">' +
+      '<div>' +
+        '<div style="font-size:14px;font-weight:500;color:var(--text);">' + m.nome + '</div>' +
+        '<div style="font-size:12px;color:var(--text-muted);">' + m.tipo + ' · ' + formatDob(m.dob) + '</div>' +
+      '</div>' +
+      '<button onclick="removeMembro(' + i + ')" style="background:none;border:none;color:var(--text-hint);cursor:pointer;font-size:16px;padding:0 4px;">✕</button>' +
+    '</div>';
+  }).join('');
+}
+
+renderAgregado();
+
+// Toggle password visibility
+function togglePw(inputId, btnId) {
+  var input = document.getElementById(inputId);
+  var btn = document.getElementById(btnId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+// ── HOME PAGE ──────────────────────────────────────────────────────────────
+function updateHome() {
+  // Saudação com nome
+  var nome = document.getElementById('profileName').textContent;
+  if (nome && nome !== '—') {
+    var primeiroNome = nome.split(' ')[0];
+    document.getElementById('homeNome').textContent = primeiroNome + ' 👋';
+  }
+
+  // Docs restantes
+  var r = Math.max(0, state.freeLimit - state.docsUsed);
+  if (!state.isPro) {
+    document.getElementById('homeDocsLeft').textContent = r > 0 
+      ? r + ' análise' + (r !== 1 ? 's' : '') + ' gratuita' + (r !== 1 ? 's' : '') + ' disponível'
+      : 'Upgrade para continuar a analisar';
+  } else {
+    document.getElementById('homeDocsLeft').textContent = 'Fotografa, importa ou cola o texto';
+  }
+
+  // Pendentes
+  var pending = state.savedDocs.filter(function(d) { return d.acao_necessaria; });
+  if (pending.length > 0) {
+    document.getElementById('pendingSection').style.display = 'block';
+    document.getElementById('noPendingSection').style.display = 'none';
+    var html = pending.map(function(d, i) {
+      var idx = state.savedDocs.indexOf(d);
+      return '<div class="card" style="margin-bottom:8px;cursor:pointer;" onclick="openDocDetail(' + idx + ')">' +
+        '<div class="card-header">' +
+          '<div class="card-title">' + d.titulo + '</div>' +
+          (d.urgente ? '<span class="tag tag-urgent">Urgente</span>' : '<span class="tag tag-action">Ação</span>') +
+        '</div>' +
+        (d.prazo ? '<div style="font-size:12px;color:var(--red);margin-top:6px;">📅 ' + d.prazo + '</div>' : '') +
+        (d.o_que_fazer ? '<div style="font-size:13px;color:var(--text-muted);margin-top:4px;">' + d.o_que_fazer.substring(0,80) + '...</div>' : '') +
+        '<button onclick="event.stopPropagation();marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:#1D9E75;border:none;border-radius:10px;font-size:14px;color:white;font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
+      '</div>';
+    }).join('');
+    document.getElementById('pendingList').innerHTML = html;
+  } else if (state.savedDocs.length > 0) {
+    document.getElementById('pendingSection').style.display = 'none';
+    document.getElementById('noPendingSection').style.display = 'block';
+    var totalDocs = state.savedDocs.length;
+    var recentDocs = state.savedDocs.slice(-2).reverse();
+    var html2 = recentDocs.map(function(d, i) {
+      var docId = totalDocs - 1 - i;
+      return '<div class="card" style="margin-bottom:8px;cursor:pointer;" onclick="openDocFromHome(' + docId + ')">' +
+        '<div class="card-header">' +
+          '<div class="card-title">' + d.titulo + '</div>' +
+          '<div class="card-date">' + d.savedAt + '</div>' +
+        '</div>' +
+        '<div class="card-meta">' +
+          '<span class="tag tag-cat">' + d.categoria + '</span>' +
+          (d.acao_necessaria ? '<span class="tag tag-action">Ação</span>' : '<span class="tag tag-info">OK</span>') +
+        '</div>' +
+      '</div>';
+    }).join('');
+    document.getElementById('homeDocsList').innerHTML = html2;
+  }
+}
+
+function openDocFromHome(idx) {
+  openDoc(idx);
+}
+
+function goAnalisar() {
+  if (!state.isPro && state.docsUsed >= state.freeLimit) { openPaywall(); return; }
+  showScreen('analisar');
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('nav-analisar-btn').classList.add('active');
+  document.getElementById('homeState').style.display = 'none';
+  document.getElementById('analyseState').style.display = 'block';
+}
+
+function backToHome() {
+  document.getElementById('analyseState').style.display = 'none';
+  document.getElementById('homeState').style.display = 'block';
+  document.getElementById('docInput').value = '';
+  document.getElementById('charCount').textContent = '0 caracteres';
+  document.getElementById('resultArea').innerHTML = '';
+  clearFile();
+  updateHome();
+}
+
+function goManual() {
+  if (!state.isPro) { openPaywall(); return; }
+  window.open('Manual_Emigrante_FINAL_v2.pdf', '_blank');
+}
+
+function goBudget() {
+  if (!state.isPro) { openPaywall(); return; }
+  window.location.href = 'https://drive.google.com/uc?export=download&id=1IYzgWgTp_WCrKMj3X9_WSz5Se-O7yHtq';
+}
+
+function goConsulta() {
+  if (!state.isPro) { openPaywall(); return; }
+  window.open('https://calendly.com/romeu-m/new-meeting', '_blank');
+}
+
+// Marcar pendente como feito
+async function marcarFeito(idx) {
+  var doc = state.savedDocs[idx];
+  if (!doc) return;
+  doc.acao_necessaria = false;
+  doc.urgente = false;
+  // Actualizar no Supabase se tiver id
+  if (currentUser && doc.db_id) {
+    await sbPatch('documentos', 'id=eq.' + doc.db_id, { acao_necessaria: false, urgente: false });
+  }
+  updateHome();
+  renderNotifs();
+}
+
+function openEditModalCheck() {
+  // Perfil sempre disponível, mas agregado só para premium
+  openEditModal();
+}
+
+function tryAddMembro() {
+  if (!state.isPro) {
+    closeEditModal();
+    openPaywall();
+    return;
+  }
+  openAddMembro();
+}
+
+function openDocDetail(idx) {
+  var r = state.savedDocs[idx];
+  if (!r) return;
+  document.getElementById('detailTitle').textContent = r.titulo;
+  var h = '';
+  h += '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;">';
+  if(r.urgente) h += '<span class="tag tag-urgent">Urgente</span>';
+  if(r.acao_necessaria) h += '<span class="tag tag-action">Ação necessária</span>';
+  if(!r.acao_necessaria) h += '<span class="tag tag-info">Informativo</span>';
+  h += '<span class="tag tag-cat">' + r.categoria + '</span></div>';
+  if(r.acao_necessaria) h += '<div class="alert alert-warning"><div class="alert-text">⚠️ Este documento pode exigir uma ação importante.</div></div>';
+  else h += '<div class="alert alert-ok"><div class="alert-text">✅ Não é necessária nenhuma ação.</div></div>';
+  h += '<div class="block"><div class="block-label">Resumo</div><div class="block-text">' + r.resumo + '</div></div>';
+  h += '<div class="block"><div class="block-label">Explicação</div><div class="block-text">' + r.explicacao + '</div></div>';
+  if(r.acao_necessaria) {
+    if(r.o_que_fazer) h += '<div class="block"><div class="block-label">O que tens de fazer</div><div class="block-text">' + r.o_que_fazer + '</div></div>';
+    if(r.prazo) h += '<div class="block"><div class="block-label">Prazo</div><div class="block-text" style="color:var(--red);font-weight:500;">📅 ' + r.prazo + '</div></div>';
+    if(r.passos && r.passos.length) {
+      h += '<div class="block"><div class="block-label">Passo a passo</div><ul class="steps-list">';
+      var passos = Array.isArray(r.passos) ? r.passos : [];
+      passos.forEach(function(s, i){ h += '<li><span class="step-num">' + (i+1) + '</span>' + s + '</li>'; });
+      h += '</ul></div>';
+    }
+    if(r.consequencias) h += '<div class="block"><div class="block-label">Se não fizeres nada</div><div class="block-text">' + r.consequencias + '</div></div>';
+    h += '<button class="btn-primary" style="margin-top:4px;" onclick="marcarFeito(' + idx + ');closeDetail();">✓ Marcar como feito</button>';
+  }
+  document.getElementById('detailContent').innerHTML = h;
+  document.getElementById('detailOverlay').classList.add('open');
+}
+</script>
+<script>
+
+// ── SUPABASE CONFIG (sem SDK) ──────────────────────────────────────────────
+const SUPABASE_URL = 'https://vawfgruwwfnpnrnxuvnw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_65vuly7LkkRF6YYxd2H94g_TB-vOYvk';
+var currentUser = null;
+var accessToken = null;
+
+async function sbGet(table, filter) {
+  var r = await fetch(SUPABASE_URL+'/rest/v1/'+table+'?'+filter, {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(accessToken||SUPABASE_KEY)}});
+  return r.json();
+}
+async function sbPost(table, body) {
+  var r = await fetch(SUPABASE_URL+'/rest/v1/'+table, {method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(accessToken||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(body)});
+  return r.json();
+}
+async function sbPatch(table, filter, body) {
+  var r = await fetch(SUPABASE_URL+'/rest/v1/'+table+'?'+filter, {method:'PATCH',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(accessToken||SUPABASE_KEY),'Content-Type':'application/json'},body:JSON.stringify(body)});
+  return r.ok;
+}
+async function authPost(path, body) {
+  var r = await fetch(SUPABASE_URL+'/auth/v1/'+path, {method:'POST',headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  return r.json();
+}
+
+var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+document.addEventListener('DOMContentLoaded', async function() {
+  if (!isMobile) { document.getElementById('desktopPage').style.display='flex'; return; }
+  var saved = localStorage.getItem('claro_session');
+  if (saved) {
+    try {
+      var session = JSON.parse(saved);
+      accessToken = session.access_token;
+      currentUser = session.user;
+      // Verificar se sessao ainda valida
+      var testRes = await fetch(SUPABASE_URL + '/auth/v1/user', {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken }
+      });
+      if (testRes.ok) {
+        await loadUserAndStart(currentUser);
+        return;
+      } else if (session.refresh_token) {
+        // Tentar renovar sessao
+        var refreshData = await authPost('token?grant_type=refresh_token', { refresh_token: session.refresh_token });
+        if (refreshData.access_token) {
+          accessToken = refreshData.access_token;
+          currentUser = refreshData.user;
+          localStorage.setItem('claro_session', JSON.stringify({ access_token: refreshData.access_token, refresh_token: refreshData.refresh_token || session.refresh_token, user: refreshData.user }));
+          await loadUserAndStart(refreshData.user);
+          return;
+        }
+      }
+      localStorage.removeItem('claro_session');
+    } catch(e) { localStorage.removeItem('claro_session'); }
+  }
+  document.getElementById('authScreen').style.display = 'block';
+});
+
+function switchTab(tab) {
+  var isLogin = tab==='login';
+  document.getElementById('loginForm').style.display = isLogin?'block':'none';
+  document.getElementById('registerForm').style.display = isLogin?'none':'block';
+  document.getElementById('confirmEmail').style.display = 'none';
+  document.getElementById('tabLogin').style.background = isLogin?'var(--card)':'transparent';
+  document.getElementById('tabLogin').style.color = isLogin?'var(--text)':'var(--text-muted)';
+  document.getElementById('tabRegister').style.background = isLogin?'transparent':'var(--card)';
+  document.getElementById('tabRegister').style.color = isLogin?'var(--text-muted)':'var(--text)';
+}
+
+async function doLogin() {
+  var email=document.getElementById('loginEmail').value.trim();
+  var password=document.getElementById('loginPassword').value;
+  var errEl=document.getElementById('loginError');
+  var btn=document.getElementById('loginBtn');
+  if(!email||!password){showAuthError(errEl,'Preenche email e password.');return;}
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A entrar...';
+  errEl.style.display='none';
+  var data=await authPost('token?grant_type=password',{email:email,password:password});
+  if(data.error||!data.access_token){
+    showAuthError(errEl,'Email ou password incorretos.');
+    btn.disabled=false; btn.textContent='Entrar';
+  } else {
+    accessToken=data.access_token; currentUser=data.user;
+    localStorage.setItem('claro_session',JSON.stringify({access_token:data.access_token,refresh_token:data.refresh_token||'',user:data.user}));
+    await loadUserAndStart(data.user);
+  }
+}
+
+async function doRegister() {
+  var primeiroNome=document.getElementById('regPrimeiroNome').value.trim();
+  var apelido=document.getElementById('regApelido').value.trim();
+  var nome=(primeiroNome+' '+apelido).trim();
+  var email=document.getElementById('regEmail').value.trim();
+  var phone=document.getElementById('regPhone').value.trim();
+  var dob=document.getElementById('regDob').value;
+  var rua=(document.getElementById('regRua')||{value:''}).value.trim();
+  var numero=(document.getElementById('regNumero')||{value:''}).value.trim();
+  var cp=(document.getElementById('regCp')||{value:''}).value.trim();
+  var cidade=(document.getElementById('regCidade')||{value:''}).value.trim();
+  var morada=[rua,numero].filter(Boolean).join(', ');
+  var password=document.getElementById('regPassword').value;
+  var errEl=document.getElementById('registerError');
+  var btn=document.getElementById('registerBtn');
+  if(!primeiroNome||!apelido||!email||!cp||!cidade||!password){showAuthError(errEl,'Todos os campos obrigatórios devem ser preenchidos.');return;}
+  if(!document.getElementById('regTermos').checked){showAuthError(errEl,'Deves aceitar os Termos de Serviço e a Política de Privacidade para criar conta.');return;}
+  var aceitaMarketing = document.getElementById('regMarketing').checked;
+  if(password.length<8){showAuthError(errEl,'A password deve ter pelo menos 8 caracteres.');return;}
+  var passwordConfirm=document.getElementById('regPasswordConfirm').value;
+  if(password !== passwordConfirm){showAuthError(errEl,'As passwords não coincidem. Verifica e tenta novamente.');return;}
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A criar conta...';
+  errEl.style.display='none';
+  var data=await authPost('signup',{email:email,password:password,data:{nome:nome,phone:phone,dob:dob}});
+  if(data.error){
+    showAuthError(errEl,data.error.message||'Erro ao criar conta.');
+    btn.disabled=false; btn.textContent='Criar conta';
+  } else {
+    if(data.access_token) accessToken=data.access_token;
+    if(data.user && data.user.id){
+      await fetch('/api/create-profile', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({id:data.user.id,nome:nome,email:email,telefone:phone,data_nascimento:dob||null,cidade:cidade||null,morada:morada||null,codigo_postal:cp||null,aceita_marketing:aceitaMarketing})
+      });
+    }
+    // Enviar email de boas-vindas
+    fetch('/api/send-welcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, nome: nome, aceita_marketing: aceitaMarketing })
+    }).catch(function(){});
+    document.getElementById('registerForm').style.display='none';
+    document.getElementById('confirmEmail').style.display='block';
+    btn.disabled=false; btn.textContent='Criar conta';
+  }
+}
+
+async function forgotPassword() {
+  var email=document.getElementById('loginEmail').value.trim();
+  if(!email){alert('Escreve o teu email primeiro.');return;}
+  var data=await authPost('recover',{email:email});
+  if(!data.error) alert('Email de recuperação enviado!');
+  else alert('Erro ao enviar email.');
+}
+
+function showAuthError(el,msg){el.textContent=msg;el.style.display='block';}
+
+async function loadUserAndStart(user) {
+  var profiles=await sbGet('profiles','id=eq.'+user.id+'&select=*');
+  var profile=Array.isArray(profiles)?profiles[0]:null;
+  if(profile){
+    var nome=profile.nome||user.email;
+    var initials=nome.split(' ').map(function(n){return n[0];}).join('').substring(0,2).toUpperCase();
+    document.getElementById('profileName').textContent=nome;
+    document.getElementById('profileEmail').textContent=profile.email||user.email;
+    document.getElementById('profileInitialsText').textContent=initials;
+    document.getElementById('headerInitials').textContent=initials;
+    document.getElementById('inputName').value=nome;
+    // Preencher campos do modal com dados do Supabase
+    var nomeParts=nome.split(' ');
+    document.getElementById('inputPrimeiroNome').value=nomeParts[0]||'';
+    document.getElementById('inputApelido').value=nomeParts.slice(1).join(' ')||'';
+    document.getElementById('inputEmail').value=profile.email||user.email;
+    if(profile.telefone) document.getElementById('inputPhone').value=profile.telefone;
+    if(profile.data_nascimento) document.getElementById('inputDob').value=profile.data_nascimento;
+    if(profile.cidade) document.getElementById('inputCity').value=profile.cidade;
+    if(profile.morada){
+      var moradaParts=profile.morada.split(', ');
+      document.getElementById('inputRua').value=moradaParts[0]||'';
+      document.getElementById('inputNumero').value=moradaParts[1]||'';
+    }
+    if(profile.codigo_postal) document.getElementById('inputCp').value=profile.codigo_postal;
+    // Mostrar info completa no card
+    var dobCityParts = [];
+    if(profile.data_nascimento) { var p=profile.data_nascimento.split('-'); dobCityParts.push(p[2]+'/'+p[1]+'/'+p[0]); }
+    if(profile.cidade) dobCityParts.push(profile.cidade);
+    if(dobCityParts.length) document.getElementById('profileDobCity').textContent = dobCityParts.join(' · ');
+    var extraParts = [];
+    if(profile.telefone) extraParts.push('📞 '+profile.telefone);
+    var moradaDisplay = [];
+    if(profile.morada) moradaDisplay.push(profile.morada);
+    if(profile.codigo_postal) moradaDisplay.push(profile.codigo_postal);
+    if(profile.cidade && !dobCityParts.includes(profile.cidade)) moradaDisplay.push(profile.cidade);
+    if(moradaDisplay.length) extraParts.push('📍 '+moradaDisplay.join(', '));
+    if(extraParts.length) document.getElementById('profileExtraInfo').innerHTML = extraParts.join('<br>');
+    if(profile.plano==='pro'){state.isPro=true;updatePlanLabel();}
+    // Carregar foto de perfil
+    if(profile.foto_url) {
+      profilePhotoData = profile.foto_url;
+      document.getElementById('profilePhoto').src = profile.foto_url;
+      document.getElementById('profilePhoto').style.display = 'block';
+      document.getElementById('profileInitialsText').style.display = 'none';
+      document.getElementById('editPhotoPreview').src = profile.foto_url;
+      document.getElementById('editPhotoPreview').style.display = 'block';
+      document.getElementById('editInitialsPreview').style.display = 'none';
+      // Mostrar foto no header
+      document.getElementById('headerPhoto').src = profile.foto_url;
+      document.getElementById('headerPhoto').style.display = 'block';
+      document.getElementById('headerInitials').style.display = 'none';
+    }
+    var agData=await sbGet('agregado','user_id=eq.'+user.id+'&select=*');
+    if(Array.isArray(agData)&&agData.length){
+      agregado=agData.map(function(a){return{id:a.id,nome:a.nome,dob:a.data_nascimento,tipo:a.relacao};});
+      renderAgregado();
+    }
+  }
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  // Forçar ecrã inicial
+  document.querySelectorAll('.screen').forEach(function(s){ s.style.display='none'; });
+  document.getElementById('screen-analisar').style.display='block';
+  document.getElementById('screen-analisar').classList.add('active');
+  document.getElementById('nav-analisar').classList.add('active');
+  document.getElementById('bkName').value=document.getElementById('profileName').textContent;
+  document.getElementById('bkEmail').value=document.getElementById('profileEmail').textContent;
+  // Carregar documentos guardados
+  var docsData = await sbGet('documentos', 'user_id=eq.'+user.id+'&order=created_at.desc&select=*');
+  if(Array.isArray(docsData) && docsData.length) {
+    state.savedDocs = docsData.map(function(d) {
+      return {
+        titulo: d.titulo,
+        categoria: d.categoria,
+        resumo: d.resumo,
+        explicacao: d.explicacao,
+        acao_necessaria: d.acao_necessaria,
+        urgente: d.urgente,
+        o_que_fazer: d.o_que_fazer,
+        prazo: d.prazo,
+        prazo_dias: d.prazo_dias,
+        passos: d.passos || [],
+        consequencias: d.consequencias,
+        idioma_original: d.idioma_original,
+        savedAt: new Date(d.created_at).toLocaleDateString('pt-PT'),
+        db_id: d.id
+      };
+    });
+    // Contar apenas documentos do mês atual
+    var now = new Date();
+    state.docsUsed = docsData.filter(function(d) {
+      var created = new Date(d.created_at);
+      return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+    }).length;
+  }
+  updateHome();
+  if(window.location.search.includes('success=true')){
+    await sbPatch('profiles','id=eq.'+user.id,{plano:'pro'});
+    state.isPro=true; updatePlanLabel();
+    // Guardar email antes de limpar URL
+    var successEmail = user.email;
+    var successNome = profile ? (profile.nome || user.email.split('@')[0]) : user.email.split('@')[0];
+    history.replaceState({},'','/');
+    // Enviar email de upgrade
+    fetch('/api/send-upgrade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: successEmail, nome: successNome })
+    }).catch(function(){});
+    setTimeout(function(){alert('Bem-vindo ao Claro-app+!');},500);
+  }
+}
+
+async function doLogout() {
+  if(accessToken) await authPost('logout',{});
+  accessToken=null; currentUser=null;
+  localStorage.removeItem('claro_session');
+  state.isPro=false; state.docsUsed=0; state.savedDocs=[]; agregado=[];
+  document.getElementById('app').style.display='none';
+  document.getElementById('authScreen').style.display='block';
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPassword').value='';
+  switchTab('login');
+}
+
+
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+// SUBSTITUI PELA TUA CHAVE API DO ANTHROPIC
+// Chave API gerida pelo servidor (Vercel Environment Variables)
+const ANTHROPIC_API_KEY = '';
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+const state = { docsUsed:0, freeLimit:3, isPro:false, savedDocs:[], notifs:[], activeFilter:'' };
+
+const samples = [
+  `Krankenkasse Helsana AG\nPrämienrechnung April 2025\n\nSehr geehrte Frau Rodrigues,\n\nwir stellen Ihnen die Monatsprämie für April 2025 in Rechnung.\n\nVersicherungsnehmer: Maria Rodrigues\nGrundversicherung (KVG): CHF 312.40\nZusatzversicherung (VVG): CHF 30.40\nTotal: CHF 342.80\n\nZahlungsfrist: 27. April 2025\n\nBei verspäteter Zahlung werden Verzugszinsen erhoben. Nach 3 Mahnungen wird der Fall an das kantonale Betreibungsamt weitergeleitet.\n\nHelsana AG, Zürich`,
+  `Kantonales Steueramt Zürich\nSteuererklärung 2024\n\nSehr geehrte Frau Rodrigues,\n\nwir fordern Sie auf, die Steuererklärung 2024 bis spätestens 30. April 2025 einzureichen.\n\nBitte reichen Sie folgende Dokumente ein:\n- Lohnausweis 2024\n- Bankkontoauszüge\n- Mietvertrag\n\nBei Nichteinreichung wird eine Ermessensveranlagung vorgenommen.\n\nKantonales Steueramt Zürich`,
+  `Mietvertrag – Verlängerungsbestätigung\n\nVermieterin: Migros Immobilien AG\nMieterin: Maria Rodrigues\nMietobjekt: Bergstrasse 14, 8001 Zürich\n\nWir bestätigen die automatische Verlängerung Ihres Mietvertrags für den Zeitraum 1. Mai 2025 bis 30. April 2026.\n\nMonatliche Miete: CHF 1.450.00\nNebenkosten: CHF 120.00\n\nMit freundlichen Grüssen,\nMigros Immobilien AG`
+];
+
+// ── ONBOARDING ─────────────────────────────────────────────────────────────
+function startApp(){ /* replaced by auth */ }
+
+// ── NAV ────────────────────────────────────────────────────────────────────
+function showScreen(name){
+  document.getElementById('detailOverlay').classList.remove('open');
+  // Esconder todos os ecrãs
+  document.querySelectorAll('.screen').forEach(function(s){
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  // Mostrar ecrã pretendido
+  var screen = document.getElementById('screen-'+name);
+  if(screen){ screen.classList.add('active'); screen.style.display = 'block'; }
+  var navBtn = document.getElementById('nav-'+name);
+  if(navBtn) navBtn.classList.add('active');
+  if(name==='analisar') {
+    document.getElementById('homeState').style.display = 'block';
+    document.getElementById('analyseState').style.display = 'none';
+    updateHome();
+  }
+  if(name==='documentos') renderDocs();
+  if(name==='notificacoes') renderNotifs();
+}
+
+// ── ANÁLISE ────────────────────────────────────────────────────────────────
+function loadSample(i){ document.getElementById('docInput').value=samples[i]; updateCount(); document.getElementById('resultArea').innerHTML=''; }
+function updateCount(){ document.getElementById('charCount').textContent=document.getElementById('docInput').value.length+' caracteres'; }
+
+async function analyseDoc(){
+  if(!state.isPro && state.docsUsed>=state.freeLimit){ openPaywall(); return; }
+  const text=document.getElementById('docInput').value.trim();
+  const hasFile = uploadedFiles.length > 0 || uploadedFileData !== null;
+  if(!text && !hasFile){ alert('Importa um ficheiro ou cola o texto do documento.'); return; }
+  const btn=document.getElementById('analyseBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A analisar...';
+  document.getElementById('resultArea').innerHTML='';
+  const hoje = new Date().toLocaleDateString('pt-PT'); const prompt=`És um assistente especializado a ajudar imigrantes portugueses na Suíça a compreender documentos oficiais em alemão, francês ou italiano. A data de hoje é ${hoje}.\n\nAnalisa o seguinte documento e responde APENAS em JSON válido sem markdown:\n{\n  "titulo": "título curto",\n  "idioma_original": "Alemão/Francês/Italiano",\n  "categoria": "Seguro/Impostos/Renda/Trabalho/Saúde/Outro",\n  "resumo": "resumo simples em 2-3 frases em português",\n  "explicacao": "explicação clara em português",\n  "acao_necessaria": true/false,\n  "urgente": true/false,\n  "o_que_fazer": "o que o utilizador deve fazer (vazio se não necessário)",\n  "prazo": "prazo em português (vazio se não houver)",\n  "passos": ["passo 1","passo 2"],\n  "consequencias": "o que acontece se ignorar (vazio se não aplicável)",\n  "prazo_dias": 0\n}\n\nDocumento:\n${text}`;
+  try{
+    let messageContent;
+    if(hasFile && uploadedFiles.length > 0) {
+      messageContent = [];
+      uploadedFiles.forEach(function(f) {
+        if(f.type === 'image') {
+          messageContent.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:f.data}});
+        } else {
+          messageContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:f.data}});
+        }
+      });
+      messageContent.push({type:'text',text:prompt});
+    } else if(hasFile && uploadedFileData) {
+      if(uploadedFileType === 'image') {
+        messageContent = [
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:uploadedFileData}},
+          {type:'text',text:prompt}
+        ];
+      } else {
+        messageContent = [
+          {type:'document',source:{type:'base64',media_type:'application/pdf',data:uploadedFileData}},
+          {type:'text',text:prompt}
+        ];
+      }
+    } else {
+      messageContent = prompt;
+    }
+    const res=await fetch('/api/analyse',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[{role:'user',content:messageContent}]})
+    });
+    const data=await res.json();
+    const raw=data.content[0].text.replace(/```json|```/g,'').trim();
+    const r=JSON.parse(raw);
+    state.docsUsed++;
+    var doc = {...r, savedAt:new Date().toLocaleDateString('pt-PT')};
+    state.savedDocs.push(doc);
+    // Guardar no Supabase
+    if(currentUser) {
+      sbPost('documentos', {
+        user_id: currentUser.id,
+        titulo: r.titulo,
+        categoria: r.categoria,
+        resumo: r.resumo,
+        explicacao: r.explicacao,
+        acao_necessaria: r.acao_necessaria,
+        urgente: r.urgente,
+        o_que_fazer: r.o_que_fazer || '',
+        prazo: r.prazo || '',
+        prazo_dias: r.prazo_dias || 0,
+        passos: r.passos || [],
+        consequencias: r.consequencias || '',
+        idioma_original: r.idioma_original || ''
+      });
+    }
+    clearFile();
+    updateHome();
+    if(r.acao_necessaria) state.notifs.push({title:r.titulo,desc:r.o_que_fazer,urgent:r.urgente});
+    updatePlanLabel();
+    renderResult(r);
+  }catch(e){
+    document.getElementById('resultArea').innerHTML=`<div class="block"><div class="block-text" style="color:var(--red);">Erro ao analisar. Verifica a tua ligação ou a chave de API e tenta novamente.</div></div>`;
+  }
+  btn.disabled=false; btn.innerHTML='Analisar com IA';
+}
+
+function renderResult(r){
+  let h='';
+  h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;">`;
+  if(r.urgente) h+=`<span class="tag tag-urgent">Urgente</span>`;
+  if(r.acao_necessaria) h+=`<span class="tag tag-action">Ação necessária</span>`;
+  if(!r.acao_necessaria) h+=`<span class="tag tag-info">Informativo</span>`;
+  if(r.prazo_dias>0&&r.prazo_dias<=7) h+=`<span class="tag tag-deadline">Prazo próximo</span>`;
+  h+=`<span class="tag tag-cat">${r.categoria}</span><span class="tag tag-cat">Original: ${r.idioma_original}</span></div>`;
+  if(r.acao_necessaria) h+=`<div class="alert alert-warning"><div class="alert-text">⚠️ Este documento pode exigir uma ação importante.</div></div>`;
+  else h+=`<div class="alert alert-ok"><div class="alert-text">✅ Não é necessária nenhuma ação.</div></div>`;
+  h+=`<div class="block"><div class="block-label">Resumo</div><div class="block-text">${r.resumo}</div></div>`;
+  h+=`<div class="block"><div class="block-label">Explicação</div><div class="block-text">${r.explicacao}</div></div>`;
+  if(r.acao_necessaria){
+    if(r.o_que_fazer) h+=`<div class="block"><div class="block-label">O que tens de fazer</div><div class="block-text">${r.o_que_fazer}</div></div>`;
+    if(r.prazo) h+=`<div class="block"><div class="block-label">Prazo</div><div class="block-text" style="color:var(--red);font-weight:500;">📅 ${r.prazo}</div></div>`;
+    if(r.passos&&r.passos.length){
+      h+=`<div class="block"><div class="block-label">Passo a passo</div><ul class="steps-list">`;
+      r.passos.forEach((s,i)=>{h+=`<li><span class="step-num">${i+1}</span>${s}</li>`;});
+      h+=`</ul></div>`;
+    }
+    if(r.consequencias) h+=`<div class="block"><div class="block-label">Se não fizeres nada</div><div class="block-text">${r.consequencias}</div></div>`;
+    h+=`<div class="help-box"><div class="help-text">Evita erros ou custos desnecessários. Um consultor pode ajudar-te com este documento.</div><button class="help-btn" onclick="openBooking()">Precisas de ajuda com este documento?</button></div>`;
+  }
+  h+=`<button class="btn-primary" style="margin-top:4px;" onclick="showScreen('documentos')">Ver documentos guardados →</button>`;
+  document.getElementById('resultArea').innerHTML=h;
+  document.getElementById('resultArea').scrollIntoView({behavior:'smooth'});
+}
+
+// ── DOCUMENTOS ─────────────────────────────────────────────────────────────
+function filterDocs(chip,cat){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  state.activeFilter=cat;
+  renderDocs();
+}
+
+function renderDocs(){
+  const el=document.getElementById('savedDocsList');
+  const docs=state.activeFilter?state.savedDocs.filter(d=>d.categoria===state.activeFilter):state.savedDocs;
+  if(!docs.length){el.innerHTML='<div style="font-size:14px;color:var(--text-muted);text-align:center;padding:48px 0;line-height:1.6;">Ainda não tens documentos guardados.<br>Analisa um documento para o guardar aqui.</div>';return;}
+  el.innerHTML=docs.map((d,i)=>`
+    <div class="card" onclick="openDoc(${state.savedDocs.indexOf(d)})">
+      <div class="card-header"><div class="card-title">${d.titulo}</div><div class="card-date">${d.savedAt}</div></div>
+      <div class="card-meta">
+        ${d.urgente?'<span class="tag tag-urgent">Urgente</span>':''}
+        ${d.acao_necessaria?'<span class="tag tag-action">Ação necessária</span>':'<span class="tag tag-info">Informativo</span>'}
+        <span class="tag tag-cat">${d.categoria}</span>
+      </div>
+      ${d.resumo?`<div class="card-preview">${d.resumo.substring(0,80)}...</div>`:''}
+    </div>`).join('');
+}
+
+function openDoc(i){
+  const r=state.savedDocs[i];
+  document.getElementById('detailTitle').textContent=r.titulo;
+  let h='';
+  h+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;">`;
+  if(r.urgente) h+=`<span class="tag tag-urgent">Urgente</span>`;
+  if(r.acao_necessaria) h+=`<span class="tag tag-action">Ação necessária</span>`;
+  if(!r.acao_necessaria) h+=`<span class="tag tag-info">Informativo</span>`;
+  h+=`<span class="tag tag-cat">${r.categoria}</span></div>`;
+  if(r.acao_necessaria) h+=`<div class="alert alert-warning"><div class="alert-text">⚠️ Este documento pode exigir uma ação importante.</div></div>`;
+  else h+=`<div class="alert alert-ok"><div class="alert-text">✅ Não é necessária nenhuma ação.</div></div>`;
+  h+=`<div class="block"><div class="block-label">Resumo</div><div class="block-text">${r.resumo}</div></div>`;
+  h+=`<div class="block"><div class="block-label">Explicação</div><div class="block-text">${r.explicacao}</div></div>`;
+  if(r.acao_necessaria&&r.o_que_fazer){
+    h+=`<div class="block"><div class="block-label">O que tens de fazer</div><div class="block-text">${r.o_que_fazer}</div></div>`;
+    if(r.prazo) h+=`<div class="block"><div class="block-label">Prazo</div><div class="block-text" style="color:var(--red);font-weight:500;">📅 ${r.prazo}</div></div>`;
+    if(r.passos&&r.passos.length){
+      h+=`<div class="block"><div class="block-label">Passo a passo</div><ul class="steps-list">`;
+      r.passos.forEach((s,idx)=>{h+=`<li><span class="step-num">${idx+1}</span>${s}</li>`;});
+      h+=`</ul></div>`;
+    }
+    h+=`<div class="help-box"><div class="help-text">Evita erros ou custos desnecessários.</div><button class="help-btn" onclick="openBooking()">Precisas de ajuda com este documento?</button></div>`;
+  }
+  document.getElementById('detailContent').innerHTML=h;
+  document.getElementById('detailOverlay').classList.add('open');
+}
+function closeDetail(){ document.getElementById('detailOverlay').classList.remove('open'); }
+
+// ── NOTIFICAÇÕES ───────────────────────────────────────────────────────────
+function renderNotifs(){
+  var el=document.getElementById('notifsList');
+  var pending = state.savedDocs.filter(function(d){ return d.acao_necessaria; });
+  if(!pending.length){
+    el.innerHTML='<div style="font-size:14px;color:var(--text-muted);text-align:center;padding:48px 0;">Sem avisos por agora.</div>';
+    return;
+  }
+  el.innerHTML=pending.map(function(d){
+    var idx = state.savedDocs.indexOf(d);
+    return '<div class="notif-item" style="flex-direction:column;align-items:stretch;cursor:pointer;" onclick="openDocDetail(' + idx + ')">' +
+      '<div style="display:flex;gap:10px;align-items:flex-start;">' +
+        '<div class="notif-dot' + (d.urgente?'':' green') + '"></div>' +
+        '<div class="notif-body">' +
+          '<div class="notif-title">' + (d.urgente?'⚠️ ':'🔔 ') + d.titulo + '</div>' +
+          (d.o_que_fazer ? '<div class="notif-desc">' + d.o_que_fazer.substring(0,60) + '...</div>' : '') +
+          (d.prazo ? '<div class="notif-time">📅 ' + d.prazo + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      '<button onclick="event.stopPropagation();marcarFeito(' + idx + ')" style="margin-top:10px;width:100%;padding:9px;background:#1D9E75;border:none;border-radius:10px;font-size:14px;color:white;font-weight:500;cursor:pointer;font-family:inherit;">✓ Marcar como feito</button>' +
+    '</div>';
+  }).join('');
+}
+
+// ── PERFIL ─────────────────────────────────────────────────────────────────
+// Foto de perfil
+var profilePhotoData = null;
+
+async function handlePhotoUpload(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  
+  // Preview imediato
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    profilePhotoData = e.target.result;
+    document.getElementById('editPhotoPreview').src = profilePhotoData;
+    document.getElementById('editPhotoPreview').style.display = 'block';
+    document.getElementById('editInitialsPreview').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+  
+  // Upload ao Supabase Storage
+  if (currentUser) {
+    try {
+      var arrayBuffer = await file.arrayBuffer();
+      var fileName = currentUser.id + '/avatar.' + file.name.split('.').pop();
+      var uploadRes = await fetch(SUPABASE_URL + '/storage/v1/object/avatars/' + fileName, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + accessToken,
+          'Content-Type': file.type,
+          'x-upsert': 'true'
+        },
+        body: arrayBuffer
+      });
+      if (uploadRes.ok) {
+        var photoUrl = SUPABASE_URL + '/storage/v1/object/public/avatars/' + fileName;
+        await sbPatch('profiles', 'id=eq.' + currentUser.id, { foto_url: photoUrl });
+        profilePhotoData = photoUrl;
+      }
+    } catch(e) {
+      console.log('Foto upload erro:', e);
+    }
+  }
+}
+
+function openEditModal() {
+  // Os campos já foram preenchidos pelo loadUserAndStart — apenas garantir foto e iniciais
+  var nome = document.getElementById('profileName').textContent;
+  var initials = nome !== '—' ? nome.split(' ').map(function(n){return n[0];}).join('').substring(0,2).toUpperCase() : '?';
+  document.getElementById('editInitialsPreview').textContent = initials;
+  // Foto
+  if (profilePhotoData) {
+    document.getElementById('editPhotoPreview').src = profilePhotoData;
+    document.getElementById('editPhotoPreview').style.display = 'block';
+    document.getElementById('editInitialsPreview').style.display = 'none';
+  } else {
+    document.getElementById('editPhotoPreview').style.display = 'none';
+    document.getElementById('editInitialsPreview').style.display = 'flex';
+  }
+  renderAgregadoEdit();
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').style.display = 'none';
+}
+
+async function saveProfile() {
+  var primeiroNome = document.getElementById('inputPrimeiroNome').value.trim();
+  var apelido = document.getElementById('inputApelido').value.trim();
+  var name = (primeiroNome + ' ' + apelido).trim();
+  document.getElementById('inputName').value = name;
+  var email = document.getElementById('inputEmail').value.trim();
+  var phone = document.getElementById('inputPhone').value.trim();
+  var dob = document.getElementById('inputDob').value;
+  if (!name || !email) { alert('Nome e email são obrigatórios.'); return; }
+  
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('profileEmail').textContent = email;
+  
+  var initials = name.split(' ').map(function(n){return n[0];}).join('').substring(0,2).toUpperCase();
+  document.getElementById('profileInitialsText').textContent = initials;
+  document.getElementById('headerAvatar').textContent = initials;
+  
+  // Foto
+  if (profilePhotoData) {
+    document.getElementById('profilePhoto').src = profilePhotoData;
+    document.getElementById('profilePhoto').style.display = 'block';
+    document.getElementById('profileInitialsText').style.display = 'none';
+  }
+  
+  // Guardar no Supabase
+  var city = document.getElementById('inputCity').value.trim();
+  var rua = document.getElementById('inputRua') ? document.getElementById('inputRua').value.trim() : '';
+  var numero = document.getElementById('inputNumero') ? document.getElementById('inputNumero').value.trim() : '';
+  var cp = document.getElementById('inputCp') ? document.getElementById('inputCp').value.trim() : '';
+  var morada = [rua, numero].filter(Boolean).join(', ');
+  if (currentUser) {
+    await sbPatch('profiles', 'id=eq.' + currentUser.id, { nome: name, email: email, telefone: phone, data_nascimento: dob || null, cidade: city || null, morada: morada || null, codigo_postal: cp || null });
+  }
+  
+  // Actualizar card completo
+  var dobCityParts = [];
+  if(dob) { var p=dob.split('-'); dobCityParts.push(p[2]+'/'+p[1]+'/'+p[0]); }
+  if(city) dobCityParts.push(city);
+  document.getElementById('profileDobCity').textContent = dobCityParts.join(' · ');
+  var extraParts = [];
+  if(phone) extraParts.push('📞 '+phone);
+  var moradaDisplay = [];
+  if(morada) moradaDisplay.push(morada);
+  if(cp) moradaDisplay.push(cp);
+  if(city && !dobCityParts.includes(city)) moradaDisplay.push(city);
+  if(moradaDisplay.length) extraParts.push('📍 '+moradaDisplay.join(', '));
+  document.getElementById('profileExtraInfo').innerHTML = extraParts.join('<br>');
+  
+  // Pré-preencher booking
+  document.getElementById('bkName').value = name;
+  document.getElementById('bkEmail').value = email;
+  
+  renderAgregado();
+  closeEditModal();
+  alert('Perfil guardado!');
+}
+
+// Plano expandível
+var planoOpen = false;
+function togglePlano() {
+  planoOpen = !planoOpen;
+  var details = document.getElementById('planoDetails');
+  var chevron = document.getElementById('planoChevron');
+  details.style.display = planoOpen ? 'block' : 'none';
+  chevron.style.transform = planoOpen ? 'rotate(90deg)' : 'none';
+  if (planoOpen) renderPlanoDetails();
+}
+
+function renderPlanoDetails() {
+  var el = document.getElementById('planoDetails');
+  if (state.isPro) {
+    el.innerHTML = '<div style="margin-bottom:10px;">' +
+      '<a href="Manual_Emigrante_FINAL_v2.pdf" download style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);text-decoration:none;">' +
+        '<span style="font-size:18px;">📖</span>' +
+        '<div><div style="font-size:13px;font-weight:500;color:var(--text);">Manual do Emigrante</div><div style="font-size:11px;color:var(--text-muted);">Guia completo</div></div>' +
+        '<span style="margin-left:auto;color:var(--green);font-size:12px;">↓</span>' +
+      '</a>' +
+      '<a href="https://drive.google.com/uc?export=download&id=1IYzgWgTp_WCrKMj3X9_WSz5Se-O7yHtq" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);text-decoration:none;">' +
+        '<span style="font-size:18px;">📊</span>' +
+        '<div><div style="font-size:13px;font-weight:500;color:var(--text);">Budget Mensal</div><div style="font-size:11px;color:var(--text-muted);">Excel para despesas</div></div>' +
+        '<span style="margin-left:auto;color:var(--green);font-size:12px;">↓</span>' +
+      '</a>' +
+      '<button onclick="cancelSubscription()" style="width:100%;margin-top:10px;padding:10px;background:none;border:0.5px solid var(--red);border-radius:10px;font-size:13px;color:var(--red);cursor:pointer;font-family:inherit;">Cancelar subscrição</button>' +
+    '</div>';
+  } else {
+    var r = Math.max(0, state.freeLimit - state.docsUsed);
+    el.innerHTML = '<div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">' + r + ' documento' + (r!==1?'s':'') + ' gratuito' + (r!==1?'s':'') + ' restante' + (r!==1?'s':'') + '.</div>' +
+      '<button class="btn-primary" onclick="closeAndOpenPaywall()" style="padding:12px;">Fazer upgrade para Claro-app+</button>';
+  }
+}
+
+function closeAndOpenPaywall() {
+  planoOpen = false;
+  document.getElementById('planoDetails').style.display = 'none';
+  document.getElementById('planoChevron').style.transform = 'none';
+  openPaywall();
+}
+
+function updatePlanLabel(){
+  if(state.isPro){
+    document.getElementById('planLabel').textContent='Claro-app+ ativo ✓';
+    if(planoOpen) renderPlanoDetails();
+  }
+  else{const r=Math.max(0,state.freeLimit-state.docsUsed);document.getElementById('planLabel').textContent='Grátis · '+r+' de 3 análises mensais restantes';}
+}
+
+// ── PAYWALL ────────────────────────────────────────────────────────────────
+function openPaywall(){
+  var btn = document.getElementById('pw-cta');
+  if(btn) { btn.disabled = false; btn.innerHTML = 'Começar com Claro-app+'; }
+  document.getElementById('paywallOverlay').classList.add('open');
+}
+function closePaywall(){ document.getElementById('paywallOverlay').classList.remove('open'); }
+document.getElementById('pw-cta').addEventListener('click', async ()=>{
+  const priceId = 'price_1TSyGTI7lWm5a7C9lAylEzX5';
+  const btn = document.getElementById('pw-cta');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>A redirecionar...';
+  try {
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceId, promoCode: (document.getElementById('promoCode')||{value:''}).value.trim() || null })
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Erro ao iniciar pagamento. Tenta novamente.');
+      btn.disabled = false;
+      btn.textContent = 'Começar com Claro-app+';
+    }
+  } catch(e) {
+    alert('Erro ao iniciar pagamento. Tenta novamente.');
+    btn.disabled = false;
+    btn.textContent = 'Começar com Claro-app+';
+  }
+});
+
+// Verificar se voltou do Stripe com sucesso
+if(window.location.search.includes('success=true')) {
+  state.isPro = true;
+  updatePlanLabel();
+  history.replaceState({}, '', '/');
+  setTimeout(() => alert('Bem-vindo ao Claro-app+! 🎉'), 500);
+}
+
+// ── BOOKING ────────────────────────────────────────────────────────────────
+const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const TYPE_LABELS={video:'Videochamada',phone:'Chamada telefónica',presencial:'Presencial (Zürich)'};
+const UNAVAILABLE=['10:00','15:30'];
+const TIMES=['09:00','09:30','10:00','10:30','11:00','11:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00'];
+let curMonth,curYear,selDate=null,selTime=null,selType='video';
+
+function openBooking(){
+  if(!state.isPro){ openPaywall(); return; }
+  document.getElementById('bookingOverlay').classList.add('open');
+  if(!curMonth){ const n=new Date(); curMonth=n.getMonth(); curYear=n.getFullYear(); }
+  // Pré-preencher com dados do perfil
+  document.getElementById('bkName').value=document.getElementById('inputName').value||'';
+  document.getElementById('bkEmail').value=document.getElementById('inputEmail').value||'';
+  renderCal();
+}
+function closeBooking(){ document.getElementById('bookingOverlay').classList.remove('open'); }
+
+function renderCal(){
+  document.getElementById('calMonth').textContent=MONTHS[curMonth]+' '+curYear;
+  const g=document.getElementById('calGrid'); g.innerHTML='';
+  DAYS.forEach(d=>{const e=document.createElement('div');e.className='cal-day-label';e.textContent=d;g.appendChild(e);});
+  const first=new Date(curYear,curMonth,1).getDay();
+  const total=new Date(curYear,curMonth+1,0).getDate();
+  const today=new Date(); today.setHours(0,0,0,0);
+  for(let i=0;i<first;i++){const w=document.createElement('div');w.className='cal-wrap';const b=document.createElement('button');b.className='cal-day empty';w.appendChild(b);w.appendChild(mkDot(false));g.appendChild(w);}
+  for(let d=1;d<=total;d++){
+    const date=new Date(curYear,curMonth,d); date.setHours(0,0,0,0);
+    const dow=date.getDay(); const avail=[1,2,3,4,5].includes(dow)&&date>=today;
+    const isToday=date.getTime()===today.getTime();
+    const isSel=selDate&&selDate.getTime()===date.getTime();
+    const w=document.createElement('div'); w.className='cal-wrap';
+    const b=document.createElement('button');
+    b.textContent=d;
+    b.className='cal-day'+(isToday?' today':'')+(isSel?' selected':'')+((!avail)?' disabled':'');
+    if(avail) b.onclick=()=>selDay(new Date(curYear,curMonth,d));
+    w.appendChild(b); w.appendChild(mkDot(avail)); g.appendChild(w);
+  }
+}
+function mkDot(show){const d=document.createElement('div');d.className='dot'+(show?'':' hidden');return d;}
+function prevMonth(){curMonth--;if(curMonth<0){curMonth=11;curYear--;}renderCal();}
+function nextMonth(){curMonth++;if(curMonth>11){curMonth=0;curYear++;}renderCal();}
+
+function selDay(date){
+  selDate=date; selTime=null; renderCal();
+  const label=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][date.getDay()];
+  document.getElementById('timesLabel').textContent=label+', '+date.getDate()+' de '+MONTHS[date.getMonth()];
+  const g=document.getElementById('timesGrid'); g.innerHTML='';
+  TIMES.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='time-btn'+(UNAVAILABLE.includes(t)?' unavailable':'');
+    b.textContent=t;
+    if(!UNAVAILABLE.includes(t)) b.onclick=()=>selTimeF(t,b);
+    g.appendChild(b);
+  });
+  document.getElementById('timesSection').style.display='block';
+  document.getElementById('bookingFormSection').style.display='none';
+  setTimeout(()=>document.getElementById('timesSection').scrollIntoView({behavior:'smooth'}),100);
+}
+
+function selTimeF(t,btn){
+  selTime=t;
+  document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updateSummary();
+  document.getElementById('bookingFormSection').style.display='block';
+  setTimeout(()=>document.getElementById('bookingFormSection').scrollIntoView({behavior:'smooth'}),100);
+}
+
+function selectType(type,btn){
+  selType=type;
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updateSummary();
+}
+
+function updateSummary(){
+  if(selDate) document.getElementById('sumDate').textContent=selDate.getDate()+' de '+MONTHS[selDate.getMonth()]+' de '+selDate.getFullYear();
+  if(selTime) document.getElementById('sumTime').textContent=selTime;
+  document.getElementById('sumType').textContent=TYPE_LABELS[selType];
+}
+
+async function confirmBooking(){
+  const name=document.getElementById('bkName').value.trim();
+  const email=document.getElementById('bkEmail').value.trim();
+  const dob=document.getElementById('bkDob').value;
+  const phone=document.getElementById('bkPhone').value.trim();
+  if(!name||!email||!dob||!phone||!selDate||!selTime){alert('Por favor preenche todos os campos obrigatórios.');return;}
+  document.getElementById('cDate').textContent=selDate.getDate()+' de '+MONTHS[selDate.getMonth()]+' de '+selDate.getFullYear();
+  document.getElementById('cTime').textContent=selTime;
+  document.getElementById('cType').textContent=TYPE_LABELS[selType];
+  document.getElementById('cName').textContent=name;
+  const p=dob.split('-'); document.getElementById('cDob').textContent=p[2]+'/'+p[1]+'/'+p[0];
+  document.getElementById('cPhone').textContent=phone;
+  document.getElementById('cEmail').textContent=email;
+  // Guardar consulta no Supabase
+  if(currentUser) {
+    var dataStr = selDate.getFullYear()+'-'+String(selDate.getMonth()+1).padStart(2,'0')+'-'+String(selDate.getDate()).padStart(2,'0');
+    await sbPost('consultas', {
+      user_id: currentUser.id,
+      data: dataStr,
+      hora: selTime,
+      tipo: selType,
+      nome: name,
+      email: email,
+      status: 'pendente'
+    });
+  }
+  document.getElementById('bookingForm').style.display='none';
+  document.getElementById('bookingSuccess').classList.add('show');
+}
+
+function resetBooking(){
+  selDate=null; selTime=null; selType='video';
+  document.getElementById('bookingForm').style.display='block';
+  document.getElementById('bookingSuccess').classList.remove('show');
+  document.getElementById('timesSection').style.display='none';
+  document.getElementById('bookingFormSection').style.display='none';
+  document.querySelectorAll('.type-btn').forEach((b,i)=>b.classList.toggle('selected',i===0));
+  renderCal();
+}
+
+// ── UPLOAD DE FICHEIROS ────────────────────────────────────────────────────
+// Suporte a múltiplos ficheiros
+var uploadedFiles = []; // [{data: base64, type: 'image'|'pdf', name: '...'}]
+
+// Compatibilidade com código antigo
+var uploadedFileData = null;
+var uploadedFileType = null;
+
+function compressImage(file, callback) {
+  // Usar FileReader primeiro, depois comprimir via canvas
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var dataUrl = e.target.result;
+    var img = new Image();
+    img.onload = function() {
+      try {
+        var canvas = document.createElement('canvas');
+        var maxDim = 600;
+        var w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+          else { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        canvas.width = w; canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        var compressed = canvas.toDataURL('image/jpeg', 0.5);
+        // Só usar comprimido se for menor
+        var chosen = (compressed.length < dataUrl.length) ? compressed : dataUrl;
+        console.log('Original:', Math.round(dataUrl.length/1024), 'KB | Compressed:', Math.round(compressed.length/1024), 'KB | Using:', Math.round(chosen.length/1024), 'KB');
+        callback(chosen);
+      } catch(err) {
+        callback(dataUrl);
+      }
+    };
+    img.onerror = function() { callback(dataUrl); };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleFile(event) {
+  var files = Array.from(event.target.files);
+  if (!files.length) return;
+  var maxSize = 20 * 1024 * 1024;
+  files.forEach(function(file) {
+    if (file.size > maxSize) { alert(file.name + ': demasiado grande. Máximo 20MB.'); return; }
+    var type = file.type === 'application/pdf' ? 'pdf' : 'image';
+    if (type === 'image') {
+      compressImage(file, function(compressed) {
+        var base64 = compressed.split(',')[1];
+        // Verificar tamanho após compressão (base64 ~33% maior que binário)
+        var sizeBytes = base64.length * 0.75;
+        if (sizeBytes > 3.5 * 1024 * 1024) {
+          alert('A imagem é demasiado grande mesmo após compressão. Por favor tira a foto diretamente pela câmara em vez de importar da galeria.');
+          return;
+        }
+        uploadedFiles.push({ data: base64, type: 'image', name: file.name, size: file.size, src: compressed });
+        if (uploadedFiles.length === 1) { uploadedFileData = base64; uploadedFileType = 'image'; }
+        renderPreviews();
+        document.getElementById('docInput').value = '';
+        document.getElementById('charCount').textContent = '0 caracteres';
+        document.getElementById('resultArea').innerHTML = '';
+      });
+    } else {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var result = e.target.result;
+        var base64 = result.split(',')[1];
+        uploadedFiles.push({ data: base64, type: 'pdf', name: file.name, size: file.size, src: result });
+        if (uploadedFiles.length === 1) { uploadedFileData = base64; uploadedFileType = 'pdf'; }
+        renderPreviews();
+        document.getElementById('docInput').value = '';
+        document.getElementById('charCount').textContent = '0 caracteres';
+        document.getElementById('resultArea').innerHTML = '';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  event.target.value = '';
+}
+
+function renderPreviews() {
+  var list = document.getElementById('previewList');
+  list.innerHTML = '';
+  uploadedFiles.forEach(function(f, i) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:relative;width:80px;height:80px;flex-shrink:0;';
+    if (f.type === 'pdf') {
+      wrap.innerHTML = '<div style="width:80px;height:80px;border-radius:10px;border:0.5px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:32px;">📄</div>';
+    } else {
+      wrap.innerHTML = '<img src="' + f.src + '" style="width:80px;height:80px;object-fit:cover;border-radius:10px;border:0.5px solid var(--border);">';
+    }
+    var btn = document.createElement('button');
+    btn.innerHTML = '✕';
+    btn.style.cssText = 'position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:11px;line-height:1;';
+    btn.onclick = function() { removeFile(i); };
+    wrap.appendChild(btn);
+    list.appendChild(wrap);
+  });
+  var count = uploadedFiles.length;
+  document.getElementById('fileName').textContent = count + ' ficheiro' + (count !== 1 ? 's' : '') + ' selecionado' + (count !== 1 ? 's' : '');
+  document.getElementById('imagePreview').style.display = uploadedFiles.length ? 'block' : 'none';
+}
+
+function removeFile(i) {
+  uploadedFiles.splice(i, 1);
+  uploadedFileData = uploadedFiles.length ? uploadedFiles[0].data : null;
+  uploadedFileType = uploadedFiles.length ? uploadedFiles[0].type : null;
+  renderPreviews();
+}
+
+function clearFile() {
+  uploadedFiles = [];
+  uploadedFileData = null;
+  uploadedFileType = null;
+  document.getElementById('imagePreview').style.display = 'none';
+  document.getElementById('previewList').innerHTML = '';
+  document.getElementById('fileName').textContent = '';
+}
+
+
+// ── SWIPE NAVIGATION ──────────────────────────────────────────────────────
+// Ordem de navegação por swipe
+// 'analisar' = ecrã Início, 'analisar-form' = ecrã Analisar (estado interno)
+var swipeOrder = ['analisar', 'analisar-form', 'notificacoes', 'documentos', 'perfil'];
+
+function getSwipeCurrent() {
+  // Verificar se estamos no ecrã analisar em que estado
+  var screen = null;
+  document.querySelectorAll('.screen').forEach(function(s) {
+    if (s.classList.contains('active')) screen = s.id.replace('screen-', '');
+  });
+  if (screen === 'analisar') {
+    var homeVisible = document.getElementById('homeState').style.display !== 'none';
+    return homeVisible ? 'analisar' : 'analisar-form';
+  }
+  return screen;
+}
+
+function swipeNavigate(direction) {
+  var current = getSwipeCurrent();
+  var idx = swipeOrder.indexOf(current);
+  if (idx === -1) return;
+  var next = direction === 'left' ? swipeOrder[idx + 1] : swipeOrder[idx - 1];
+  if (!next) return;
+  if (next === 'analisar') {
+    showScreen('analisar');
+    document.getElementById('homeState').style.display = 'block';
+    document.getElementById('analyseState').style.display = 'none';
+    document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+    document.getElementById('nav-analisar').classList.add('active');
+  } else if (next === 'analisar-form') {
+    goAnalisar();
+  } else {
+    showScreen(next);
+  }
+}
+
+var touchStartX = 0;
+var touchStartY = 0;
+
+document.addEventListener('touchstart', function(e) {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchStartX;
+  var dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
+  var target = e.target;
+  while (target) {
+    if (target.id === 'editModal' || target.id === 'paywallOverlay' || 
+        target.id === 'bookingOverlay' || target.id === 'detailOverlay' ||
+        target.id === 'membroModal') return;
+    // Ignorar swipe em zonas com scroll horizontal (ex: categorias)
+    if (target.classList && target.classList.contains('filter-row')) return;
+    if (target.scrollWidth > target.clientWidth && target.scrollLeft !== undefined) {
+      var style = window.getComputedStyle(target);
+      if (style.overflowX === 'auto' || style.overflowX === 'scroll') return;
+    }
+    target = target.parentElement;
+  }
+  swipeNavigate(dx < 0 ? 'left' : 'right');
+}, { passive: true });
+
+// Repor botão paywall quando a página volta ao foco (ex: depois do Stripe)
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    var btn = document.getElementById('pw-cta');
+    if(btn && btn.disabled) { btn.disabled = false; btn.innerHTML = 'Começar com Claro-app+'; }
+  }
+});
+
+
+
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js');
+  });
+}
+</script>
+
+</body>
+</html>
