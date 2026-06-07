@@ -9,6 +9,8 @@ const handler = async (req, res) => {
   if (!messages) return res.status(400).json({ error: 'Missing messages' });
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 55000);
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -21,7 +23,9 @@ const handler = async (req, res) => {
         max_tokens: 1000,
         messages: messages,
       }),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     const data = await response.json();
     return res.status(200).json(data);
   } catch (error) {
