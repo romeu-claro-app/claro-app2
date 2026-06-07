@@ -1390,8 +1390,11 @@ async function analyseDoc(){
       signal:controller.signal
     });
     clearTimeout(timeoutId);
+    console.log('[analyse] HTTP status:', res.status, res.ok);
     const data=await res.json();
+    console.log('[analyse] data recebida:', JSON.stringify(data));
     const raw=data.content[0].text.replace(/```json|```/g,'').trim();
+    console.log('[analyse] raw antes do parse:', raw);
     const r=JSON.parse(raw);
     state.docsUsed++;
     var doc = {...r, savedAt:new Date().toLocaleDateString('pt-PT')};
@@ -1420,6 +1423,7 @@ async function analyseDoc(){
     updatePlanLabel();
     renderResult(r);
   }catch(e){
+    console.error('[analyse] erro:', e.name, e.message, e);
     document.getElementById('resultArea').innerHTML=`<div class="block"><div class="block-text" style="color:var(--red);">Erro ao analisar. Verifica a tua ligação ou a chave de API e tenta novamente.</div></div>`;
   }
   btn.disabled=false; btn.innerHTML='Analisar com IA';
