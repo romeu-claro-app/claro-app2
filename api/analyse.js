@@ -1,6 +1,4 @@
-module.exports.config = { maxDuration: 60 };
-
-module.exports = async (req, res) => {
+const handler = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -30,3 +28,6 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+handler.config = { maxDuration: 60 };
+module.exports = handler;
