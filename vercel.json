@@ -10,6 +10,11 @@
       ]
     }
   ],
+  "functions": {
+    "api/analyse.js": {
+      "maxDuration": 60
+    }
+  },
   "crons": [
     {
       "path": "/api/notify-deadlines",

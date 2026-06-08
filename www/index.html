@@ -1351,7 +1351,7 @@ function recompressBase64Image(base64) {
     img.onload = function() {
       try {
         var canvas = document.createElement('canvas');
-        var maxDim = 1000;
+        var maxDim = 800;
         var w = img.width, h = img.height;
         if (w > maxDim || h > maxDim) {
           if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
@@ -1359,7 +1359,7 @@ function recompressBase64Image(base64) {
         }
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
+        var compressed = canvas.toDataURL('image/jpeg', 0.4).split(',')[1];
         console.log('[compress] antes:', Math.round(base64.length * 0.75 / 1024), 'KB → depois:', Math.round(compressed.length * 0.75 / 1024), 'KB');
         resolve(compressed);
       } catch(e) { resolve(base64); }
@@ -1912,7 +1912,7 @@ function compressImage(file, callback) {
     img.onload = function() {
       try {
         var canvas = document.createElement('canvas');
-        var maxDim = 1200;
+        var maxDim = 800;
         var w = img.width, h = img.height;
         if (w > maxDim || h > maxDim) {
           if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
@@ -1921,7 +1921,7 @@ function compressImage(file, callback) {
         canvas.width = w; canvas.height = h;
         var ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL('image/jpeg', 0.7);
+        var compressed = canvas.toDataURL('image/jpeg', 0.4);
         console.log('Original:', Math.round(dataUrl.length/1024), 'KB | Compressed:', Math.round(compressed.length/1024), 'KB');
         callback(compressed);
       } catch(err) {
