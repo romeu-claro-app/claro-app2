@@ -1345,6 +1345,30 @@ function showScreen(name){
 function loadSample(i){ document.getElementById('docInput').value=samples[i]; updateCount(); document.getElementById('resultArea').innerHTML=''; }
 function updateCount(){ document.getElementById('charCount').textContent=document.getElementById('docInput').value.length+' caracteres'; }
 
+function recompressBase64Image(base64) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      try {
+        var canvas = document.createElement('canvas');
+        var maxDim = 1000;
+        var w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+          else { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        var compressed = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
+        console.log('[compress] antes:', Math.round(base64.length * 0.75 / 1024), 'KB → depois:', Math.round(compressed.length * 0.75 / 1024), 'KB');
+        resolve(compressed);
+      } catch(e) { resolve(base64); }
+    };
+    img.onerror = function() { resolve(base64); };
+    img.src = 'data:image/jpeg;base64,' + base64;
+  });
+}
+
 async function analyseDoc(){
   if(!state.isPro && state.docsUsed>=state.freeLimit){ openPaywall(); return; }
   const text=document.getElementById('docInput').value.trim();
@@ -1358,18 +1382,21 @@ async function analyseDoc(){
     let messageContent;
     if(hasFile && uploadedFiles.length > 0) {
       messageContent = [];
-      uploadedFiles.forEach(function(f) {
+      for(var i = 0; i < uploadedFiles.length; i++) {
+        var f = uploadedFiles[i];
         if(f.type === 'image') {
-          messageContent.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:f.data}});
+          var imgData = await recompressBase64Image(f.data);
+          messageContent.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgData}});
         } else {
           messageContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:f.data}});
         }
-      });
+      }
       messageContent.push({type:'text',text:prompt});
     } else if(hasFile && uploadedFileData) {
       if(uploadedFileType === 'image') {
+        var imgData = await recompressBase64Image(uploadedFileData);
         messageContent = [
-          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:uploadedFileData}},
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgData}},
           {type:'text',text:prompt}
         ];
       } else {
