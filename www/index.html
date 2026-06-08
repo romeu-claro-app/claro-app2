@@ -1347,6 +1347,19 @@ function updateCount(){ document.getElementById('charCount').textContent=documen
 
 function recompressBase64Image(base64, count) {
   return new Promise(function(resolve) {
+    // verificar canvas antes de carregar a imagem
+    try {
+      var testCanvas = document.createElement('canvas');
+      var testCtx = testCanvas.getContext('2d');
+      if (!testCtx) {
+        console.error('[compress] canvas 2d context não disponível — a retornar original');
+        return resolve(base64);
+      }
+    } catch(e) {
+      console.error('[compress] document.createElement canvas falhou:', e);
+      return resolve(base64);
+    }
+
     var img = new Image();
     img.onload = function() {
       try {
@@ -1354,18 +1367,39 @@ function recompressBase64Image(base64, count) {
         var maxDim = (count >= 2) ? 600 : 800;
         var quality = (count >= 2) ? 0.25 : 0.4;
         var w = img.width, h = img.height;
+        console.log('[compress] imagem carregada:', w, 'x', h, '| count:', count, '| maxDim:', maxDim, '| quality:', quality);
+        if (w === 0 || h === 0) {
+          console.error('[compress] imagem com dimensões inválidas:', w, h);
+          return resolve(base64);
+        }
         if (w > maxDim || h > maxDim) {
           if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
           else { w = Math.round(w * maxDim / h); h = maxDim; }
         }
         canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL('image/jpeg', quality).split(',')[1];
-        console.log('[compress] count:', count, '| antes:', Math.round(base64.length * 0.75 / 1024), 'KB → depois:', Math.round(compressed.length * 0.75 / 1024), 'KB');
+        var ctx = canvas.getContext('2d');
+        if (!ctx) {
+          console.error('[compress] falhou getContext no canvas de compressão');
+          return resolve(base64);
+        }
+        ctx.drawImage(img, 0, 0, w, h);
+        var dataUrl = canvas.toDataURL('image/jpeg', quality);
+        if (!dataUrl || dataUrl === 'data:,') {
+          console.error('[compress] toDataURL retornou vazio');
+          return resolve(base64);
+        }
+        var compressed = dataUrl.split(',')[1];
+        console.log('[compress] OK — antes:', Math.round(base64.length * 0.75 / 1024), 'KB → depois:', Math.round(compressed.length * 0.75 / 1024), 'KB');
         resolve(compressed);
-      } catch(e) { resolve(base64); }
+      } catch(e) {
+        console.error('[compress] erro no canvas:', e);
+        resolve(base64);
+      }
     };
-    img.onerror = function() { resolve(base64); };
+    img.onerror = function(e) {
+      console.error('[compress] img.onerror — falhou carregar base64 como imagem:', e);
+      resolve(base64);
+    };
     img.src = 'data:image/jpeg;base64,' + base64;
   });
 }
