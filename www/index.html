@@ -1400,7 +1400,8 @@ function recompressBase64Image(base64, count) {
       console.error('[compress] img.onerror — falhou carregar base64 como imagem:', e);
       resolve(base64);
     };
-    img.src = 'data:image/jpeg;base64,' + base64;
+    var mimeType = base64.startsWith('/9j/') ? 'image/jpeg' : base64.startsWith('iVBOR') ? 'image/png' : 'image/jpeg';
+    img.src = 'data:' + mimeType + ';base64,' + base64;
   });
 }
 
