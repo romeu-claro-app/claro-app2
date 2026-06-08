@@ -1034,6 +1034,7 @@ function openDocDetail(idx) {
 const SUPABASE_URL = 'https://vawfgruwwfnpnrnxuvnw.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_65vuly7LkkRF6YYxd2H94g_TB-vOYvk';
 var currentUser = null;
+var currentUserName = null;
 var accessToken = null;
 
 async function sbGet(table, filter) {
@@ -1180,6 +1181,7 @@ async function loadUserAndStart(user) {
   var profile=Array.isArray(profiles)?profiles[0]:null;
   if(profile){
     var nome=profile.nome||user.email;
+    currentUserName=profile.nome||null;
     var initials=nome.split(' ').map(function(n){return n[0];}).join('').substring(0,2).toUpperCase();
     document.getElementById('profileName').textContent=nome;
     document.getElementById('profileEmail').textContent=profile.email||user.email;
@@ -1414,7 +1416,9 @@ async function analyseDoc(){
   const btn=document.getElementById('analyseBtn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>A analisar...';
   document.getElementById('resultArea').innerHTML='';
-  const hoje = new Date().toLocaleDateString('pt-PT'); const prompt=`És um assistente especializado a ajudar imigrantes portugueses na Suíça a compreender documentos oficiais em alemão, francês ou italiano. A data de hoje é ${hoje}.\n\nAnalisa o seguinte documento e responde APENAS em JSON válido sem markdown:\n{\n  "titulo": "título curto",\n  "idioma_original": "Alemão/Francês/Italiano",\n  "categoria": "Seguro/Impostos/Renda/Trabalho/Saúde/Outro",\n  "resumo": "resumo simples em 2-3 frases em português",\n  "explicacao": "explicação clara em português",\n  "acao_necessaria": true/false,\n  "urgente": true/false,\n  "o_que_fazer": "o que o utilizador deve fazer (vazio se não necessário)",\n  "prazo": "prazo em português (vazio se não houver)",\n  "passos": ["passo 1","passo 2"],\n  "consequencias": "o que acontece se ignorar (vazio se não aplicável)",\n  "prazo_dias": 0\n}\n\nDocumento:\n${text}`;
+  const hoje = new Date().toLocaleDateString('pt-PT');
+  const userContext = currentUserName ? `\n\nO utilizador que está a analisar este documento chama-se ${currentUserName}. Verifica se este nome aparece no documento. Se aparecer, dá as instruções e consequências especificamente para essa pessoa e o seu papel no documento. Se o nome não aparecer, analisa de forma neutra.` : '';
+  const prompt=`És um assistente especializado a ajudar imigrantes portugueses na Suíça a compreender documentos oficiais em alemão, francês ou italiano. A data de hoje é ${hoje}.${userContext}\n\nAnalisa o seguinte documento e responde APENAS em JSON válido sem markdown:\n{\n  "titulo": "título curto",\n  "idioma_original": "Alemão/Francês/Italiano",\n  "categoria": "Seguro/Impostos/Renda/Trabalho/Saúde/Outro",\n  "resumo": "resumo simples em 2-3 frases em português",\n  "explicacao": "explicação clara em português",\n  "acao_necessaria": true/false,\n  "urgente": true/false,\n  "o_que_fazer": "o que o utilizador deve fazer (vazio se não necessário)",\n  "prazo": "prazo em português (vazio se não houver)",\n  "passos": ["passo 1","passo 2"],\n  "consequencias": "o que acontece se ignorar (vazio se não aplicável)",\n  "prazo_dias": 0\n}\n\nDocumento:\n${text}`;
   try{
     let messageContent;
     if(hasFile && uploadedFiles.length > 0) {
