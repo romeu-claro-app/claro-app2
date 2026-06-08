@@ -33,5 +33,5 @@ const handler = async (req, res) => {
   }
 };
 
-handler.config = { maxDuration: 60 };
+handler.config = { maxDuration: 60, api: { bodyParser: { sizeLimit: '10mb' } } };
 module.exports = handler;
