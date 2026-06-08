@@ -1345,13 +1345,14 @@ function showScreen(name){
 function loadSample(i){ document.getElementById('docInput').value=samples[i]; updateCount(); document.getElementById('resultArea').innerHTML=''; }
 function updateCount(){ document.getElementById('charCount').textContent=document.getElementById('docInput').value.length+' caracteres'; }
 
-function recompressBase64Image(base64) {
+function recompressBase64Image(base64, count) {
   return new Promise(function(resolve) {
     var img = new Image();
     img.onload = function() {
       try {
         var canvas = document.createElement('canvas');
-        var maxDim = 800;
+        var maxDim = (count >= 2) ? 600 : 800;
+        var quality = (count >= 2) ? 0.25 : 0.4;
         var w = img.width, h = img.height;
         if (w > maxDim || h > maxDim) {
           if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
@@ -1359,8 +1360,8 @@ function recompressBase64Image(base64) {
         }
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL('image/jpeg', 0.4).split(',')[1];
-        console.log('[compress] antes:', Math.round(base64.length * 0.75 / 1024), 'KB → depois:', Math.round(compressed.length * 0.75 / 1024), 'KB');
+        var compressed = canvas.toDataURL('image/jpeg', quality).split(',')[1];
+        console.log('[compress] count:', count, '| antes:', Math.round(base64.length * 0.75 / 1024), 'KB → depois:', Math.round(compressed.length * 0.75 / 1024), 'KB');
         resolve(compressed);
       } catch(e) { resolve(base64); }
     };
@@ -1385,7 +1386,7 @@ async function analyseDoc(){
       for(var i = 0; i < uploadedFiles.length; i++) {
         var f = uploadedFiles[i];
         if(f.type === 'image') {
-          var imgData = await recompressBase64Image(f.data);
+          var imgData = await recompressBase64Image(f.data, uploadedFiles.length);
           messageContent.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgData}});
         } else {
           messageContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:f.data}});
@@ -1394,7 +1395,7 @@ async function analyseDoc(){
       messageContent.push({type:'text',text:prompt});
     } else if(hasFile && uploadedFileData) {
       if(uploadedFileType === 'image') {
-        var imgData = await recompressBase64Image(uploadedFileData);
+        var imgData = await recompressBase64Image(uploadedFileData, 1);
         messageContent = [
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgData}},
           {type:'text',text:prompt}
