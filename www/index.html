@@ -1878,7 +1878,6 @@ var uploadedFileData = null;
 var uploadedFileType = null;
 
 function compressImage(file, callback) {
-  // Usar FileReader primeiro, depois comprimir via canvas
   var reader = new FileReader();
   reader.onload = function(e) {
     var dataUrl = e.target.result;
@@ -1886,7 +1885,7 @@ function compressImage(file, callback) {
     img.onload = function() {
       try {
         var canvas = document.createElement('canvas');
-        var maxDim = 600;
+        var maxDim = 1200;
         var w = img.width, h = img.height;
         if (w > maxDim || h > maxDim) {
           if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
@@ -1895,11 +1894,9 @@ function compressImage(file, callback) {
         canvas.width = w; canvas.height = h;
         var ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, w, h);
-        var compressed = canvas.toDataURL('image/jpeg', 0.5);
-        // Só usar comprimido se for menor
-        var chosen = (compressed.length < dataUrl.length) ? compressed : dataUrl;
-        console.log('Original:', Math.round(dataUrl.length/1024), 'KB | Compressed:', Math.round(compressed.length/1024), 'KB | Using:', Math.round(chosen.length/1024), 'KB');
-        callback(chosen);
+        var compressed = canvas.toDataURL('image/jpeg', 0.7);
+        console.log('Original:', Math.round(dataUrl.length/1024), 'KB | Compressed:', Math.round(compressed.length/1024), 'KB');
+        callback(compressed);
       } catch(err) {
         callback(dataUrl);
       }
@@ -1922,7 +1919,7 @@ function handleFile(event) {
         var base64 = compressed.split(',')[1];
         // Verificar tamanho após compressão (base64 ~33% maior que binário)
         var sizeBytes = base64.length * 0.75;
-        if (sizeBytes > 3.5 * 1024 * 1024) {
+        if (sizeBytes > 1.5 * 1024 * 1024) {
           alert('A imagem é demasiado grande mesmo após compressão. Por favor tira a foto diretamente pela câmara em vez de importar da galeria.');
           return;
         }
