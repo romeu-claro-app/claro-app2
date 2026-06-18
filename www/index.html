@@ -244,15 +244,50 @@
     .viewer-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:60px 20px;color:var(--text-muted);font-size:14px}
     .viewer-spinner{width:30px;height:30px;border:3px solid var(--green-light);border-top-color:var(--green);border-radius:50%;animation:vspin 0.8s linear infinite}
     @keyframes vspin{to{transform:rotate(360deg)}}
-    /* Excel */
-    .xls-tabs{display:flex;gap:6px;padding:10px 12px 0;overflow-x:auto;flex-shrink:0;background:var(--card);border-bottom:0.5px solid var(--border)}
-    .xls-tab{font-size:12px;padding:7px 13px;border-radius:8px 8px 0 0;border:0.5px solid var(--border);border-bottom:none;background:var(--surface);color:var(--text-muted);cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit;font-weight:500}
-    .xls-tab.active{background:var(--green);color:#fff;border-color:var(--green)}
-    .xls-wrap{padding:14px 12px 30px;overflow-x:auto}
-    table.xls-table{border-collapse:collapse;font-size:12px;width:100%;background:var(--card);border-radius:8px;overflow:hidden}
-    table.xls-table td,table.xls-table th{border:0.5px solid var(--border);padding:7px 10px;color:var(--text);white-space:nowrap;text-align:left}
-    table.xls-table tr:first-child td{background:var(--green-light);font-weight:600;color:var(--green-dark);position:sticky;top:0}
-    table.xls-table tr:nth-child(even) td{background:var(--surface)}
+    /* ===== Budget Mensal interativo ===== */
+    .bm-view{flex:1;min-height:0;display:flex;flex-direction:column}
+    .bm-header{background:#0A1F18;color:#fff;padding:12px 14px 14px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+    .bm-header-top{display:flex;align-items:center;gap:10px}
+    .bm-logo{width:30px;height:30px;border-radius:8px;flex-shrink:0;object-fit:cover}
+    .bm-header-title{font-size:16px;font-weight:600;color:#fff;flex:1;min-width:0}
+    .bm-close{background:rgba(255,255,255,0.12);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:15px;cursor:pointer;flex-shrink:0;line-height:1}
+    .bm-year-nav{display:flex;align-items:center;justify-content:center;gap:22px}
+    .bm-yr-nav{background:rgba(255,255,255,0.08);border:none;color:#9FE1CB;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
+    .bm-header-year{font-size:20px;font-weight:600;color:#5DCAA5;min-width:70px;text-align:center}
+    .bm-back{background:none;border:none;color:#9FE1CB;font-size:14px;cursor:pointer;font-family:inherit;flex:1;text-align:left;padding:0}
+    .bm-totals{display:flex;gap:8px}
+    .bm-total{flex:1;background:rgba(255,255,255,0.06);border-radius:10px;padding:9px 6px;text-align:center}
+    .bm-total-lbl{font-size:11px;color:#9FE1CB;margin-bottom:3px}
+    .bm-total-val{font-size:13px;font-weight:600;color:#fff}
+    .bm-total-val.pos{color:#5DCAA5}
+    .bm-total-val.neg{color:#ff8b8a}
+    /* Vista anual */
+    .bm-months-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}
+    .bm-month-card{background:var(--card);border:0.5px solid var(--border);border-radius:14px;padding:15px 14px;text-align:left;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;gap:6px;min-height:70px;justify-content:center}
+    .bm-month-card:active{border-color:var(--green-mid)}
+    .bm-month-name{font-size:14px;font-weight:600;color:var(--text)}
+    .bm-net{font-size:15px;font-weight:600}
+    .bm-net.pos{color:var(--green)}
+    .bm-net.neg{color:var(--red)}
+    .bm-empty{font-size:13px;color:var(--text-hint)}
+    .bm-disclaimer{font-size:11px;color:var(--text-muted);text-align:center;line-height:1.5;padding:6px 24px 34px}
+    /* Vista de mês */
+    .bm-cats{padding:12px 14px 34px;display:flex;flex-direction:column;gap:8px}
+    .bm-cat{background:var(--card);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+    .bm-cat-head{width:100%;background:none;border:none;display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;font-family:inherit;text-align:left}
+    .bm-cat-icon{font-size:18px;flex-shrink:0;width:24px;text-align:center}
+    .bm-cat-name{font-size:14px;font-weight:600;color:var(--text);flex:1;min-width:0}
+    .bm-cat-total{font-size:13px;font-weight:600;color:var(--text-muted);margin-right:4px;white-space:nowrap}
+    .bm-chevron{color:var(--green);font-size:17px;transition:transform 0.15s;flex-shrink:0}
+    .bm-cat-body{border-top:0.5px solid var(--border);padding:6px 14px 10px}
+    .bm-field{display:flex;align-items:center;gap:10px;padding:6px 0}
+    .bm-field-label{flex:1;font-size:13px;color:var(--text);min-width:0}
+    .bm-input-wrap{display:flex;align-items:center;gap:6px;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:0 10px;height:44px;flex-shrink:0;width:130px}
+    .bm-input-wrap:focus-within{border-color:var(--green-mid)}
+    .bm-chf{font-size:11px;color:var(--text-hint);flex-shrink:0}
+    .bm-input{border:none;background:none;outline:none;font-family:inherit;font-size:14px;color:var(--text);width:100%;text-align:right;padding:0}
+    .bm-input::-webkit-outer-spin-button,.bm-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+    .bm-input[type=number]{-moz-appearance:textfield}
   </style>
 <link rel="manifest" href="/manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
@@ -262,7 +297,6 @@
 <meta name="theme-color" content="#1D9E75">
 <script defer src="/_vercel/insights/script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -773,20 +807,47 @@
   </div>
 </div>
 
-<!-- VISUALIZADOR EXCEL (Budget Mensal) -->
-<div class="viewer-overlay" id="xlsViewer">
-  <div class="viewer-header">
-    <div class="vh-icon">📊</div>
-    <div>
-      <div class="vh-title">Budget Mensal Suíça</div>
-      <div class="vh-sub">Controla as tuas despesas em CHF</div>
+<!-- BUDGET MENSAL INTERATIVO -->
+<div class="viewer-overlay" id="budgetViewer">
+  <!-- VISTA ANUAL -->
+  <div id="budgetYearView" class="bm-view">
+    <div class="bm-header">
+      <div class="bm-header-top">
+        <img src="icon-512.png" class="bm-logo" alt="Claro-app">
+        <div class="bm-header-title">Budget Mensal Suíça</div>
+        <button class="bm-close" onclick="closeBudget()">✕</button>
+      </div>
+      <div class="bm-year-nav">
+        <button class="bm-yr-nav" onclick="changeBudgetYear(-1)">‹</button>
+        <div class="bm-header-year" id="budgetYearLabel"></div>
+        <button class="bm-yr-nav" onclick="changeBudgetYear(1)">›</button>
+      </div>
     </div>
-    <button class="viewer-close" onclick="closeXlsViewer()">✕</button>
+    <div class="viewer-body">
+      <div class="bm-months-grid" id="budgetMonthsGrid"></div>
+      <div class="bm-disclaimer">Os valores ficam só no teu telemóvel. Conteúdo informativo — para a tua situação específica, consulta um profissional.</div>
+    </div>
   </div>
-  <div class="xls-tabs" id="xlsTabs"></div>
-  <div class="viewer-body">
-    <div id="xlsLoading" class="viewer-loading"><div class="viewer-spinner"></div><div>A carregar o budget…</div></div>
-    <div id="xlsWrap" class="xls-wrap"></div>
+  <!-- VISTA DE MÊS -->
+  <div id="budgetMonthView" class="bm-view" style="display:none;">
+    <div class="bm-header">
+      <div class="bm-header-top">
+        <button class="bm-back" onclick="showBudgetYear()">‹ Voltar ao ano</button>
+        <button class="bm-close" onclick="closeBudget()">✕</button>
+      </div>
+      <div class="bm-header-top" style="gap:8px;">
+        <img src="icon-512.png" class="bm-logo" alt="Claro-app">
+        <div class="bm-header-title" id="budgetMonthTitle"></div>
+      </div>
+      <div class="bm-totals">
+        <div class="bm-total"><div class="bm-total-lbl">Rendimentos</div><div class="bm-total-val pos" id="bmIncome">CHF 0</div></div>
+        <div class="bm-total"><div class="bm-total-lbl">Despesas</div><div class="bm-total-val" id="bmExpense">CHF 0</div></div>
+        <div class="bm-total"><div class="bm-total-lbl">Limpo</div><div class="bm-total-val pos" id="bmNet">CHF 0</div></div>
+      </div>
+    </div>
+    <div class="viewer-body">
+      <div class="bm-cats" id="budgetCats"></div>
+    </div>
   </div>
 </div>
 
@@ -1021,12 +1082,11 @@ function goManual() {
 
 function goBudget() {
   if (!state.isPro) { openPaywall(); return; }
-  openXlsViewer();
+  openBudget();
 }
 
 /* ===== Visualizador PDF inline (PDF.js) ===== */
 var PDF_URL = 'ferramentas/manual-emigrante.pdf';
-var XLS_URL = 'ferramentas/budget-mensal.xlsx';
 var pdfLoaded = false;
 
 function openPdfViewer() {
@@ -1064,62 +1124,174 @@ async function renderPdf() {
   }
 }
 
-/* ===== Visualizador Excel inline (SheetJS) ===== */
-var xlsLoaded = false;
-var xlsWorkbook = null;
+/* ===== Budget Mensal interativo ===== */
+var MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+var BUDGET_CATS = [
+  { name:'Rendimentos', icon:'💰', income:true, fields:['Salário','Bonus','Subsídios','Reembolsos','Outros','Outros'] },
+  { name:'Despesas da Casa', icon:'🏠', fields:['Renda','Luz','Água e Aquecimento','Telefone','Internet','TV','Mobília','Arranjos','Manutenção','Serviços de Limpeza','Outros','Outros','Outros'] },
+  { name:'Seguros', icon:'🛡️', fields:['LAMal','LCA','Veículo','RC Ménage','ECA','Proteção Jurídica','SERAFE','Outros','Outros'] },
+  { name:'Transporte', icon:'🚗', fields:['Leasing','Transporte Público','Combustível','Carregamentos (VE)','Reparações','Outros','Outros','Outros'] },
+  { name:'Dia a Dia', icon:'🛍️', fields:['Compras','Roupa','Refeições Fora','Lavandaria','Outros','Outros','Outros'] },
+  { name:'Subscrições', icon:'📺', fields:['Netflix','Spotify','Apple','Youtube','Livros','Cursos','Club Desporto','Ginásio','Jornal','Revistas','Claro+','Outros','Outros'] },
+  { name:'Saúde', icon:'❤️', fields:['Consultas','Medicamentos','Suplementos','Dentista','Outros'] },
+  { name:'Animais de Estimação', icon:'🐾', fields:['Comida','Veterinário','Brinquedos','Outros','Outros','Outros'] },
+  { name:'Poupanças', icon:'🐷', fields:['Fundos de Emergência','Reparações Veículo','Reforma','Investimentos','Férias','Outros','Outros','Outros','Outros'] },
+  { name:'Obrigações', icon:'🧾', fields:['Empréstimo 1','Empréstimo 2','Empréstimo 3','Impostos','Multas','Outros','Outros','Outros','Outros'] },
+  { name:'Educação', icon:'🎓', fields:['Aulas 1','Aulas 2','Aulas 3','Explicações','Cursos Privados','Outros'] },
+  { name:'Presentes / Doações', icon:'🎁', fields:['Presentes 1','Presentes 2','Presentes 3','Doações de Caridade 1','Doações de Caridade 2','Outros'] }
+];
 
-function openXlsViewer() {
-  document.getElementById('xlsViewer').classList.add('open');
+var budgetYear, budgetMonth, budgetData = {};
+
+function openBudget() {
+  budgetYear = new Date().getFullYear();
+  document.getElementById('budgetViewer').classList.add('open');
   document.body.style.overflow = 'hidden';
-  if (!xlsLoaded) renderXls();
+  showBudgetYear();
 }
-function closeXlsViewer() {
-  document.getElementById('xlsViewer').classList.remove('open');
+function closeBudget() {
+  document.getElementById('budgetViewer').classList.remove('open');
   document.body.style.overflow = '';
 }
 
-async function renderXls() {
-  var loading = document.getElementById('xlsLoading');
-  var tabsEl = document.getElementById('xlsTabs');
-  try {
-    if (typeof XLSX === 'undefined') throw new Error('SheetJS indisponível');
-    var resp = await fetch(XLS_URL);
-    var buf = await resp.arrayBuffer();
-    xlsWorkbook = XLSX.read(buf, { type: 'array' });
-    var names = xlsWorkbook.SheetNames;
-    tabsEl.innerHTML = '';
-    if (names.length > 1) {
-      names.forEach(function(name, i) {
-        var btn = document.createElement('button');
-        btn.className = 'xls-tab' + (i === 0 ? ' active' : '');
-        btn.textContent = name;
-        btn.onclick = function() { showXlsSheet(name, btn); };
-        tabsEl.appendChild(btn);
-      });
+function budgetKey(y, m) { return 'budget:' + y + '-' + m; }
+function loadBudgetMonth(y, m) {
+  try { return JSON.parse(localStorage.getItem(budgetKey(y, m)) || '{}'); }
+  catch (e) { return {}; }
+}
+function saveBudgetMonth(y, m, data) {
+  try { localStorage.setItem(budgetKey(y, m), JSON.stringify(data)); } catch (e) {}
+}
+
+function fmtCHF(n) {
+  var abs = Math.abs(n).toLocaleString('de-CH', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  return (n < 0 ? '−' : '') + 'CHF ' + abs;
+}
+
+function monthTotals(y, m) {
+  var data = loadBudgetMonth(y, m), income = 0, expense = 0;
+  BUDGET_CATS.forEach(function(cat, ci) {
+    cat.fields.forEach(function(f, fi) {
+      var v = parseFloat(data[ci + '_' + fi]) || 0;
+      if (cat.income) income += v; else expense += v;
+    });
+  });
+  return { income: income, expense: expense, net: income - expense };
+}
+function monthHasData(y, m) {
+  var data = loadBudgetMonth(y, m);
+  for (var k in data) { if (data.hasOwnProperty(k) && parseFloat(data[k])) return true; }
+  return false;
+}
+
+function changeBudgetYear(delta) { budgetYear += delta; showBudgetYear(); }
+
+function showBudgetYear() {
+  document.getElementById('budgetMonthView').style.display = 'none';
+  document.getElementById('budgetYearView').style.display = 'flex';
+  document.getElementById('budgetYearLabel').textContent = budgetYear;
+  var grid = document.getElementById('budgetMonthsGrid');
+  grid.innerHTML = '';
+  for (var m = 0; m < 12; m++) {
+    var has = monthHasData(budgetYear, m);
+    var valHtml;
+    if (has) {
+      var t = monthTotals(budgetYear, m);
+      valHtml = '<div class="bm-net ' + (t.net >= 0 ? 'pos' : 'neg') + '">' + fmtCHF(t.net) + '</div>';
     } else {
-      tabsEl.style.display = 'none';
+      valHtml = '<div class="bm-empty">vazio</div>';
     }
-    xlsLoaded = true;
-    loading.style.display = 'none';
-    renderXlsSheet(names[0]);
-  } catch (e) {
-    loading.innerHTML = '<div style="font-size:30px;">⚠️</div><div>Não foi possível abrir o budget.<br>Verifica a tua ligação.</div>';
+    var card = document.createElement('button');
+    card.className = 'bm-month-card';
+    card.onclick = (function(mm) { return function() { openBudgetMonth(mm); }; })(m);
+    card.innerHTML = '<div class="bm-month-name">' + MONTH_NAMES[m] + '</div>' + valHtml;
+    grid.appendChild(card);
   }
 }
 
-function showXlsSheet(name, btn) {
-  var tabs = document.querySelectorAll('#xlsTabs .xls-tab');
-  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
-  btn.classList.add('active');
-  renderXlsSheet(name);
+function openBudgetMonth(m) {
+  budgetMonth = m;
+  budgetData = loadBudgetMonth(budgetYear, m);
+  document.getElementById('budgetYearView').style.display = 'none';
+  document.getElementById('budgetMonthView').style.display = 'flex';
+  document.getElementById('budgetMonthTitle').textContent = MONTH_NAMES[m] + ' ' + budgetYear;
+  var body = document.querySelector('#budgetMonthView .viewer-body');
+  if (body) body.scrollTop = 0;
+  renderBudgetCats();
+  updateBudgetTotals();
 }
 
-function renderXlsSheet(name) {
-  var sheet = xlsWorkbook.Sheets[name];
-  var html = XLSX.utils.sheet_to_html(sheet, { editable: false });
-  // injecta a nossa classe na tabela gerada
-  html = html.replace('<table', '<table class="xls-table"');
-  document.getElementById('xlsWrap').innerHTML = html;
+function renderBudgetCats() {
+  var wrap = document.getElementById('budgetCats');
+  wrap.innerHTML = '';
+  BUDGET_CATS.forEach(function(cat, ci) {
+    var fieldsHtml = '';
+    cat.fields.forEach(function(f, fi) {
+      var key = ci + '_' + fi;
+      var val = (budgetData[key] != null) ? budgetData[key] : '';
+      fieldsHtml +=
+        '<div class="bm-field">' +
+          '<span class="bm-field-label">' + f + '</span>' +
+          '<span class="bm-input-wrap"><span class="bm-chf">CHF</span>' +
+          '<input class="bm-input" type="number" inputmode="decimal" step="0.05" placeholder="0" value="' + val + '" ' +
+          'oninput="onBudgetInput(' + ci + ',' + fi + ',this.value)"></span>' +
+        '</div>';
+    });
+    var card = document.createElement('div');
+    card.className = 'bm-cat';
+    card.innerHTML =
+      '<button class="bm-cat-head" onclick="toggleBudgetCat(' + ci + ')">' +
+        '<span class="bm-cat-icon">' + cat.icon + '</span>' +
+        '<span class="bm-cat-name">' + cat.name + '</span>' +
+        '<span class="bm-cat-total" id="bmCatTotal' + ci + '"></span>' +
+        '<span class="bm-chevron" id="bmChev' + ci + '">›</span>' +
+      '</button>' +
+      '<div class="bm-cat-body" id="bmCatBody' + ci + '" style="display:none;">' + fieldsHtml + '</div>';
+    wrap.appendChild(card);
+    updateCatTotal(ci);
+  });
+}
+
+function toggleBudgetCat(ci) {
+  var body = document.getElementById('bmCatBody' + ci);
+  var chev = document.getElementById('bmChev' + ci);
+  var open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  chev.style.transform = open ? 'rotate(90deg)' : 'none';
+}
+
+function catTotal(ci) {
+  var sum = 0;
+  BUDGET_CATS[ci].fields.forEach(function(f, fi) {
+    sum += parseFloat(budgetData[ci + '_' + fi]) || 0;
+  });
+  return sum;
+}
+function updateCatTotal(ci) {
+  document.getElementById('bmCatTotal' + ci).textContent = fmtCHF(catTotal(ci));
+}
+
+function onBudgetInput(ci, fi, val) {
+  var key = ci + '_' + fi;
+  if (val === '' || val == null) { delete budgetData[key]; }
+  else { budgetData[key] = val; }
+  saveBudgetMonth(budgetYear, budgetMonth, budgetData);
+  updateCatTotal(ci);
+  updateBudgetTotals();
+}
+
+function updateBudgetTotals() {
+  var income = 0, expense = 0;
+  BUDGET_CATS.forEach(function(cat, ci) {
+    var t = catTotal(ci);
+    if (cat.income) income += t; else expense += t;
+  });
+  var net = income - expense;
+  document.getElementById('bmIncome').textContent = fmtCHF(income);
+  document.getElementById('bmExpense').textContent = fmtCHF(expense);
+  var netEl = document.getElementById('bmNet');
+  netEl.textContent = fmtCHF(net);
+  netEl.className = 'bm-total-val ' + (net >= 0 ? 'pos' : 'neg');
 }
 
 function goConsulta() {
