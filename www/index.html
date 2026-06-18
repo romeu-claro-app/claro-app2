@@ -275,7 +275,7 @@
     .bm-cats{padding:12px 14px 34px;display:flex;flex-direction:column;gap:8px}
     .bm-cat{background:var(--card);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
     .bm-cat-head{width:100%;background:none;border:none;display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;font-family:inherit;text-align:left}
-    .bm-cat-icon{font-size:18px;flex-shrink:0;width:24px;text-align:center}
+    .bm-cat-icon{color:var(--green);font-size:20px;line-height:1;flex-shrink:0;width:24px;text-align:center;display:flex;align-items:center;justify-content:center}
     .bm-cat-name{font-size:14px;font-weight:600;color:var(--text);flex:1;min-width:0}
     .bm-cat-total{font-size:13px;font-weight:600;color:var(--text-muted);margin-right:4px;white-space:nowrap}
     .bm-chevron{color:var(--green);font-size:17px;transition:transform 0.15s;flex-shrink:0}
@@ -297,6 +297,7 @@
 <meta name="theme-color" content="#1D9E75">
 <script defer src="/_vercel/insights/script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
 </head>
 <body>
 
@@ -1127,18 +1128,18 @@ async function renderPdf() {
 /* ===== Budget Mensal interativo ===== */
 var MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 var BUDGET_CATS = [
-  { name:'Rendimentos', icon:'💰', income:true, fields:['Salário','Bonus','Subsídios','Reembolsos','Outros','Outros'] },
-  { name:'Despesas da Casa', icon:'🏠', fields:['Renda','Luz','Água e Aquecimento','Telefone','Internet','TV','Mobília','Arranjos','Manutenção','Serviços de Limpeza','Outros','Outros','Outros'] },
-  { name:'Seguros', icon:'🛡️', fields:['LAMal','LCA','Veículo','RC Ménage','ECA','Proteção Jurídica','SERAFE','Outros','Outros'] },
-  { name:'Transporte', icon:'🚗', fields:['Leasing','Transporte Público','Combustível','Carregamentos (VE)','Reparações','Outros','Outros','Outros'] },
-  { name:'Dia a Dia', icon:'🛍️', fields:['Compras','Roupa','Refeições Fora','Lavandaria','Outros','Outros','Outros'] },
-  { name:'Subscrições', icon:'📺', fields:['Netflix','Spotify','Apple','Youtube','Livros','Cursos','Club Desporto','Ginásio','Jornal','Revistas','Claro+','Outros','Outros'] },
-  { name:'Saúde', icon:'❤️', fields:['Consultas','Medicamentos','Suplementos','Dentista','Outros'] },
-  { name:'Animais de Estimação', icon:'🐾', fields:['Comida','Veterinário','Brinquedos','Outros','Outros','Outros'] },
-  { name:'Poupanças', icon:'🐷', fields:['Fundos de Emergência','Reparações Veículo','Reforma','Investimentos','Férias','Outros','Outros','Outros','Outros'] },
-  { name:'Obrigações', icon:'🧾', fields:['Empréstimo 1','Empréstimo 2','Empréstimo 3','Impostos','Multas','Outros','Outros','Outros','Outros'] },
-  { name:'Educação', icon:'🎓', fields:['Aulas 1','Aulas 2','Aulas 3','Explicações','Cursos Privados','Outros'] },
-  { name:'Presentes / Doações', icon:'🎁', fields:['Presentes 1','Presentes 2','Presentes 3','Doações de Caridade 1','Doações de Caridade 2','Outros'] }
+  { name:'Rendimentos', icon:'cash', income:true, fields:['Salário','Bonus','Subsídios','Reembolsos','Outros','Outros'] },
+  { name:'Despesas da Casa', icon:'home', fields:['Renda','Luz','Água e Aquecimento','Telefone','Internet','TV','Mobília','Arranjos','Manutenção','Serviços de Limpeza','Outros','Outros','Outros'] },
+  { name:'Seguros', icon:'shield', fields:['LAMal','LCA','Veículo','RC Ménage','ECA','Proteção Jurídica','SERAFE','Outros','Outros'] },
+  { name:'Transporte', icon:'car', fields:['Leasing','Transporte Público','Combustível','Carregamentos (VE)','Reparações','Outros','Outros','Outros'] },
+  { name:'Dia a Dia', icon:'shopping-bag', fields:['Compras','Roupa','Refeições Fora','Lavandaria','Outros','Outros','Outros'] },
+  { name:'Subscrições', icon:'device-tv', fields:['Netflix','Spotify','Apple','Youtube','Livros','Cursos','Club Desporto','Ginásio','Jornal','Revistas','Claro+','Outros','Outros'] },
+  { name:'Saúde', icon:'heart', fields:['Consultas','Medicamentos','Suplementos','Dentista','Outros'] },
+  { name:'Animais de Estimação', icon:'paw', fields:['Comida','Veterinário','Brinquedos','Outros','Outros','Outros'] },
+  { name:'Poupanças', icon:'pig-money', fields:['Fundos de Emergência','Reparações Veículo','Reforma','Investimentos','Férias','Outros','Outros','Outros','Outros'] },
+  { name:'Obrigações', icon:'file-invoice', fields:['Empréstimo 1','Empréstimo 2','Empréstimo 3','Impostos','Multas','Outros','Outros','Outros','Outros'] },
+  { name:'Educação', icon:'school', fields:['Aulas 1','Aulas 2','Aulas 3','Explicações','Cursos Privados','Outros'] },
+  { name:'Presentes / Doações', icon:'gift', fields:['Presentes 1','Presentes 2','Presentes 3','Doações de Caridade 1','Doações de Caridade 2','Outros'] }
 ];
 
 var budgetYear, budgetMonth, budgetData = {};
@@ -1241,7 +1242,7 @@ function renderBudgetCats() {
     card.className = 'bm-cat';
     card.innerHTML =
       '<button class="bm-cat-head" onclick="toggleBudgetCat(' + ci + ')">' +
-        '<span class="bm-cat-icon">' + cat.icon + '</span>' +
+        '<i class="ti ti-' + cat.icon + ' bm-cat-icon"></i>' +
         '<span class="bm-cat-name">' + cat.name + '</span>' +
         '<span class="bm-cat-total" id="bmCatTotal' + ci + '"></span>' +
         '<span class="bm-chevron" id="bmChev' + ci + '">›</span>' +
