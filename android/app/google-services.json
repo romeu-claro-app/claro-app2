@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1097855694567",
+    "project_id": "claro-app-afd0e",
+    "storage_bucket": "claro-app-afd0e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1097855694567:android:8430374cc2311b06489442",
+        "android_client_info": {
+          "package_name": "ch.claro_app.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGvYaUFm92C4aqGaYeD3FMKe5JwuFatZc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
