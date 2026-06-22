@@ -1,5 +1,13 @@
 const crypto = require('crypto');
 
+// Mapa price_id (Stripe) → valor da coluna `plano` no Supabase
+const PRICE_TO_PLANO = {
+  'price_1Tl7UeI7lWm5a7C9BxlQ36ca': 'claro_plus',   // Claro+ mensal (9 CHF)
+  'price_1Tl7TdI7lWm5a7C9xdx7OABd': 'claro_plus',   // Claro+ anual (90 CHF)
+  'price_1Tl7VtI7lWm5a7C9qNjZZD5H': 'claro_total',  // Claro Total mensal (19 CHF)
+  'price_1Tl7W8I7lWm5a7C9fIxT8eW4': 'claro_total'   // Claro Total anual (190 CHF)
+};
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -19,6 +27,28 @@ module.exports = async (req, res) => {
     const nome = session.customer_details?.name || email;
 
     if (email) {
+      // Descobrir o price_id da subscrição comprada (não vem no objeto session).
+      // Expandir os line items da sessão e ler o price.id do primeiro item.
+      let priceId = null;
+      try {
+        const liRes = await fetch(
+          'https://api.stripe.com/v1/checkout/sessions/' + session.id + '/line_items?limit=1',
+          { headers: { 'Authorization': 'Bearer ' + process.env.STRIPE_SECRET_KEY } }
+        );
+        const liData = await liRes.json();
+        priceId = liData.data?.[0]?.price?.id || null;
+      } catch (err) {
+        console.error('Erro ao obter line items da sessão:', err.message);
+      }
+
+      const plano = priceId ? PRICE_TO_PLANO[priceId] : null;
+
+      if (!plano) {
+        // price_id desconhecido ou não obtido — não alterar o plano para evitar valor errado
+        console.warn('price_id sem mapeamento de plano, plano não alterado. price_id:', priceId, 'email:', email);
+        return res.status(200).json({ received: true });
+      }
+
       // Atualizar plano no Supabase
       await fetch('https://vawfgruwwfnpnrnxuvnw.supabase.co/rest/v1/profiles?email=eq.' + encodeURIComponent(email), {
         method: 'PATCH',
@@ -28,7 +58,7 @@ module.exports = async (req, res) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          plano: 'pro',
+          plano: plano,
           stripe_subscription_id: session.subscription || null,
           stripe_customer_id: session.customer || null
         })
@@ -85,7 +115,7 @@ module.exports = async (req, res) => {
         })
       });
 
-      console.log('Plano pro e email enviado para:', email);
+      console.log('Plano', plano, 'e email enviado para:', email);
     }
   }
 
