@@ -166,6 +166,22 @@
     .bonus-desc{font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;line-height:1.4}
     .bonus-price{font-size:11px;color:rgba(255,255,255,0.5);text-decoration:line-through;flex-shrink:0;margin-top:2px}
     .paywall-close{width:100%;padding:13px;background:var(--surface);border:none;border-radius:10px;font-size:14px;color:var(--text-muted);cursor:pointer;font-family:inherit;margin-top:10px}
+    /* PLAN CARDS */
+    .plan-cards{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+    .plan-card{border:1px solid var(--border);border-radius:14px;padding:16px;background:var(--surface);position:relative}
+    .plan-card.featured{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
+    .plan-badge{position:absolute;top:-9px;left:16px;background:var(--green);color:#fff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:3px 10px;border-radius:10px}
+    .plan-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:4px}
+    .plan-name{font-size:16px;font-weight:600;color:var(--text)}
+    .plan-price{font-size:22px;font-weight:600;color:var(--text);white-space:nowrap}
+    .plan-price small{font-size:12px;font-weight:400;color:var(--text-muted)}
+    .plan-sub{font-size:12px;color:var(--text-muted);margin-bottom:10px;min-height:16px}
+    .plan-feats{list-style:none;margin:0 0 14px;padding:0}
+    .plan-feats li{display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);padding:3px 0}
+    .plan-feats li span.check{color:var(--green);font-size:14px;flex-shrink:0}
+    .plan-btn{width:100%;background:var(--green);color:white;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:background 0.15s}
+    .plan-btn.ghost{background:var(--surface);color:var(--text-muted);border:1px solid var(--border)}
+    .plan-btn:disabled{opacity:0.6;cursor:default}
 
     /* PROFILE */
     .profile-card{background:var(--card);border-radius:14px;border:0.5px solid var(--border);padding:24px 16px;margin-bottom:14px;text-align:center}
@@ -696,38 +712,68 @@
       <svg width="28" height="28" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
       <span style="font-size:18px;font-weight:600;color:#1D9E75;">claro-app</span><span style="font-size:13px;color:#0F6E56;">.ch</span>
     </div>
-    <div class="paywall-title">Continua sem limites</div>
-    <div class="paywall-sub">Chegaste ao limite do plano gratuito.<br>Faz upgrade para continuar.</div>
-    <div class="price-big"><span id="pw-price">CHF 12</span><small id="pw-period">/mês</small></div>
-    <div class="price-note" id="pw-note" style="color:var(--text-muted);font-size:13px;margin-bottom:12px;">cobrado CHF 144/ano — cancela quando quiseres</div>
-    <ul class="paywall-features">
-      <li><span class="check">✓</span> Análises ilimitadas de documentos — sem limites, sem stress</li>
-      <li><span class="check">✓</span> Alemão, francês e italiano — qualquer carta, qualquer cantão</li>
-      <li><span class="check">✓</span> Resumo em português simples com o que tens de fazer e quando</li>
-      <li><span class="check">✓</span> Alertas automáticos para prazos importantes</li>
-      <li><span class="check">✓</span> Histórico completo de todos os teus documentos guardados</li>
-      <li><span class="check">✓</span> Gestão do agregado familiar — toda a família protegida</li>
-      <li><span class="check">✓</span> Marcações ilimitadas com consultor especializado</li>
-      <li><span class="check">✓</span> Manual do Emigrante em PDF — seguros, impostos, habitação, tudo</li>
-      <li><span class="check">✓</span> Budget Mensal Suíça em Excel — controla as tuas despesas em CHF</li>
-      <li><span class="check">✓</span> Suporte direto por email com resposta prioritária</li>
-      <li><span class="check">✓</span> Acesso antecipado a todas as novas funcionalidades</li>
-    </ul>
-    <div class="bonus-box">
-      <div class="bonus-title">✦ Incluído no Claro-app+</div>
-      <div class="bonus-item">
-        <div class="bonus-icon">📖</div>
-        <div class="bonus-info"><div class="bonus-name">Manual do Emigrante</div><div class="bonus-desc">Guia completo de integração na Suíça — seguros, impostos, habitação e muito mais.</div></div>
-        <div class="bonus-price">CHF 9.90</div>
+    <div class="paywall-title">Escolhe o teu plano</div>
+    <div class="paywall-sub">Cancela quando quiseres.</div>
+
+    <div class="toggle-row" style="margin-top:14px;">
+      <span class="toggle-label active" id="pw-lbl-mensal">Mensal</span>
+      <button class="toggle-switch" id="pw-cycle-switch" onclick="togglePwCycle()" aria-label="Alternar mensal/anual"><span class="toggle-dot"></span></button>
+      <span class="toggle-label" id="pw-lbl-anual">Anual <span style="color:var(--green);font-weight:600;">−2 meses</span></span>
+    </div>
+
+    <div class="plan-cards">
+      <!-- Claro (gratuito) -->
+      <div class="plan-card">
+        <div class="plan-head">
+          <span class="plan-name">Claro</span>
+          <span class="plan-price">Grátis</span>
+        </div>
+        <div class="plan-sub">Para começar a perceber as tuas cartas.</div>
+        <ul class="plan-feats">
+          <li><span class="check">✓</span> 3 análises de documentos</li>
+          <li><span class="check">✓</span> Resumo em português simples</li>
+          <li><span class="check">✓</span> Alertas de prazos</li>
+        </ul>
+        <button class="plan-btn ghost" onclick="closePaywall()">Continuar grátis</button>
       </div>
-      <div class="bonus-item">
-        <div class="bonus-icon">📊</div>
-        <div class="bonus-info"><div class="bonus-name">Budget Mensal Suíça</div><div class="bonus-desc">Excel completo para controlar as tuas despesas em francos suíços.</div></div>
-        <div class="bonus-price">CHF 4.90</div>
+
+      <!-- Claro+ -->
+      <div class="plan-card featured">
+        <span class="plan-badge">Mais popular</span>
+        <div class="plan-head">
+          <span class="plan-name">Claro+</span>
+          <span class="plan-price"><span id="pw-plus-price">CHF 9</span><small id="pw-plus-period">/mês</small></span>
+        </div>
+        <div class="plan-sub" id="pw-plus-sub">Análises ilimitadas e família protegida.</div>
+        <ul class="plan-feats">
+          <li><span class="check">✓</span> Análises ilimitadas de documentos</li>
+          <li><span class="check">✓</span> Alemão, francês e italiano</li>
+          <li><span class="check">✓</span> Histórico completo de documentos</li>
+          <li><span class="check">✓</span> Gestão do agregado familiar</li>
+          <li><span class="check">✓</span> Alertas automáticos de prazos</li>
+        </ul>
+        <button class="plan-btn" data-plan="claro_plus" onclick="startCheckoutPlan('claro_plus', this)">Escolher Claro+</button>
+      </div>
+
+      <!-- Claro Total -->
+      <div class="plan-card">
+        <div class="plan-head">
+          <span class="plan-name">Claro Total</span>
+          <span class="plan-price"><span id="pw-total-price">CHF 19</span><small id="pw-total-period">/mês</small></span>
+        </div>
+        <div class="plan-sub" id="pw-total-sub">Tudo do Claro+ e acompanhamento humano.</div>
+        <ul class="plan-feats">
+          <li><span class="check">✓</span> Tudo o que tens no Claro+</li>
+          <li><span class="check">✓</span> Marcações ilimitadas com consultor</li>
+          <li><span class="check">✓</span> Manual do Emigrante (PDF)</li>
+          <li><span class="check">✓</span> Budget Mensal Suíça (Excel)</li>
+          <li><span class="check">✓</span> Suporte prioritário por email</li>
+        </ul>
+        <button class="plan-btn" data-plan="claro_total" onclick="startCheckoutPlan('claro_total', this)">Escolher Claro Total</button>
       </div>
     </div>
+
     <input id="promoCode" type="text" placeholder="Código promo (opcional)" style="width:100%;padding:12px 14px;border:0.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;margin-bottom:6px;" oninput="this.value=this.value.toUpperCase()">
-  <button class="btn-primary" id="pw-cta">Começar com Claro-app+</button>
     <button class="paywall-close" onclick="closePaywall()">Agora não</button>
   </div>
 </div>
@@ -1544,7 +1590,7 @@ async function loadUserAndStart(user) {
     if(profile.cidade && !dobCityParts.includes(profile.cidade)) moradaDisplay.push(profile.cidade);
     if(moradaDisplay.length) extraParts.push('📍 '+moradaDisplay.join(', '));
     if(extraParts.length) document.getElementById('profileExtraInfo').innerHTML = extraParts.join('<br>');
-    if(profile.plano==='pro'){state.isPro=true;updatePlanLabel();}
+    if(profile.plano==='pro'||profile.plano==='claro_plus'||profile.plano==='claro_total'){state.isPro=true;updatePlanLabel();}
     // Carregar foto de perfil
     if(profile.foto_url) {
       profilePhotoData = profile.foto_url;
@@ -2105,37 +2151,90 @@ function updatePlanLabel(){
 }
 
 // ── PAYWALL ────────────────────────────────────────────────────────────────
+// Mapa plano + ciclo → price_id da Stripe
+const PRICES = {
+  claro_plus:  { mensal: 'price_1Tl7UeI7lWm5a7C9BxlQ36ca', anual: 'price_1Tl7TdI7lWm5a7C9xdx7OABd' },
+  claro_total: { mensal: 'price_1Tl7VtI7lWm5a7C9qNjZZD5H', anual: 'price_1Tl7W8I7lWm5a7C9fIxT8eW4' }
+};
+// Preços de exibição (mensal vs anual)
+const PLAN_DISPLAY = {
+  claro_plus:  { mensal: { price: 'CHF 9',  period: '/mês', sub: 'Análises ilimitadas e família protegida.' },
+                 anual:  { price: 'CHF 90', period: '/ano', sub: 'CHF 7.50/mês — poupa 2 meses.' } },
+  claro_total: { mensal: { price: 'CHF 19',  period: '/mês', sub: 'Tudo do Claro+ e acompanhamento humano.' },
+                 anual:  { price: 'CHF 190', period: '/ano', sub: 'CHF 15.83/mês — poupa 2 meses.' } }
+};
+let pwCycle = 'mensal';
+
+function updatePwPrices(){
+  ['claro_plus','claro_total'].forEach(function(plan){
+    var d = PLAN_DISPLAY[plan][pwCycle];
+    var key = plan === 'claro_plus' ? 'plus' : 'total';
+    document.getElementById('pw-'+key+'-price').textContent = d.price;
+    document.getElementById('pw-'+key+'-period').textContent = d.period;
+    document.getElementById('pw-'+key+'-sub').textContent = d.sub;
+  });
+  var sw = document.getElementById('pw-cycle-switch');
+  sw.classList.toggle('annual', pwCycle === 'anual');
+  document.getElementById('pw-lbl-mensal').classList.toggle('active', pwCycle === 'mensal');
+  document.getElementById('pw-lbl-anual').classList.toggle('active', pwCycle === 'anual');
+}
+function togglePwCycle(){
+  pwCycle = pwCycle === 'mensal' ? 'anual' : 'mensal';
+  updatePwPrices();
+}
+
 function openPaywall(){
-  var btn = document.getElementById('pw-cta');
-  if(btn) { btn.disabled = false; btn.innerHTML = 'Começar com Claro-app+'; }
+  pwCycle = 'mensal';
+  updatePwPrices();
+  // Repor estado dos botões de plano
+  document.querySelectorAll('#paywallOverlay .plan-btn[data-plan]').forEach(function(b){
+    b.disabled = false;
+    b.innerHTML = b.dataset.plan === 'claro_plus' ? 'Escolher Claro+' : 'Escolher Claro Total';
+  });
   document.getElementById('paywallOverlay').classList.add('open');
 }
 function closePaywall(){ document.getElementById('paywallOverlay').classList.remove('open'); }
-document.getElementById('pw-cta').addEventListener('click', async ()=>{
-  const priceId = 'price_1TSyGTI7lWm5a7C9lAylEzX5';
-  const btn = document.getElementById('pw-cta');
+
+// Abre o URL de checkout no browser externo (nativo) com fallback para web
+async function openCheckoutUrl(url){
+  try {
+    if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+      var Browser = window.Capacitor.Plugins && window.Capacitor.Plugins.Browser;
+      if (Browser && Browser.open) { await Browser.open({ url: url }); return; }
+    }
+  } catch(e) { /* cai no fallback web */ }
+  var win = window.open(url, '_blank');
+  if (!win) window.location.href = url;
+}
+
+async function startCheckoutPlan(plan, btn){
+  var priceId = PRICES[plan] && PRICES[plan][pwCycle];
+  if (!priceId) { alert('Plano indisponível. Tenta novamente.'); return; }
+  var original = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>A redirecionar...';
   try {
     const res = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ priceId, promoCode: (document.getElementById('promoCode')||{value:''}).value.trim() || null })
+      body: JSON.stringify({ priceId: priceId, promoCode: (document.getElementById('promoCode')||{value:''}).value.trim() || null })
     });
     const data = await res.json();
     if (data.url) {
-      window.location.href = data.url;
-    } else {
-      alert('Erro ao iniciar pagamento. Tenta novamente.');
+      await openCheckoutUrl(data.url);
       btn.disabled = false;
-      btn.textContent = 'Começar com Claro-app+';
+      btn.innerHTML = original;
+    } else {
+      alert(data.error || 'Erro ao iniciar pagamento. Tenta novamente.');
+      btn.disabled = false;
+      btn.innerHTML = original;
     }
   } catch(e) {
     alert('Erro ao iniciar pagamento. Tenta novamente.');
     btn.disabled = false;
-    btn.textContent = 'Começar com Claro-app+';
+    btn.innerHTML = original;
   }
-});
+}
 
 // Verificar se voltou do Stripe com sucesso
 if(window.location.search.includes('success=true')) {
@@ -2452,11 +2551,15 @@ document.addEventListener('touchend', function(e) {
   swipeNavigate(dx < 0 ? 'left' : 'right');
 }, { passive: true });
 
-// Repor botão paywall quando a página volta ao foco (ex: depois do Stripe)
+// Repor botões do paywall quando a página volta ao foco (ex: depois do Stripe)
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'visible') {
-    var btn = document.getElementById('pw-cta');
-    if(btn && btn.disabled) { btn.disabled = false; btn.innerHTML = 'Começar com Claro-app+'; }
+    document.querySelectorAll('#paywallOverlay .plan-btn[data-plan]').forEach(function(b){
+      if (b.disabled) {
+        b.disabled = false;
+        b.innerHTML = b.dataset.plan === 'claro_plus' ? 'Escolher Claro+' : 'Escolher Claro Total';
+      }
+    });
   }
 });
 

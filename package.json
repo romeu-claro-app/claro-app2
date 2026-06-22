@@ -2,6 +2,7 @@
   "name": "claro-app",
   "version": "1.0.0",
   "dependencies": {
+    "@capacitor/browser": "^8.0.3",
     "@vercel/analytics": "^2.0.1",
     "google-auth-library": "^10.6.2",
     "stripe": "^14.0.0"
