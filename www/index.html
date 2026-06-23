@@ -712,8 +712,8 @@
       <svg width="28" height="28" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="#1D9E75"/><circle cx="18" cy="18" r="11" fill="#E1F5EE"/><circle cx="18" cy="18" r="5" fill="#1D9E75"/></svg>
       <span style="font-size:18px;font-weight:600;color:#1D9E75;">claro-app</span><span style="font-size:13px;color:#0F6E56;">.ch</span>
     </div>
-    <div class="paywall-title">Escolhe o teu plano</div>
-    <div class="paywall-sub">Cancela quando quiseres.</div>
+    <div class="paywall-title" id="pw-title">Escolhe o teu plano</div>
+    <div class="paywall-sub" id="pw-sub">Cancela quando quiseres.</div>
 
     <div class="toggle-row" style="margin-top:14px;">
       <span class="toggle-label active" id="pw-lbl-mensal">Mensal</span>
@@ -723,7 +723,7 @@
 
     <div class="plan-cards">
       <!-- Claro (gratuito) -->
-      <div class="plan-card">
+      <div class="plan-card" id="pw-card-free">
         <div class="plan-head">
           <span class="plan-name">Claro</span>
           <span class="plan-price">Grátis</span>
@@ -738,25 +738,25 @@
       </div>
 
       <!-- Claro+ -->
-      <div class="plan-card featured">
+      <div class="plan-card featured" id="pw-card-plus">
         <span class="plan-badge">Mais popular</span>
         <div class="plan-head">
           <span class="plan-name">Claro+</span>
           <span class="plan-price"><span id="pw-plus-price">CHF 9</span><small id="pw-plus-period">/mês</small></span>
         </div>
-        <div class="plan-sub" id="pw-plus-sub">Análises ilimitadas e família protegida.</div>
+        <div class="plan-sub" id="pw-plus-sub">Análises ilimitadas e ferramentas.</div>
         <ul class="plan-feats">
           <li><span class="check">✓</span> Análises ilimitadas de documentos</li>
           <li><span class="check">✓</span> Alemão, francês e italiano</li>
           <li><span class="check">✓</span> Histórico completo de documentos</li>
-          <li><span class="check">✓</span> Gestão do agregado familiar</li>
-          <li><span class="check">✓</span> Alertas automáticos de prazos</li>
+          <li><span class="check">✓</span> Manual do Emigrante (PDF)</li>
+          <li><span class="check">✓</span> Budget Mensal Suíça (Excel)</li>
         </ul>
         <button class="plan-btn" data-plan="claro_plus" onclick="startCheckoutPlan('claro_plus', this)">Escolher Claro+</button>
       </div>
 
       <!-- Claro Total -->
-      <div class="plan-card">
+      <div class="plan-card" id="pw-card-total">
         <div class="plan-head">
           <span class="plan-name">Claro Total</span>
           <span class="plan-price"><span id="pw-total-price">CHF 19</span><small id="pw-total-period">/mês</small></span>
@@ -765,8 +765,7 @@
         <ul class="plan-feats">
           <li><span class="check">✓</span> Tudo o que tens no Claro+</li>
           <li><span class="check">✓</span> Marcações ilimitadas com consultor</li>
-          <li><span class="check">✓</span> Manual do Emigrante (PDF)</li>
-          <li><span class="check">✓</span> Budget Mensal Suíça (Excel)</li>
+          <li><span class="check">✓</span> Gestão do agregado familiar</li>
           <li><span class="check">✓</span> Suporte prioritário por email</li>
         </ul>
         <button class="plan-btn" data-plan="claro_total" onclick="startCheckoutPlan('claro_total', this)">Escolher Claro Total</button>
@@ -925,6 +924,7 @@ async function cancelSubscription() {
     });
     var data = await r.json();
     if (data.success) {
+      state.plano = 'gratuito';
       state.isPro = false;
       updatePlanLabel();
       if(planoOpen) renderPlanoDetails();
@@ -1122,12 +1122,12 @@ function backToHome() {
 }
 
 function goManual() {
-  if (!state.isPro) { openPaywall(); return; }
+  if (!temFerramentas()) { openPaywall(); return; }
   openPdfViewer();
 }
 
 function goBudget() {
-  if (!state.isPro) { openPaywall(); return; }
+  if (!temFerramentas()) { openPaywall(); return; }
   openBudget();
 }
 
@@ -1341,7 +1341,7 @@ function updateBudgetTotals() {
 }
 
 function goConsulta() {
-  if (!state.isPro) { openPaywall(); return; }
+  if (!temConsultas()) { openPaywall(temFerramentas() ? 'upgrade_total' : undefined); return; }
   window.open('https://calendly.com/romeu-m/new-meeting', '_blank');
 }
 
@@ -1365,9 +1365,9 @@ function openEditModalCheck() {
 }
 
 function tryAddMembro() {
-  if (!state.isPro) {
+  if (!temConsultas()) {
     closeEditModal();
-    openPaywall();
+    openPaywall(temFerramentas() ? 'upgrade_total' : undefined);
     return;
   }
   openAddMembro();
@@ -1551,6 +1551,33 @@ async function forgotPassword() {
 
 function showAuthError(el,msg){el.textContent=msg;el.style.display='block';}
 
+// ── PLANO / NÍVEL DE ACESSO ─────────────────────────────────────────────────
+// Normaliza o plano vindo do Supabase e deriva state.isPro.
+function setPlano(p){
+  if(p==='pro') p='claro_total';                       // legado → trata como Total
+  if(p!=='claro_plus' && p!=='claro_total') p='gratuito';
+  state.plano = p;
+  state.isPro = (p==='claro_plus' || p==='claro_total'); // conveniência: qualquer plano pago
+}
+function temFerramentas(){ return state.plano==='claro_plus' || state.plano==='claro_total'; }
+function temConsultas(){ return state.plano==='claro_total'; }
+function temAgregado(){ return state.plano==='claro_total'; }
+
+// Recarrega o plano real do Supabase (fonte da verdade, escrita pelo webhook).
+// Faz algumas tentativas para tolerar um pequeno atraso do webhook.
+async function refreshPlano(user){
+  document.getElementById('planLabel').textContent='A confirmar a tua subscrição…';
+  for(var i=0;i<4;i++){
+    var profiles=await sbGet('profiles','id=eq.'+user.id+'&select=plano');
+    var p=(Array.isArray(profiles)&&profiles[0])?profiles[0].plano:null;
+    setPlano(p);
+    updatePlanLabel();
+    if(state.isPro) return true;
+    await new Promise(function(r){ setTimeout(r,1500); });
+  }
+  return false;
+}
+
 async function loadUserAndStart(user) {
   var profiles=await sbGet('profiles','id=eq.'+user.id+'&select=*');
   var profile=Array.isArray(profiles)?profiles[0]:null;
@@ -1590,7 +1617,7 @@ async function loadUserAndStart(user) {
     if(profile.cidade && !dobCityParts.includes(profile.cidade)) moradaDisplay.push(profile.cidade);
     if(moradaDisplay.length) extraParts.push('📍 '+moradaDisplay.join(', '));
     if(extraParts.length) document.getElementById('profileExtraInfo').innerHTML = extraParts.join('<br>');
-    if(profile.plano==='pro'||profile.plano==='claro_plus'||profile.plano==='claro_total'){state.isPro=true;updatePlanLabel();}
+    setPlano(profile.plano); updatePlanLabel();
     // Carregar foto de perfil
     if(profile.foto_url) {
       profilePhotoData = profile.foto_url;
@@ -1650,19 +1677,22 @@ async function loadUserAndStart(user) {
   }
   updateHome();
   if(window.location.search.includes('success=true')){
-    await sbPatch('profiles','id=eq.'+user.id,{plano:'pro'});
-    state.isPro=true; updatePlanLabel();
     // Guardar email antes de limpar URL
     var successEmail = user.email;
     var successNome = profile ? (profile.nome || user.email.split('@')[0]) : user.email.split('@')[0];
     history.replaceState({},'','/');
+    // Fonte da verdade: o Supabase (escrito pelo webhook). Recarregar o plano real
+    // em vez de assumir um plano fixo localmente.
+    await refreshPlano(user);
     // Enviar email de upgrade
     fetch('/api/send-upgrade', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: successEmail, nome: successNome })
     }).catch(function(){});
-    setTimeout(function(){alert('Bem-vindo ao Claro-app+!');},500);
+    setTimeout(function(){
+      alert(state.isPro ? 'Subscrição confirmada. Bem-vindo!' : 'Pagamento recebido. A tua subscrição está a ser ativada — pode demorar um instante.');
+    },500);
   }
 }
 
@@ -1670,7 +1700,7 @@ async function doLogout() {
   if(accessToken) await authPost('logout',{});
   accessToken=null; currentUser=null;
   localStorage.removeItem('claro_session');
-  state.isPro=false; state.docsUsed=0; state.savedDocs=[]; agregado=[];
+  state.plano='gratuito'; state.isPro=false; state.docsUsed=0; state.savedDocs=[]; agregado=[];
   document.getElementById('app').style.display='none';
   document.getElementById('authScreen').style.display='block';
   document.getElementById('loginEmail').value='';
@@ -1685,7 +1715,7 @@ async function doLogout() {
 const ANTHROPIC_API_KEY = '';
 
 // ── STATE ──────────────────────────────────────────────────────────────────
-const state = { docsUsed:0, freeLimit:3, isPro:false, savedDocs:[], notifs:[], activeFilter:'' };
+const state = { docsUsed:0, freeLimit:3, isPro:false, plano:'gratuito', savedDocs:[], notifs:[], activeFilter:'' };
 
 const samples = [
   `Krankenkasse Helsana AG\nPrämienrechnung April 2025\n\nSehr geehrte Frau Rodrigues,\n\nwir stellen Ihnen die Monatsprämie für April 2025 in Rechnung.\n\nVersicherungsnehmer: Maria Rodrigues\nGrundversicherung (KVG): CHF 312.40\nZusatzversicherung (VVG): CHF 30.40\nTotal: CHF 342.80\n\nZahlungsfrist: 27. April 2025\n\nBei verspäteter Zahlung werden Verzugszinsen erhoben. Nach 3 Mahnungen wird der Fall an das kantonale Betreibungsamt weitergeleitet.\n\nHelsana AG, Zürich`,
@@ -2114,8 +2144,8 @@ function togglePlano() {
 
 function renderPlanoDetails() {
   var el = document.getElementById('planoDetails');
-  if (state.isPro) {
-    el.innerHTML = '<div style="margin-bottom:10px;">' +
+  if (temFerramentas()) {
+    var html = '<div style="margin-bottom:10px;">' +
       '<div onclick="goManual()" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">' +
         '<span style="font-size:18px;">📖</span>' +
         '<div><div style="font-size:13px;font-weight:500;color:var(--text);">Manual do Emigrante</div><div style="font-size:11px;color:var(--text-muted);">Guia completo</div></div>' +
@@ -2125,26 +2155,43 @@ function renderPlanoDetails() {
         '<span style="font-size:18px;">📊</span>' +
         '<div><div style="font-size:13px;font-weight:500;color:var(--text);">Budget Mensal</div><div style="font-size:11px;color:var(--text-muted);">Excel para despesas</div></div>' +
         '<span style="margin-left:auto;color:var(--green);font-size:14px;">›</span>' +
-      '</div>' +
-      '<button onclick="cancelSubscription()" style="width:100%;margin-top:10px;padding:10px;background:none;border:0.5px solid var(--red);border-radius:10px;font-size:13px;color:var(--red);cursor:pointer;font-family:inherit;">Cancelar subscrição</button>' +
+      '</div>';
+    if (temConsultas()) {
+      html +=
+      '<div onclick="goConsulta()" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">' +
+        '<span style="font-size:18px;">🗓️</span>' +
+        '<div><div style="font-size:13px;font-weight:500;color:var(--text);">Marcar consulta</div><div style="font-size:11px;color:var(--text-muted);">Com consultor especializado</div></div>' +
+        '<span style="margin-left:auto;color:var(--green);font-size:14px;">›</span>' +
+      '</div>';
+    } else {
+      // Claro+ → sugerir upgrade para Total (consultas + agregado)
+      html +=
+      '<button class="btn-primary" onclick="closeAndOpenPaywall(\'upgrade_total\')" style="padding:12px;margin-top:10px;">Passar a Claro Total</button>';
+    }
+    html += '<button onclick="cancelSubscription()" style="width:100%;margin-top:10px;padding:10px;background:none;border:0.5px solid var(--red);border-radius:10px;font-size:13px;color:var(--red);cursor:pointer;font-family:inherit;">Cancelar subscrição</button>' +
     '</div>';
+    el.innerHTML = html;
   } else {
     var r = Math.max(0, state.freeLimit - state.docsUsed);
     el.innerHTML = '<div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">' + r + ' documento' + (r!==1?'s':'') + ' gratuito' + (r!==1?'s':'') + ' restante' + (r!==1?'s':'') + '.</div>' +
-      '<button class="btn-primary" onclick="closeAndOpenPaywall()" style="padding:12px;">Fazer upgrade para Claro-app+</button>';
+      '<button class="btn-primary" onclick="closeAndOpenPaywall()" style="padding:12px;">Fazer upgrade</button>';
   }
 }
 
-function closeAndOpenPaywall() {
+function closeAndOpenPaywall(context) {
   planoOpen = false;
   document.getElementById('planoDetails').style.display = 'none';
   document.getElementById('planoChevron').style.transform = 'none';
-  openPaywall();
+  openPaywall(context);
 }
 
 function updatePlanLabel(){
-  if(state.isPro){
-    document.getElementById('planLabel').textContent='Claro-app+ ativo ✓';
+  if(state.plano==='claro_total'){
+    document.getElementById('planLabel').textContent='Claro Total ativo ✓';
+    if(planoOpen) renderPlanoDetails();
+  }
+  else if(state.plano==='claro_plus'){
+    document.getElementById('planLabel').textContent='Claro+ ativo ✓';
     if(planoOpen) renderPlanoDetails();
   }
   else{const r=Math.max(0,state.freeLimit-state.docsUsed);document.getElementById('planLabel').textContent='Grátis · '+r+' de 3 análises mensais restantes';}
@@ -2158,9 +2205,9 @@ const PRICES = {
 };
 // Preços de exibição (mensal vs anual)
 const PLAN_DISPLAY = {
-  claro_plus:  { mensal: { price: 'CHF 9',  period: '/mês', sub: 'Análises ilimitadas e família protegida.' },
+  claro_plus:  { mensal: { price: 'CHF 9',  period: '/mês', sub: 'Análises ilimitadas e ferramentas.' },
                  anual:  { price: 'CHF 90', period: '/ano', sub: 'CHF 7.50/mês — poupa 2 meses.' } },
-  claro_total: { mensal: { price: 'CHF 19',  period: '/mês', sub: 'Tudo do Claro+ e acompanhamento humano.' },
+  claro_total: { mensal: { price: 'CHF 19',  period: '/mês', sub: 'Consultas e agregado incluídos.' },
                  anual:  { price: 'CHF 190', period: '/ano', sub: 'CHF 15.83/mês — poupa 2 meses.' } }
 };
 let pwCycle = 'mensal';
@@ -2183,7 +2230,10 @@ function togglePwCycle(){
   updatePwPrices();
 }
 
-function openPaywall(){
+// context: undefined/'convert' → converter gratuito (mostra todos os planos)
+//          'upgrade_total'     → upgrade de Claro+ para Claro Total (foca no Total)
+function openPaywall(context){
+  var upgradeTotal = context === 'upgrade_total';
   pwCycle = 'mensal';
   updatePwPrices();
   // Repor estado dos botões de plano
@@ -2191,6 +2241,13 @@ function openPaywall(){
     b.disabled = false;
     b.innerHTML = b.dataset.plan === 'claro_plus' ? 'Escolher Claro+' : 'Escolher Claro Total';
   });
+  // Num upgrade Claro+ → Total, esconde o gratuito e o Claro+ e foca no Total
+  document.getElementById('pw-card-free').style.display = upgradeTotal ? 'none' : '';
+  document.getElementById('pw-card-plus').style.display = upgradeTotal ? 'none' : '';
+  document.getElementById('pw-title').textContent = upgradeTotal ? 'Passa a Claro Total' : 'Escolhe o teu plano';
+  document.getElementById('pw-sub').textContent = upgradeTotal
+    ? 'Desbloqueia consultas e gestão do agregado familiar.'
+    : 'Cancela quando quiseres.';
   document.getElementById('paywallOverlay').classList.add('open');
 }
 function closePaywall(){ document.getElementById('paywallOverlay').classList.remove('open'); }
@@ -2236,13 +2293,10 @@ async function startCheckoutPlan(plan, btn){
   }
 }
 
-// Verificar se voltou do Stripe com sucesso
-if(window.location.search.includes('success=true')) {
-  state.isPro = true;
-  updatePlanLabel();
-  history.replaceState({}, '', '/');
-  setTimeout(() => alert('Bem-vindo ao Claro-app+! 🎉'), 500);
-}
+// Regresso do Stripe (?success=true): NÃO assumimos plano localmente aqui.
+// O plano real é confirmado em loadUserAndStart() → refreshPlano(), que lê o
+// Supabase (fonte da verdade, escrito pelo webhook). Não limpar o URL aqui para
+// que esse handler ainda veja o parâmetro.
 
 // ── BOOKING ────────────────────────────────────────────────────────────────
 const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -2253,7 +2307,7 @@ const TIMES=['09:00','09:30','10:00','10:30','11:00','11:30','14:00','14:30','15
 let curMonth,curYear,selDate=null,selTime=null,selType='video';
 
 function openBooking(){
-  if(!state.isPro){ openPaywall(); return; }
+  if(!temConsultas()){ openPaywall(temFerramentas() ? 'upgrade_total' : undefined); return; }
   document.getElementById('bookingOverlay').classList.add('open');
   if(!curMonth){ const n=new Date(); curMonth=n.getMonth(); curYear=n.getFullYear(); }
   // Pré-preencher com dados do perfil
