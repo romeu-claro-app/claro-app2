@@ -1578,6 +1578,30 @@ async function refreshPlano(user){
   return false;
 }
 
+// Recarrega o plano quando a app volta a primeiro plano (ex: regresso do checkout
+// no browser externo). Leitura única e silenciosa; só atualiza a UI se o plano mudou.
+var _planoReloadInFlight = false;
+var _appStartedAt = Date.now();
+async function reloadPlanoOnForeground(){
+  if(!currentUser) return;                          // só com sessão autenticada
+  if(Date.now() - _appStartedAt < 2000) return;     // ignora o arranque imediato
+  if(_planoReloadInFlight) return;                  // evita chamadas sobrepostas
+  _planoReloadInFlight = true;
+  try {
+    var profiles = await sbGet('profiles','id=eq.'+currentUser.id+'&select=plano');
+    var novo = (Array.isArray(profiles)&&profiles[0]) ? profiles[0].plano : null;
+    var anterior = state.plano;
+    setPlano(novo);
+    if(state.plano !== anterior){
+      updatePlanLabel();
+      updateHome();
+      if(planoOpen) renderPlanoDetails();
+      if(state.isPro) closePaywall();               // já tem acesso → fecha o paywall
+    }
+  } catch(e){ /* silencioso — tentamos de novo no próximo foreground */ }
+  finally { _planoReloadInFlight = false; }
+}
+
 async function loadUserAndStart(user) {
   var profiles=await sbGet('profiles','id=eq.'+user.id+'&select=*');
   var profile=Array.isArray(profiles)?profiles[0]:null;
@@ -2605,17 +2629,29 @@ document.addEventListener('touchend', function(e) {
   swipeNavigate(dx < 0 ? 'left' : 'right');
 }, { passive: true });
 
-// Repor botões do paywall quando a página volta ao foco (ex: depois do Stripe)
+// Repor botões do paywall + recarregar o plano quando a app volta a primeiro plano.
+// visibilitychange é o mecanismo principal: funciona na WebView do Capacitor e no
+// browser/PWA sem plugins nativos (logo, sem novo AAB).
+function onAppForeground(){
+  document.querySelectorAll('#paywallOverlay .plan-btn[data-plan]').forEach(function(b){
+    if (b.disabled) {
+      b.disabled = false;
+      b.innerHTML = b.dataset.plan === 'claro_plus' ? 'Escolher Claro+' : 'Escolher Claro Total';
+    }
+  });
+  reloadPlanoOnForeground();
+}
 document.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'visible') {
-    document.querySelectorAll('#paywallOverlay .plan-btn[data-plan]').forEach(function(b){
-      if (b.disabled) {
-        b.disabled = false;
-        b.innerHTML = b.dataset.plan === 'claro_plus' ? 'Escolher Claro+' : 'Escolher Claro Total';
-      }
-    });
-  }
+  if (document.visibilityState === 'visible') onAppForeground();
 });
+// Se o Capacitor App API estiver disponível (@capacitor/app), também reagir ao
+// appStateChange nativo. Se o plugin não estiver instalado, este bloco é ignorado.
+try {
+  var _capApp = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+  if (_capApp && _capApp.addListener) {
+    _capApp.addListener('appStateChange', function(s){ if (s && s.isActive) onAppForeground(); });
+  }
+} catch(e) { /* sem App API — visibilitychange trata do regresso a primeiro plano */ }
 
 
 
