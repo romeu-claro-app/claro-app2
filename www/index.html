@@ -1708,12 +1708,17 @@ async function loadUserAndStart(user) {
     // Fonte da verdade: o Supabase (escrito pelo webhook). Recarregar o plano real
     // em vez de assumir um plano fixo localmente.
     await refreshPlano(user);
-    // Enviar email de upgrade
+    // [DESLIGADO] Email de upgrade duplicado.
+    // O email de boas-vindas pós-pagamento passa a ser enviado APENAS pelo webhook
+    // (api/webhook.js → buildWelcomeEmail), que é plano-aware (Claro+ vs Claro Total).
+    // Comentado para ser reversível; o ficheiro api/send-upgrade.js NÃO foi apagado.
+    /*
     fetch('/api/send-upgrade', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: successEmail, nome: successNome })
     }).catch(function(){});
+    */
     setTimeout(function(){
       alert(state.isPro ? 'Subscrição confirmada. Bem-vindo!' : 'Pagamento recebido. A tua subscrição está a ser ativada — pode demorar um instante.');
     },500);
