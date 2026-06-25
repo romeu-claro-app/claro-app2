@@ -15,7 +15,7 @@ const PLAN_EMAIL = {
     badge: 'CLARO+ ATIVO',
     features: [
       'Análises ilimitadas',
-      'Manual do Emigrante (PDF, 43 páginas)',
+      'Manual do Emigrante (PDF)',
       'Ferramenta de cálculo de Budget',
       'Suporte por email'
     ]
@@ -25,7 +25,7 @@ const PLAN_EMAIL = {
     badge: 'CLARO TOTAL ATIVO',
     features: [
       'Análises ilimitadas',
-      'Manual do Emigrante (PDF, 43 páginas)',
+      'Manual do Emigrante (PDF)',
       'Ferramenta de cálculo de Budget',
       '1 consulta por mês com um profissional',
       'Gestão do agregado familiar',

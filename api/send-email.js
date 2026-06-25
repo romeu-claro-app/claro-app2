@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
 <p style="font-size:14px;font-weight:600;color:#0F6E56;margin:0 0 10px;">"Os Melhores Anos da Minha Vida como Emigrante"</p>
 <p style="font-size:13px;color:#064E3B;margin:0;line-height:1.8;">📋 Preparação para a chegada<br>🏥 Seguros e saúde<br>💼 Trabalho e direitos<br>🏠 Habitação e contratos<br>💰 Impostos e finanças<br>🏦 Reforma e poupança</p>
 </div>
-<p style="font-size:15px;color:#5A5955;line-height:1.7;margin:0 0 28px;">43 páginas escritas com base em anos de experiência real na Suíça. Em português simples, com exemplos reais e dicas práticas. É o guia que eu próprio gostaria de ter tido no primeiro dia.</p>
+<p style="font-size:15px;color:#5A5955;line-height:1.7;margin:0 0 28px;">Escrito com base em anos de experiência real na Suíça. Em português simples, com exemplos reais e dicas práticas. É o guia que eu próprio gostaria de ter tido no primeiro dia.</p>
 <p style="font-size:15px;color:#5A5955;line-height:1.7;margin:0 0 28px;">Está incluído no Claro-app+.</p>
 <div style="text-align:center;margin-bottom:28px;">
 <a href="https://claro-app2.vercel.app" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Quero acesso ao Manual →</a>

@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
 <p style="font-size:12px;font-weight:600;color:#1A1A18;margin:0 0 14px;text-transform:uppercase;letter-spacing:0.5px;">O que tens agora:</p>
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Documentos ilimitados</td></tr>
-<tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Manual do Emigrante (PDF — 43 páginas)</td></tr>
+<tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Manual do Emigrante (PDF)</td></tr>
 <tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Budget Mensal Suíça (Excel)</td></tr>
 <tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Marcações de consulta ilimitadas</td></tr>
 <tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Gestão do agregado familiar</td></tr>
