@@ -47,7 +47,7 @@ module.exports = async (req, res) => {
             token: profile.fcm_token,
             notification: {
               title: 'Pensas em renovar o teu seguro de saúde?',
-              body: 'Talvez uma análise rápida não seja suficiente para rever a tua situação. Com o Claro-app+ tens marcações ilimitadas com conselheiros profissionais. Esta semana 20% desconto com código CLARO20.',
+              body: 'Talvez uma análise rápida não seja suficiente para rever a tua situação. Com o Claro Total tens 1 consulta por mês com um profissional. Esta semana 20% desconto com código CLARO20.',
             },
             android: {
               priority: 'high',

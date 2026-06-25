@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
             token: profile.fcm_token,
             notification: {
               title: 'Ainda pedes ao patrão para te explicar as cartas? que vergonha..',
-              body: 'A Suíça já te mandou cartas, multas e juros de mora... e tu sempre a sorrir e a pagar sem perceber porquê. O Claro-app+ tem apoio direto para quando precisas de alguém de verdade. Marca já.',
+              body: 'A Suíça já te mandou cartas, multas e juros de mora... e tu sempre a sorrir e a pagar sem perceber porquê. O Claro Total tem apoio direto para quando precisas de alguém de verdade. Marca já.',
             },
             android: {
               priority: 'high',

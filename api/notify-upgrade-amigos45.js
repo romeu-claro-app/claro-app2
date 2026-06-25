@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
             token: profile.fcm_token,
             notification: {
               title: 'O Claro-app tem CHF 45 para ti.',
-              body: 'Passa para o Claro-app+ com CHF 45 de desconto. Usa o código AMIGOS45.',
+              body: 'Passa para o Claro+ com CHF 45 de desconto. Usa o código AMIGOS45.',
             },
             android: {
               priority: 'high',

@@ -85,7 +85,7 @@ module.exports = async (req, res) => {
             token: profile.fcm_token,
             notification: {
               title: 'Chegaste ao limite este mês.',
-              body: 'Com o Claro-app+ tens análises ilimitadas — e muito mais. Esta semana com desconto: usa o código CLARO20.',
+              body: 'Com o Claro+ tens análises ilimitadas — e muito mais. Esta semana com desconto: usa o código CLARO20.',
             },
             android: {
               priority: 'high',
