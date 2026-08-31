@@ -607,12 +607,14 @@
     <!-- Botão editar -->
     <button class="btn-secondary" onclick="openEditModalCheck()" style="margin-bottom:10px;">Editar</button>
 
-    <!-- Plano -->
-    <div class="block" style="margin-bottom:10px;cursor:pointer;" onclick="togglePlano()">
+    <!-- Subscrição — a app é gratuita, por isso este bloco fica escondido para
+         toda a gente. Só aparece a quem ainda tem uma subscrição Stripe ativa,
+         que é a única forma de a poder cancelar. -->
+    <div class="block" id="planoBlock" style="margin-bottom:10px;cursor:pointer;display:none;" onclick="togglePlano()">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <div class="block-label">Plano atual</div>
-          <div style="font-size:14px;font-weight:500;color:var(--text);" id="planLabel">Tudo incluído</div>
+          <div class="block-label">Subscrição</div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);" id="planLabel">—</div>
         </div>
         <span id="planoChevron" style="font-size:20px;color:var(--text-muted);transition:transform 0.2s;">›</span>
       </div>
@@ -2362,6 +2364,15 @@ function togglePlano() {
 
 function renderPlanoDetails() {
   var el = document.getElementById('planoDetails');
+  if (TUDO_GRATUITO) {
+    // O Manual, o Budget e a marcação de consulta já estão no ecrã inicial e no
+    // perfil, por isso aqui só faz sentido tratar da subscrição que sobra.
+    el.innerHTML = state.isPro
+      ? '<div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.6;">A app passou a ser gratuita. A tua subscrição continua ativa — podes cancelá-la que não perdes acesso a nada.</div>' +
+        '<button onclick="cancelSubscription()" style="width:100%;padding:10px;background:none;border:0.5px solid var(--red);border-radius:10px;font-size:13px;color:var(--red);cursor:pointer;font-family:inherit;">Cancelar subscrição</button>'
+      : '';
+    return;
+  }
   if (temFerramentas()) {
     var html = '<div style="margin-bottom:10px;">' +
       '<div onclick="goManual()" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">' +
@@ -2409,15 +2420,16 @@ function closeAndOpenPaywall(context) {
 }
 
 function updatePlanLabel(){
+  var bloco = document.getElementById('planoBlock');
   if(TUDO_GRATUITO){
-    // Quem ainda tem subscrição Stripe ativa vê que a tem, para saber que pode
-    // cancelá-la; os restantes veem só que está tudo incluído.
-    document.getElementById('planLabel').textContent = state.isPro
-      ? 'Tudo incluído · subscrição ainda ativa'
-      : 'Tudo incluído · grátis';
+    // Sem planos, não há nada para mostrar a quem nunca pagou. O bloco só
+    // aparece a quem tem subscrição ativa, para a poder cancelar.
+    if(bloco) bloco.style.display = state.isPro ? '' : 'none';
+    document.getElementById('planLabel').textContent = 'Ativa';
     if(planoOpen) renderPlanoDetails();
     return;
   }
+  if(bloco) bloco.style.display = '';
   if(state.plano==='claro_total'){
     document.getElementById('planLabel').textContent='Claro Total ativo ✓';
     if(planoOpen) renderPlanoDetails();
