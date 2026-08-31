@@ -948,7 +948,11 @@ async function cancelSubscription() {
 var agregado = [];
 
 function openAddMembro() {
-  document.getElementById('membroNome').value = '';
+  // O formulário foi dividido em primeiro nome + apelido, mas isto continuava a
+  // limpar um 'membroNome' que já não existe: rebentava aqui e o modal nunca
+  // chegava a abrir. Estava partido para todos os Claro Total.
+  document.getElementById('membroPrimeiroNome').value = '';
+  document.getElementById('membroApelido').value = '';
   document.getElementById('membroDob').value = '';
   document.getElementById('membroTipo').value = '';
   document.getElementById('membroModal').style.display = 'flex';
@@ -1051,8 +1055,8 @@ function updateHome() {
 
   // Docs restantes
   var r = Math.max(0, state.freeLimit - state.docsUsed);
-  if (!state.isPro) {
-    document.getElementById('homeDocsLeft').textContent = r > 0 
+  if (!TUDO_GRATUITO && !state.isPro) {
+    document.getElementById('homeDocsLeft').textContent = r > 0
       ? r + ' análise' + (r !== 1 ? 's' : '') + ' gratuita' + (r !== 1 ? 's' : '') + ' disponível'
       : 'Upgrade para continuar a analisar';
   } else {
@@ -1104,7 +1108,7 @@ function openDocFromHome(idx) {
 }
 
 function goAnalisar() {
-  if (!state.isPro && state.docsUsed >= state.freeLimit) { openPaywall(); return; }
+  if (!TUDO_GRATUITO && !state.isPro && state.docsUsed >= state.freeLimit) { openPaywall(); return; }
   showScreen('analisar');
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
   document.getElementById('nav-analisar-btn').classList.add('active');
@@ -1656,6 +1660,14 @@ async function forgotPassword() {
 function showAuthError(el,msg){el.textContent=msg;el.style.display='block';}
 
 // ── PLANO / NÍVEL DE ACESSO ─────────────────────────────────────────────────
+// A app é totalmente gratuita desde 31 ago 2026: toda a gente tem análises
+// ilimitadas, Manual, Budget, consultas e agregado. Pôr a false devolve o
+// modelo de 3 planos — o paywall, o PRICES, o checkout.js e o webhook.js
+// continuam todos no sítio, inertes, precisamente para isto ser reversível.
+// NB: state.isPro continua a refletir uma subscrição Stripe REAL, e não o
+// acesso — é o que distingue quem ainda tem de poder cancelar a subscrição.
+var TUDO_GRATUITO = true;
+
 // Normaliza o plano vindo do Supabase e deriva state.isPro.
 function setPlano(p){
   if(p==='pro') p='claro_total';                       // legado → trata como Total
@@ -1663,9 +1675,9 @@ function setPlano(p){
   state.plano = p;
   state.isPro = (p==='claro_plus' || p==='claro_total'); // conveniência: qualquer plano pago
 }
-function temFerramentas(){ return state.plano==='claro_plus' || state.plano==='claro_total'; }
-function temConsultas(){ return state.plano==='claro_total'; }
-function temAgregado(){ return state.plano==='claro_total'; }
+function temFerramentas(){ return TUDO_GRATUITO || state.plano==='claro_plus' || state.plano==='claro_total'; }
+function temConsultas(){ return TUDO_GRATUITO || state.plano==='claro_total'; }
+function temAgregado(){ return TUDO_GRATUITO || state.plano==='claro_total'; }
 
 // Recarrega o plano real do Supabase (fonte da verdade, escrita pelo webhook).
 // Faz algumas tentativas para tolerar um pequeno atraso do webhook.
@@ -2020,7 +2032,7 @@ function recompressBase64Image(base64, count) {
 }
 
 async function analyseDoc(){
-  if(!state.isPro && state.docsUsed>=state.freeLimit){ openPaywall(); return; }
+  if(!TUDO_GRATUITO && !state.isPro && state.docsUsed>=state.freeLimit){ openPaywall(); return; }
   const text=document.getElementById('docInput').value.trim();
   const hasFile = uploadedFiles.length > 0 || uploadedFileData !== null;
   if(!text && !hasFile){ alert('Importa um ficheiro ou cola o texto do documento.'); return; }
@@ -2374,8 +2386,13 @@ function renderPlanoDetails() {
       html +=
       '<button class="btn-primary" onclick="closeAndOpenPaywall(\'upgrade_total\')" style="padding:12px;margin-top:10px;">Passar a Claro Total</button>';
     }
-    html += '<button onclick="cancelSubscription()" style="width:100%;margin-top:10px;padding:10px;background:none;border:0.5px solid var(--red);border-radius:10px;font-size:13px;color:var(--red);cursor:pointer;font-family:inherit;">Cancelar subscrição</button>' +
-    '</div>';
+    // Só quem tem subscrição Stripe REAL vê o botão de cancelar. Com a app
+    // gratuita, temFerramentas() é verdade para toda a gente, e mostrar isto a
+    // quem nunca pagou não faria sentido nenhum.
+    if (state.isPro) {
+      html += '<button onclick="cancelSubscription()" style="width:100%;margin-top:10px;padding:10px;background:none;border:0.5px solid var(--red);border-radius:10px;font-size:13px;color:var(--red);cursor:pointer;font-family:inherit;">Cancelar subscrição</button>';
+    }
+    html += '</div>';
     el.innerHTML = html;
   } else {
     var r = Math.max(0, state.freeLimit - state.docsUsed);
@@ -2392,6 +2409,15 @@ function closeAndOpenPaywall(context) {
 }
 
 function updatePlanLabel(){
+  if(TUDO_GRATUITO){
+    // Quem ainda tem subscrição Stripe ativa vê que a tem, para saber que pode
+    // cancelá-la; os restantes veem só que está tudo incluído.
+    document.getElementById('planLabel').textContent = state.isPro
+      ? 'Tudo incluído · subscrição ainda ativa'
+      : 'Tudo incluído · grátis';
+    if(planoOpen) renderPlanoDetails();
+    return;
+  }
   if(state.plano==='claro_total'){
     document.getElementById('planLabel').textContent='Claro Total ativo ✓';
     if(planoOpen) renderPlanoDetails();
