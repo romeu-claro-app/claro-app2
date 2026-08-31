@@ -607,20 +607,10 @@
     <!-- Botão editar -->
     <button class="btn-secondary" onclick="openEditModalCheck()" style="margin-bottom:10px;">Editar</button>
 
-    <!-- Subscrição — a app é gratuita, por isso este bloco fica escondido para
-         toda a gente. Só aparece a quem ainda tem uma subscrição Stripe ativa,
-         que é a única forma de a poder cancelar. -->
-    <div class="block" id="planoBlock" style="margin-bottom:10px;cursor:pointer;display:none;" onclick="togglePlano()">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <div class="block-label">Subscrição</div>
-          <div style="font-size:14px;font-weight:500;color:var(--text);" id="planLabel">—</div>
-        </div>
-        <span id="planoChevron" style="font-size:20px;color:var(--text-muted);transition:transform 0.2s;">›</span>
-      </div>
-      <div id="planoDetails" style="display:none;margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border);">
-      </div>
-    </div>
+    <!-- O bloco do plano foi removido: a app é gratuita, não há subscrições
+         nem nada para mostrar aqui. As funções que o manipulavam ficam no
+         ficheiro, inertes e à prova de elemento ausente, para o caso de o
+         modelo de planos voltar (ver TUDO_GRATUITO). -->
 
     <!-- Marcar consulta -->
     <div style="text-align:center;margin-top:8px;margin-bottom:12px;">
@@ -1684,7 +1674,8 @@ function temAgregado(){ return TUDO_GRATUITO || state.plano==='claro_total'; }
 // Recarrega o plano real do Supabase (fonte da verdade, escrita pelo webhook).
 // Faz algumas tentativas para tolerar um pequeno atraso do webhook.
 async function refreshPlano(user){
-  document.getElementById('planLabel').textContent='A confirmar a tua subscrição…';
+  var _lbl = document.getElementById('planLabel');
+  if(_lbl) _lbl.textContent='A confirmar a tua subscrição…';
   for(var i=0;i<4;i++){
     var profiles=await sbGet('profiles','id=eq.'+user.id+'&select=plano');
     var p=(Array.isArray(profiles)&&profiles[0])?profiles[0].plano:null;
@@ -2354,9 +2345,10 @@ async function saveProfile() {
 // Plano expandível
 var planoOpen = false;
 function togglePlano() {
-  planoOpen = !planoOpen;
   var details = document.getElementById('planoDetails');
   var chevron = document.getElementById('planoChevron');
+  if (!details || !chevron) return;   // bloco do plano já não existe no perfil
+  planoOpen = !planoOpen;
   details.style.display = planoOpen ? 'block' : 'none';
   chevron.style.transform = planoOpen ? 'rotate(90deg)' : 'none';
   if (planoOpen) renderPlanoDetails();
@@ -2364,15 +2356,7 @@ function togglePlano() {
 
 function renderPlanoDetails() {
   var el = document.getElementById('planoDetails');
-  if (TUDO_GRATUITO) {
-    // O Manual, o Budget e a marcação de consulta já estão no ecrã inicial e no
-    // perfil, por isso aqui só faz sentido tratar da subscrição que sobra.
-    el.innerHTML = state.isPro
-      ? '<div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.6;">A app passou a ser gratuita. A tua subscrição continua ativa — podes cancelá-la que não perdes acesso a nada.</div>' +
-        '<button onclick="cancelSubscription()" style="width:100%;padding:10px;background:none;border:0.5px solid var(--red);border-radius:10px;font-size:13px;color:var(--red);cursor:pointer;font-family:inherit;">Cancelar subscrição</button>'
-      : '';
-    return;
-  }
+  if (TUDO_GRATUITO || !el) return;   // bloco do plano já não existe no perfil
   if (temFerramentas()) {
     var html = '<div style="margin-bottom:10px;">' +
       '<div onclick="goManual()" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);cursor:pointer;">' +
@@ -2414,22 +2398,16 @@ function renderPlanoDetails() {
 
 function closeAndOpenPaywall(context) {
   planoOpen = false;
-  document.getElementById('planoDetails').style.display = 'none';
-  document.getElementById('planoChevron').style.transform = 'none';
+  var details = document.getElementById('planoDetails');
+  var chevron = document.getElementById('planoChevron');
+  if (details) details.style.display = 'none';
+  if (chevron) chevron.style.transform = 'none';
   openPaywall(context);
 }
 
 function updatePlanLabel(){
-  var bloco = document.getElementById('planoBlock');
-  if(TUDO_GRATUITO){
-    // Sem planos, não há nada para mostrar a quem nunca pagou. O bloco só
-    // aparece a quem tem subscrição ativa, para a poder cancelar.
-    if(bloco) bloco.style.display = state.isPro ? '' : 'none';
-    document.getElementById('planLabel').textContent = 'Ativa';
-    if(planoOpen) renderPlanoDetails();
-    return;
-  }
-  if(bloco) bloco.style.display = '';
+  var lbl = document.getElementById('planLabel');
+  if(TUDO_GRATUITO || !lbl) return;   // bloco do plano já não existe no perfil
   if(state.plano==='claro_total'){
     document.getElementById('planLabel').textContent='Claro Total ativo ✓';
     if(planoOpen) renderPlanoDetails();
