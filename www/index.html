@@ -256,7 +256,8 @@
     .viewer-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
     /* PDF */
     #pdfPages{display:flex;flex-direction:column;align-items:center;gap:14px;padding:14px 10px 30px}
-    #pdfPages canvas{width:100%;max-width:410px;height:auto;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,0.12);background:#fff}
+    .pdf-slot{width:100%;max-width:410px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,0.12);background:#fff;flex-shrink:0}
+    #pdfPages canvas{display:block;width:100%;height:100%;border-radius:8px}
     .viewer-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:60px 20px;color:var(--text-muted);font-size:14px}
     .viewer-spinner{width:30px;height:30px;border:3px solid var(--green-light);border-top-color:var(--green);border-radius:50%;animation:vspin 0.8s linear infinite}
     @keyframes vspin{to{transform:rotate(360deg)}}
@@ -1132,42 +1133,138 @@ function goBudget() {
 }
 
 /* ===== Visualizador PDF inline (PDF.js) ===== */
+// O manual tem 43 páginas. Desenhar todas de uma vez e mantê-las em memória
+// rebentava a WebView do Android: à escala antiga (devicePixelRatio * 1.4) cada
+// canvas A4 ocupava 15-45 MB, ou seja 0,6-2 GB para o documento inteiro. O processo
+// de render era morto e a app mostrava o ecrã de erro do Chrome. Agora limitamos a
+// resolução e desenhamos apenas as páginas perto do ecrã, libertando as outras.
 var PDF_URL = 'ferramentas/manual-emigrante.pdf';
-var pdfLoaded = false;
+var PDF_MAX_DPR = 2;        // teto de resolução: acima disto só gasta memória
+var PDF_NEAR = '800px';     // quanto pré-desenhamos acima/abaixo do visível
+var pdfDoc = null;          // documento aberto uma única vez
+var pdfRendering = false;   // impede dois renders em paralelo ao reabrir
+var pdfObserver = null;
 
 function openPdfViewer() {
   document.getElementById('pdfViewer').classList.add('open');
   document.body.style.overflow = 'hidden';
-  if (!pdfLoaded) renderPdf();
+  // Já aberto antes: os slots e o observer continuam montados, reabre instantâneo.
+  if (!pdfDoc && !pdfRendering) renderPdf();
 }
 function closePdfViewer() {
   document.getElementById('pdfViewer').classList.remove('open');
   document.body.style.overflow = '';
 }
 
+// Cria um slot vazio por página com a altura correta (o scroll fica certo desde
+// o início) e deixa o observer desenhar cada uma quando chega perto do ecrã.
 async function renderPdf() {
   var loading = document.getElementById('pdfLoading');
   var pagesEl = document.getElementById('pdfPages');
+  var bodyEl = pagesEl.parentNode;
+  pdfRendering = true;
+  loading.style.display = '';
+  loading.innerHTML = '<div class="viewer-spinner"></div><div>A carregar o manual…</div>';
+  pagesEl.innerHTML = '';
+  if (pdfObserver) { pdfObserver.disconnect(); pdfObserver = null; }
   try {
     if (typeof pdfjsLib === 'undefined') throw new Error('PDF.js indisponível');
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    var pdf = await pdfjsLib.getDocument(PDF_URL).promise;
-    var scale = (window.devicePixelRatio || 1) * 1.4;
-    for (var n = 1; n <= pdf.numPages; n++) {
-      var page = await pdf.getPage(n);
-      var viewport = page.getViewport({ scale: scale });
-      var canvas = document.createElement('canvas');
-      var ctx = canvas.getContext('2d');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      pagesEl.appendChild(canvas);
-      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+    pdfDoc = await pdfjsLib.getDocument(PDF_URL).promise;
+
+    var width = Math.min(pagesEl.clientWidth || 410, 410);
+    for (var n = 1; n <= pdfDoc.numPages; n++) {
+      var page = await pdfDoc.getPage(n);
+      var base = page.getViewport({ scale: 1 });
+      var slot = document.createElement('div');
+      slot.className = 'pdf-slot';
+      slot.dataset.page = n;
+      slot.style.height = Math.round(width * base.height / base.width) + 'px';
+      pagesEl.appendChild(slot);
+      page.cleanup();
     }
-    pdfLoaded = true;
+
+    if (typeof IntersectionObserver !== 'undefined') {
+      pdfObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) drawPdfPage(en.target);
+          else releasePdfPage(en.target);
+        });
+      }, { root: bodyEl, rootMargin: PDF_NEAR });
+      Array.prototype.forEach.call(pagesEl.children, function (slot) { pdfObserver.observe(slot); });
+    } else {
+      // WebView sem IntersectionObserver: mesmo efeito à custa do scroll.
+      bodyEl.addEventListener('scroll', schedulePdfSweep);
+    }
+    // Arranque explícito: não dependemos do primeiro disparo do observer para
+    // mostrar alguma coisa. Sem isto, um observer que não dispare deixaria o
+    // manual aberto mas todo em branco.
+    sweepPdfPages();
+
     loading.style.display = 'none';
   } catch (e) {
+    pdfDoc = null;
     loading.innerHTML = '<div style="font-size:30px;">⚠️</div><div>Não foi possível abrir o manual.<br>Verifica a tua ligação.</div>';
+  } finally {
+    pdfRendering = false;
   }
+}
+
+async function drawPdfPage(slot) {
+  if (!pdfDoc || slot.dataset.state) return;   // 'busy' ou 'done' → nada a fazer
+  slot.dataset.state = 'busy';
+  try {
+    var page = await pdfDoc.getPage(parseInt(slot.dataset.page, 10));
+    var cssW = slot.clientWidth || 410;
+    var dpr = Math.min(window.devicePixelRatio || 1, PDF_MAX_DPR);
+    var base = page.getViewport({ scale: 1 });
+    var viewport = page.getViewport({ scale: (cssW * dpr) / base.width });
+    var canvas = document.createElement('canvas');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    slot.innerHTML = '';
+    slot.appendChild(canvas);
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+    page.cleanup();
+    slot.dataset.state = 'done';
+  } catch (e) {
+    slot.innerHTML = '';
+    slot.dataset.state = '';
+  }
+}
+
+// Liberta o bitmap da página que saiu do ecrã (pôr width/height a 0 é o que
+// realmente devolve a memória; remover o nó sozinho não chega).
+function releasePdfPage(slot) {
+  if (slot.dataset.state !== 'done') return;
+  var c = slot.querySelector('canvas');
+  if (c) { c.width = 0; c.height = 0; }
+  slot.innerHTML = '';
+  slot.dataset.state = '';
+}
+
+// Desenha o que está perto do ecrã e liberta o resto. É o mecanismo de reserva
+// (e o arranque) para não ficarmos dependentes do IntersectionObserver.
+var pdfSweepPending = false;
+function schedulePdfSweep() {
+  if (pdfSweepPending) return;
+  pdfSweepPending = true;
+  requestAnimationFrame(function () { pdfSweepPending = false; sweepPdfPages(); });
+}
+function sweepPdfPages() {
+  var pagesEl = document.getElementById('pdfPages');
+  var bodyEl = pagesEl.parentNode;
+  // Sem layout calculado (viewer fechado/oculto) todos os offsetTop são 0 e
+  // o varrimento desenharia as 43 páginas de uma vez. Esperamos por layout.
+  if (!bodyEl.clientHeight) return;
+  var near = parseInt(PDF_NEAR, 10) || 800;
+  var top = bodyEl.scrollTop - near;
+  var bottom = bodyEl.scrollTop + bodyEl.clientHeight + near;
+  Array.prototype.forEach.call(pagesEl.children, function (slot) {
+    var y = slot.offsetTop;
+    if (y + slot.offsetHeight >= top && y <= bottom) drawPdfPage(slot);
+    else releasePdfPage(slot);
+  });
 }
 
 /* ===== Budget Mensal interativo ===== */

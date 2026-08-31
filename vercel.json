@@ -1,5 +1,18 @@
 {
   "outputDirectory": "www",
+  "redirects": [
+    {
+      "source": "/((?!api/).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "claro-app2.vercel.app"
+        }
+      ],
+      "destination": "https://app.claro-app.ch/$1",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

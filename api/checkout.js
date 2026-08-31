@@ -1,3 +1,7 @@
+// Dominio da app. Configuravel por env var para sobreviver a futuras migracoes
+// de dominio sem alterar codigo (era claro-app2.vercel.app antes de app.claro-app.ch).
+const APP_URL = process.env.APP_URL || "https://app.claro-app.ch";
+
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -13,8 +17,8 @@ module.exports = async (req, res) => {
     params.append("mode", "subscription");
     params.append("line_items[0][price]", priceId);
     params.append("line_items[0][quantity]", "1");
-    params.append("success_url", "https://claro-app2.vercel.app?success=true");
-    params.append("cancel_url", "https://claro-app2.vercel.app?cancelled=true");
+    params.append("success_url", APP_URL + "?success=true");
+    params.append("cancel_url", APP_URL + "?cancelled=true");
 
     if (cleanPromo) {
       // Procurar o ID interno do promotion code pelo código visível

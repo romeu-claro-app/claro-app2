@@ -1,3 +1,7 @@
+// Dominio da app. Configuravel por env var para sobreviver a futuras migracoes
+// de dominio sem alterar codigo (era claro-app2.vercel.app antes de app.claro-app.ch).
+const APP_URL = process.env.APP_URL || "https://app.claro-app.ch";
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -32,7 +36,7 @@ module.exports = async (req, res) => {
 <p style="font-size:14px;color:#064E3B;margin:0;line-height:1.7;">Com o Claro-app+, tens acesso direto a mim — marcações ilimitadas, em português, sem agenda escondida. Não tenho nada para te vender. O meu único interesse é que a tua vida na Suíça seja mais fácil.</p>
 </div>
 <div style="text-align:center;margin-bottom:28px;">
-<a href="https://claro-app2.vercel.app" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Descobrir o Claro-app+ →</a>
+<a href="${APP_URL}" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Descobrir o Claro-app+ →</a>
 </div>
 <div style="border-top:1px solid #E8E6DF;padding-top:20px;">
 <p style="font-size:13px;color:#A8A69F;margin:0;">Dúvidas? Responde a este email ou contacta-nos em <a href="mailto:suporte@claro-app.ch" style="color:#1D9E75;">suporte@claro-app.ch</a></p>
@@ -40,7 +44,7 @@ module.exports = async (req, res) => {
 </td></tr>
 <tr><td style="background:#F5F3EC;padding:20px 40px;text-align:center;">
 <p style="font-size:12px;color:#A8A69F;margin:0;">© 2025 Claro-app.ch · Montreux, Suíça</p>
-<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="https://claro-app2.vercel.app/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
+<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="${APP_URL}/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
 </td></tr>
 </table>
 </td></tr>
@@ -67,7 +71,7 @@ module.exports = async (req, res) => {
 <p style="font-size:15px;color:#5A5955;line-height:1.7;margin:0 0 28px;">Escrito com base em anos de experiência real na Suíça. Em português simples, com exemplos reais e dicas práticas. É o guia que eu próprio gostaria de ter tido no primeiro dia.</p>
 <p style="font-size:15px;color:#5A5955;line-height:1.7;margin:0 0 28px;">Está incluído no Claro-app+.</p>
 <div style="text-align:center;margin-bottom:28px;">
-<a href="https://claro-app2.vercel.app" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Quero acesso ao Manual →</a>
+<a href="${APP_URL}" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Quero acesso ao Manual →</a>
 </div>
 <div style="border-top:1px solid #E8E6DF;padding-top:20px;">
 <p style="font-size:13px;color:#A8A69F;margin:0;">Dúvidas? Contacta-nos em <a href="mailto:suporte@claro-app.ch" style="color:#1D9E75;">suporte@claro-app.ch</a></p>
@@ -75,7 +79,7 @@ module.exports = async (req, res) => {
 </td></tr>
 <tr><td style="background:#F5F3EC;padding:20px 40px;text-align:center;">
 <p style="font-size:12px;color:#A8A69F;margin:0;">© 2025 Claro-app.ch · Montreux, Suíça</p>
-<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="https://claro-app2.vercel.app/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
+<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="${APP_URL}/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
 </td></tr>
 </table>
 </td></tr>
@@ -101,7 +105,7 @@ module.exports = async (req, res) => {
 </div>
 <p style="font-size:15px;color:#5A5955;line-height:1.7;margin:0 0 28px;">Criado especificamente para a realidade suíça — em francos suíços, com cálculos automáticos, pronto a usar no primeiro dia.</p>
 <div style="text-align:center;margin-bottom:28px;">
-<a href="https://claro-app2.vercel.app" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Quero o Budget Mensal →</a>
+<a href="${APP_URL}" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Quero o Budget Mensal →</a>
 </div>
 <div style="border-top:1px solid #E8E6DF;padding-top:20px;">
 <p style="font-size:13px;color:#A8A69F;margin:0;">Dúvidas? Contacta-nos em <a href="mailto:suporte@claro-app.ch" style="color:#1D9E75;">suporte@claro-app.ch</a></p>
@@ -109,7 +113,7 @@ module.exports = async (req, res) => {
 </td></tr>
 <tr><td style="background:#F5F3EC;padding:20px 40px;text-align:center;">
 <p style="font-size:12px;color:#A8A69F;margin:0;">© 2025 Claro-app.ch · Montreux, Suíça</p>
-<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="https://claro-app2.vercel.app/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
+<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="${APP_URL}/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
 </td></tr>
 </table>
 </td></tr>
@@ -135,7 +139,7 @@ module.exports = async (req, res) => {
 </div>
 <p style="font-size:15px;color:#5A5955;line-height:1.7;margin:0 0 28px;">Estas situações acontecem todos os dias. E com o Claro-app+ tens marcações ilimitadas comigo — incluídas na anuidade, sem custos extra.</p>
 <div style="text-align:center;margin-bottom:28px;">
-<a href="https://claro-app2.vercel.app" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Quero o Claro-app+ →</a>
+<a href="${APP_URL}" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Quero o Claro-app+ →</a>
 </div>
 <div style="border-top:1px solid #E8E6DF;padding-top:20px;">
 <p style="font-size:13px;color:#A8A69F;margin:0;">Dúvidas? Contacta-nos em <a href="mailto:suporte@claro-app.ch" style="color:#1D9E75;">suporte@claro-app.ch</a></p>
@@ -143,7 +147,7 @@ module.exports = async (req, res) => {
 </td></tr>
 <tr><td style="background:#F5F3EC;padding:20px 40px;text-align:center;">
 <p style="font-size:12px;color:#A8A69F;margin:0;">© 2025 Claro-app.ch · Montreux, Suíça</p>
-<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="https://claro-app2.vercel.app/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
+<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="${APP_URL}/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
 </td></tr>
 </table>
 </td></tr>
@@ -187,7 +191,7 @@ module.exports = async (req, res) => {
 </table>
 <p style="font-size:15px;color:#5A5955;line-height:1.7;margin:0 0 28px;">Uma consulta tradicional já paga o teu ano inteiro no Claro-app+.</p>
 <div style="text-align:center;margin-bottom:28px;">
-<a href="https://claro-app2.vercel.app" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Começar com Claro-app+ →</a>
+<a href="${APP_URL}" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Começar com Claro-app+ →</a>
 </div>
 <div style="border-top:1px solid #E8E6DF;padding-top:20px;">
 <p style="font-size:13px;color:#A8A69F;margin:0;">Dúvidas? Contacta-nos em <a href="mailto:suporte@claro-app.ch" style="color:#1D9E75;">suporte@claro-app.ch</a></p>
@@ -195,7 +199,7 @@ module.exports = async (req, res) => {
 </td></tr>
 <tr><td style="background:#F5F3EC;padding:20px 40px;text-align:center;">
 <p style="font-size:12px;color:#A8A69F;margin:0;">© 2025 Claro-app.ch · Montreux, Suíça</p>
-<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="https://claro-app2.vercel.app/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
+<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="${APP_URL}/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
 </td></tr>
 </table>
 </td></tr>
@@ -221,7 +225,7 @@ module.exports = async (req, res) => {
 <p style="font-size:15px;color:#5A5955;line-height:1.7;margin:0 0 16px;">Se ainda não experimentaste — começa hoje. Fotografa qualquer carta que tenhas em casa e vê o que a app te diz.</p>
 <p style="font-size:15px;color:#5A5955;line-height:1.7;margin:0 0 28px;">E se quiseres dar o próximo passo — tudo isto por CHF 12/mês:</p>
 <div style="text-align:center;margin-bottom:28px;">
-<a href="https://claro-app2.vercel.app" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Upgrade para Claro-app+ →</a>
+<a href="${APP_URL}" style="display:inline-block;background:#1D9E75;color:white;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;">Upgrade para Claro-app+ →</a>
 </div>
 <div style="border-top:1px solid #E8E6DF;padding-top:20px;">
 <p style="font-size:13px;color:#A8A69F;margin:0;">Dúvidas? Responde a este email ou contacta-nos em <a href="mailto:suporte@claro-app.ch" style="color:#1D9E75;">suporte@claro-app.ch</a></p>
@@ -229,7 +233,7 @@ module.exports = async (req, res) => {
 </td></tr>
 <tr><td style="background:#F5F3EC;padding:20px 40px;text-align:center;">
 <p style="font-size:12px;color:#A8A69F;margin:0;">© 2025 Claro-app.ch · Montreux, Suíça</p>
-<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="https://claro-app2.vercel.app/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
+<p style="font-size:12px;color:#A8A69F;margin:6px 0 0;"><a href="${APP_URL}/api/unsubscribe?email=${email}" style="color:#A8A69F;">Cancelar subscrição de emails</a></p>
 </td></tr>
 </table>
 </td></tr>
