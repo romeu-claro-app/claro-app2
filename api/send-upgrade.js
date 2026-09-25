@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Documentos ilimitados</td></tr>
 <tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Manual do Emigrante (PDF)</td></tr>
-<tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Budget Mensal Suíça (Excel)</td></tr>
+<tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Budget Mensal Suíça</td></tr>
 <tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>1 consulta por mês com um profissional</td></tr>
 <tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Gestão do agregado familiar</td></tr>
 <tr><td style="padding:6px 0;font-size:13px;color:#3A3A38;"><span style="color:#1D9E75;font-weight:700;margin-right:8px;">✓</span>Suporte direto por email</td></tr>
